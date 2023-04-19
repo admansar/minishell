@@ -294,7 +294,44 @@ char **split_and_pay_attention(char **input)
 	return (str);
 }
 
-char **parsing(char **input)
+void rebuild(char **ptr)
+{
+	char *tmp;
+	int i;
+	int j;
+	int k;
+
+	i = 0;
+	j = 0;
+	k = 0;
+	tmp = malloc (sizeof(char) * (2 + ft_strlen(*ptr)));
+	tmp[j++] = '\"';
+	while ((*ptr)[i])
+	{
+		if (k == 2 && (*ptr)[i] == ' ')
+		{
+			tmp[j++] = '\"';
+			tmp[j++] = ' ';
+			i++;
+		}
+		if ((*ptr)[i] != '\"')
+		{
+			tmp[j] = (*ptr)[i];
+			j++;
+		}
+		else 
+			k++;
+			i++;
+	}
+	if (char_counter(tmp, '\"') != 2)
+		tmp[j++] = '\"';
+	tmp[j] = '\0';
+	//printf ("%s\n", tmp);
+	strlcpy(*ptr, tmp, ft_strlen(tmp) + 1);
+	free(tmp);
+}
+
+char *parsing(char **input)
 {
 	int i;
 	int j;
@@ -335,12 +372,19 @@ char **parsing(char **input)
 		return (NULL);
 	}
 	i = 0;
+	while (str[i])
+	{
+		if (char_counter(str[i], '\"') == 2 && !surounded_by(str[i], '\"'))
+			rebuild(&str[i]);
+		i++;
+	}
+	i = 0;
 	while (new_str[i])
-		printf ("%s\n", new_str[i++]);
+		printf ("%s$\n", new_str[i++]);
 	printf ("-------%d\n", ft_strcount(new_str));
 	i = 0;
 	while (str[i])
-		printf ("%s\n", str[i++]);
+		printf ("%s$\n", str[i++]);
 	printf ("-------%d\n", ft_strcount(str));
 	return (NULL);
 }
