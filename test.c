@@ -240,7 +240,7 @@ char **split_and_pay_attention(char **input)
 	int end;
 	char **str;
 
-	str = malloc (sizeof (char *) * ft_strlen((*input)));
+	str = ft_calloc (sizeof (char *), ft_strlen((*input)));
 	start = 0;
 	end = 0;
 	taken = 1;
@@ -271,7 +271,7 @@ char **split_and_pay_attention(char **input)
 		}
 		else if ((*input)[i] == '\"' && taken == 0)
 		{
-			if ((*input)[i + 1] == ' ' || (*input)[i + 1] == '\0')
+			if ((*input)[i + 1] == ' ' || (*input)[i + 1] == '\0' || (*input)[i + 1] == '\'')
 			{
 				end = i;
 			}
@@ -293,7 +293,7 @@ char **split_and_pay_attention(char **input)
 	str[j] = NULL;
 	return (str);
 }
-
+//segv is here 
 void rebuild(char **ptr)
 {
 	char *tmp;
@@ -304,7 +304,9 @@ void rebuild(char **ptr)
 	i = 0;
 	j = 0;
 	k = 0;
-	tmp = malloc (sizeof(char) * (2 + ft_strlen(*ptr)));
+	if ((*ptr)[i] == '\'')
+		return ;
+	tmp = ft_calloc (sizeof(char), (2 + ft_strlen(*ptr)));
 	tmp[j++] = '\"';
 	while ((*ptr)[i])
 	{
@@ -326,7 +328,8 @@ void rebuild(char **ptr)
 	if (char_counter(tmp, '\"') != 2)
 		tmp[j++] = '\"';
 	tmp[j] = '\0';
-	//printf ("%s\n", tmp);
+	free (*ptr);
+	*ptr = malloc (sizeof (char) * (ft_strlen(tmp) + 1));
 	strlcpy(*ptr, tmp, ft_strlen(tmp) + 1);
 	free(tmp);
 }
@@ -338,7 +341,7 @@ char *parsing(char **input)
 	int k;
 	int taken;
 	int start;
-	int *must_fus;
+	char *must_fus;
 	int end;
 	char **str;
 	char **new_str;
@@ -353,8 +356,29 @@ char *parsing(char **input)
 		return (NULL);
 	}
 	delete_non_sense(input);
-	new_str = split_without_weast (input);
 	str = split_and_pay_attention (input);
+	new_str = split_without_weast (input);
+	if ((!surounded_by(str[0], '\"')) && char_counter(str[0], ' '))
+	{
+		k = ft_simularity_len (str[0], ' ') + 1;
+		tmp1 = malloc (sizeof(char) * (k + 1));
+		ft_strlcpy(tmp1, str[0], k + 1);
+		tmp2 = ft_strdup (str[0] + k);
+		free (str[0]);
+		str[0] = ft_strdup(tmp1);
+		free (tmp1);
+		if (str[1])
+		{
+			must_fus = ft_str_join (tmp2, str[1]);
+			ft_strlcpy(str[1], must_fus, ft_strlen (must_fus) + 1);
+			free (must_fus);
+		}
+		else
+		{
+			str[1] = ft_strdup(tmp2);
+			free (tmp2);
+		}
+	}
 	i = 0;
 	j = 0;
 	while (new_str[i])
@@ -371,6 +395,24 @@ char *parsing(char **input)
 		error_print ("command not found: ", clean_copy(new_str[0]));
 		return (NULL);
 	}
+	i = -1;
+	j = -1;
+//	while (new_str[++i + 1])
+//		if (new_str[i][ft_strlen(new_str[i]) - 1] != ' ')
+//		{
+//			new_str[i] = ft_str_join(new_str[i], new_str[i + 1]);
+//			j = i + 1;
+//			while (new_str[j + 1])
+//			{
+//				k = ft_strlen(new_str[j + 1]) + 1;
+//				printf ("%d <<>> %d\n", j , k);
+//				free (new_str[j]);
+//				new_str[j] = malloc (sizeof(char) * k);
+//				ft_strlcpy(new_str[j] , new_str[j + 1], k);
+//				j++;
+//			}
+//			new_str[j] = NULL;
+//		}
 	i = 0;
 	while (str[i])
 	{
