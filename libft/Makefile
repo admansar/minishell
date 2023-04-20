@@ -6,7 +6,7 @@
 #    By: admansar <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/10 18:33:04 by admansar          #+#    #+#              #
-#    Updated: 2023/04/13 17:49:39 by admansar         ###   ########.fr        #
+#    Updated: 2023/04/20 15:07:19 by admansar         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,7 +19,7 @@ CC = cc
 SRC = ft_isalpha.c ft_isdigit.c ft_isalnum.c ft_isascii.c ft_isprint.c ft_strlen.c ft_memset.c ft_bzero.c ft_memcpy.c \
 ft_memmove.c ft_atof.c ft_strlcpy.c ft_strlcat.c ft_toupper.c ft_tolower.c ft_strchr.c ft_strrchr.c ft_memcmp.c ft_strnstr.c \
 ft_memchr.c ft_strncmp.c ft_strdup.c ft_calloc.c ft_atoi.c ft_substr.c ft_strjoin.c ft_str_join.c  ft_strtrim.c ft_itoa.c ft_strmapi.c \
-ft_striteri.c ft_putchar_fd.c ft_putstr_fd.c ft_putendl_fd.c ft_putnbr_fd.c ft_split.c \
+ft_striteri.c ft_putchar_fd.c ft_putstr_fd.c ft_putendl_fd.c ft_putnbr_fd.c ft_split.c my_spliter.c\
 ft_putadres.c ft_putnbr_hexa.c ft_putstr.c ft_printf.c ft_putchar.c ft_putnbr_hexa_up.c ft_printf.h	ft_putnbr.c	ft_putnbr_ui.c
 BSRC = ft_lstnew.c ft_lstadd_front.c ft_lstsize.c ft_lstlast.c ft_lstadd_back.c ft_lstdelone.c ft_lstclear.c ft_lstiter.c
 

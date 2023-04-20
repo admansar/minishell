@@ -6,7 +6,7 @@
 /*   By: admansar <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/29 12:11:46 by admansar          #+#    #+#             */
-/*   Updated: 2023/04/15 16:04:55 by admansar         ###   ########.fr       */
+/*   Updated: 2023/04/20 15:09:37 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,4 +68,5 @@ void			ft_lstclear(t_list **lst, void (*del)(void *));
 void			ft_lstiter(t_list *lst, void (*f)(void *));
 char			*ft_str_join(char *s1, char *s2);
 int				ft_strcount(char **c);
+char			**my_spliter(char *s, int i, int j, int k);
 #endif

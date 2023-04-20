@@ -42,7 +42,7 @@ char *take_copy(char *s1, int start, int end)
 	int i;
 	char *re;
 
-	re = malloc (sizeof(char) * (end - start + 2));
+	re = malloc (sizeof(char) * (end - start + 3));
 	i = 0;
 	while (i < end - start + 1)
 	{
@@ -199,7 +199,7 @@ char **split_without_weast(char **input)
 		}
 		else if ((*input)[i] != '\"' && taken == 1) 
 		{
-			new_str[j] = malloc (sizeof (char) * (ft_strlen((*input))) + 1);
+			new_str[j] = malloc (sizeof (char) * (ft_strlen((*input)) + 1));
 			k = 0;
 			while ((*input)[i] && (*input)[i] != '\"')
 			{ 
@@ -334,6 +334,53 @@ void rebuild(char **ptr)
 	free(tmp);
 }
 
+void free_double_array(char **c)
+{
+	int	i;
+
+	i = 0;
+	while (c[i])
+		free(c[i++]);
+	free(c);
+}
+
+char **ultra_split(char **new_str , char **input)
+{
+	char **split;
+	char **str_pro_max;
+	int i;
+	int j;
+	int k;
+
+	i = 0;
+	j = 0;
+	k = 0;
+	str_pro_max = ft_calloc(sizeof(char *), ft_strlen((*input)));
+	while (new_str[i])
+	{
+		if (!char_counter(new_str[i], '\"') && char_counter(new_str[i], ' '))
+		{
+			split = my_spliter(new_str[i], 0, 0, 0);
+			if (new_str[i][ft_strlen(new_str[i]) - 1] == ' ')
+				split[ft_strcount(split) - 1] = ft_str_join(split[ft_strcount(split) - 1], " ");
+			j = 0;
+			while (split[j])
+			{
+				str_pro_max [k] = ft_strdup(split[j]);
+				j++;
+				k++;
+			}
+			free_double_array(split);
+		}
+		else
+		{
+			str_pro_max[k++] = ft_strdup(new_str[i]);
+		}
+		i++;
+	}
+	return (str_pro_max);
+}
+
 char *parsing(char **input)
 {
 	int i;
@@ -347,6 +394,8 @@ char *parsing(char **input)
 	char **new_str;
 	char *tmp1;
 	char *tmp2;
+	char **str_pro_max; // the best one one use
+	char **split;
 
 	if (!char_counter((*input), '\"') && ! char_counter((*input), '\''))
 		return (NULL);
@@ -386,6 +435,7 @@ char *parsing(char **input)
 		if ((char_counter(new_str[i], '\'') % 2))
 		{
 			error_print ("command not found: ", clean_copy(new_str[i]));
+			free_double_array(new_str);
 			return (NULL);
 		}
 		i++;
@@ -393,6 +443,7 @@ char *parsing(char **input)
 	if (char_counter(new_str[0], ' ') && surounded_by(new_str[0], '\"'))
 	{
 		error_print ("command not found: ", clean_copy(new_str[0]));
+		free_double_array(new_str);
 		return (NULL);
 	}
 	i = -1;
@@ -413,13 +464,14 @@ char *parsing(char **input)
 //			}
 //			new_str[j] = NULL;
 //		}
-	i = 0;
-	while (str[i])
-	{
-		if (char_counter(str[i], '\"') == 2 && !surounded_by(str[i], '\"'))
-			rebuild(&str[i]);
-		i++;
-	}
+	str_pro_max = ultra_split(new_str, input);
+//	i = 0;
+//	while (str[i])
+//	{
+//		if (char_counter(str[i], '\"') == 2 && !surounded_by(str[i], '\"'))
+//			rebuild(&str[i]);
+//		i++;
+//	}
 	i = 0;
 	while (new_str[i])
 		printf ("%s$\n", new_str[i++]);
@@ -428,6 +480,13 @@ char *parsing(char **input)
 	while (str[i])
 		printf ("%s$\n", str[i++]);
 	printf ("-------%d\n", ft_strcount(str));
+	i = 0;
+	while (str_pro_max[i])
+		printf ("%s$\n", str_pro_max[i++]);
+	printf ("-------%d\n", ft_strcount(str_pro_max));
+	free_double_array(new_str);
+	free_double_array(str);
+	free_double_array(str_pro_max);
 	return (NULL);
 }
 
