@@ -6,7 +6,7 @@
 /*   By: admansar <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/13 21:17:24 by admansar          #+#    #+#             */
-/*   Updated: 2023/04/13 17:55:21 by admansar         ###   ########.fr       */
+/*   Updated: 2023/04/24 00:41:31 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ static char	*g_g(char *ptr, const char *s1, const char *s2)
 	return (ptr);
 }
 
-
 char	*ft_str_join(char *s1, char *s2)
 {
 	char	*ptr;
@@ -42,8 +41,8 @@ char	*ft_str_join(char *s1, char *s2)
 
 	if (!s1 || !s2)
 		return (NULL);
-	s1len = ft_strlen((char *)s1);
-	s2len = ft_strlen((char *)s2);
+	s1len = ft_strlen(s1) + 1;
+	s2len = ft_strlen(s2) + 1;
 	ptr = malloc(sizeof(char) * (s1len + s2len) + 1);
 	if (!ptr)
 		return (NULL);

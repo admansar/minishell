@@ -4,12 +4,14 @@ SRC = test.c
 
 CC = cc
 
+CFLAGS = -fsanitize=address
+
 
 all : $(NAME)
 
 $(NAME) : $(SRC)
 	@make -C libft
-	$(CC) $(SRC) libft/libft.a -lreadline -o $(NAME)
+	$(CC) $(SRC) $(CFLAGS) libft/libft.a -lreadline -o $(NAME)
 
 clean :
 	make -C libft clean

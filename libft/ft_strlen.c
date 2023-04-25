@@ -6,7 +6,7 @@
 /*   By: admansar <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/29 17:04:14 by admansar          #+#    #+#             */
-/*   Updated: 2023/04/16 14:36:21 by admansar         ###   ########.fr       */
+/*   Updated: 2023/04/23 15:29:10 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 int	ft_strcount(char **c)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (c[i])
@@ -22,14 +22,13 @@ int	ft_strcount(char **c)
 	return (i);
 }
 
-
 unsigned long	ft_strlen(char *b)
 {
 	int	j;
 
 	j = 0;
 	if (!b)
-		return j;
+		return (j);
 	while (b[j])
 		j++;
 	return (j);
