@@ -46,7 +46,7 @@ char *take_copy(char *s1, int start, int end)
 
 	re = malloc (sizeof(char) * (end - start + 3));
 	i = 0;
-	while (i < end - start + 1)
+	while (i < end - start + 1/* && s1[start + i]*/)
 	{
 		re[i] = s1[start + i];
 		i++;
@@ -99,20 +99,24 @@ char *clean_copy(char *c)
 {
 	int i;
 	int j;
+	int k;
 	char *re;
 
 	if (surounded_by(c, '\"'))
 	{
 		re = malloc (sizeof (char) * ft_strlen(c));
 		i = 0;
+		k = 0;
 		j = 0;
-		while (c[i])
+		while (c[i] && k < 2)
 		{
 			if (c[i] != '\"')
 			{
 				re[j] = c[i];
 				j++;
 			}
+			else 
+				k++;
 			i++;
 		}
 		re[j] = '\0';
@@ -313,7 +317,7 @@ char **split_without_weast(char **input)
 }
 
 
-
+//search if a letter 'c' is inside a single quotes 
 int insider(char **input, char c)
 {
 	int i;
@@ -408,6 +412,7 @@ void should_i_replace_them(char **input)
 	}
 }
 
+//to surounde a string by the quotes
 void rebuild_using(char **ptr, char c)
 {
 	char *tmp;
@@ -460,6 +465,7 @@ void free_double_array(char **c)
 	c = NULL;
 }
 
+//the best split for the project 
 char **ultra_split(char **new_str , char **input)
 {
 	char **split;
@@ -500,6 +506,7 @@ char **ultra_split(char **new_str , char **input)
 	return (str_pro_max);
 }
 
+//join the string to the next one that should be joined with 
 void the_joiner(char ***str_pro_max)
 {
 	int i;
@@ -540,6 +547,7 @@ void the_joiner(char ***str_pro_max)
 	}
 }
 
+//print the double array for me 
 void printer(char **ptr)
 {
 	int	i;
@@ -550,6 +558,7 @@ void printer(char **ptr)
 	printf ("-------%d\n", ft_strcount(ptr));
 }
 
+//the dual of qoutes and double qoutes 
 char dual(char c)
 {
 	if (c == '\'')
@@ -557,6 +566,7 @@ char dual(char c)
 	return ('\'');
 }
 
+//delete the usless iner things
 void delete_them_inside(char **ptr, char c)
 {
 	char	*tmp;
@@ -626,8 +636,8 @@ void no_etxra_qoutes(char ***str)
 }
 
 
-
-void make_some_space(char **str) // working here
+// making space to let the "rederections" easy to detect inside by the ultra_split 
+void make_some_space(char **str) 
 {
     char *tmp;
     char **redirection;
@@ -681,23 +691,113 @@ void make_some_space(char **str) // working here
 	free (tmp);
 }
 
-
-
-void redirection(char ***str_pro_max)
+void expand(char ***str_pro_max, char **env)
 {
 	int i;
-
+	int k;
+	int h;
+	int j;
+	int m;
+	int start;
+	int end;
+	char *tmp;
+	char *tmp2;
+	char **str;
 	i = 0;
+	j = 0;
+	start = 0;
+	end = 0;
+
+	str = ft_calloc (sizeof (char *) ,(ft_strcount(*str_pro_max) + 1));
 	while ((*str_pro_max)[i])
 	{
-		if (!surounded_by((*str_pro_max)[i], '\'') || !surounded_by((*str_pro_max)[i], '\"'))
-			make_some_space(&(*str_pro_max)[i]);
-			i++;
+		j = 0;
+		k = 0;
+		start = 0;
+		end = 0;
+		while ((*str_pro_max)[i][j])
+		{
+			if ((*str_pro_max)[i][j] == '$' && ((*str_pro_max)[i][j + 1] != ' ' 
+						&& (*str_pro_max)[i][j + 1] != '\"' 
+						&& (*str_pro_max)[i][j + 1] != '\0'))
+			{
+				start = j;
+				while ((*str_pro_max)[i][j] && (*str_pro_max)[i][j] != ' '  
+						&& (*str_pro_max)[i][j] != '\'' && (*str_pro_max)[i][j] != '\"')
+					j++;
+				end = j--;
+				tmp = take_copy((*str_pro_max)[i], start + 1, end - 1);
+				k = 0;
+				while (env[k])
+				{
+					h = ft_strlen(tmp);
+					if (!ft_strncmp(tmp, env[k], h) && env[k][h] == '=')
+					{
+						k = ft_strlen(env[k]) - h - 1;
+						break;
+					}
+					k++;
+				}
+				free(tmp);	
+				if (j >= ft_strlen((*str_pro_max)[i]))
+					break;
+			}
+			else 
+				j++;
+		}
+		str[i] = ft_calloc (sizeof (char) ,(ft_strlen((*str_pro_max)[i]) - (end - start) + k + 1));
+		i++;
 	}
+	i = 0;
+	j = 0;
+	start = 0;
+	end = 0;
+	while ((*str_pro_max)[i])
+	{
+		j = 0;
+		m = 0;
+		while ((*str_pro_max)[i][j])
+		{
+			if ((*str_pro_max)[i][j] == '$' && ((*str_pro_max)[i][j + 1] != ' ' 
+						&& (*str_pro_max)[i][j + 1] != '\"' 
+						&& (*str_pro_max)[i][j + 1] != '\0'))
+			{
+				start = j;
+				while ((*str_pro_max)[i][j] && (*str_pro_max)[i][j] != ' '  
+						&& (*str_pro_max)[i][j] != '\'' && (*str_pro_max)[i][j] != '\"')
+					j++;
+				end = j--;
+				tmp = take_copy((*str_pro_max)[i], start + 1, end - 1); 
+				k = 0;
+				while (env[k])
+				{
+					h = ft_strlen(tmp);
+					if (!ft_strncmp(tmp, env[k], h) && env[k][h] == '=')
+					{
+						tmp2 = take_copy(env[k], h + 1, ft_strlen(env[k]));
+						k = 0;
+						while (tmp2[k])
+							str[i][m++] = tmp2[k++];
+						free (tmp2);
+						break;
+					}
+					k++;
+				}
+				m--;
+				free(tmp);
+			}
+			else 
+				str[i][m] = (*str_pro_max)[i][j];
+			j++;
+			m++;
+		}
+		i++;
+	}
+//	printer (str);
 }
 
 // te perfect parsing does not exis ... 
-char *parsing(char **input)
+char *parsing(char **input, char **env)
 {
 	int i;
 	int j;
@@ -721,7 +821,7 @@ char *parsing(char **input)
 		error_print ("bash: syntax error", NULL);
 		return (NULL);
 	}
-	delete_non_sense(input);
+	//delete_non_sense(input);
 	new_str = split_without_weast (input);
 //	if (char_counter(new_str[0], ' ') && surounded_by(new_str[0], '\"'))
 //	{
@@ -741,6 +841,7 @@ char *parsing(char **input)
 		}
 		i++;
 	}
+	expand(&new_str, env);
 	str_pro_max = ultra_split(new_str, input);
 	the_joiner(&str_pro_max);
 	i = 0;
@@ -753,20 +854,23 @@ char *parsing(char **input)
 //		i++;
 //	}
 	no_etxra_qoutes(&str_pro_max);
-	printer(new_str);
+//	printer(new_str);
 	printer(str_pro_max);
 	free_double_array(new_str);
 	free_double_array(str_pro_max);
 	return (NULL);
 }
 
-int main()
+int main(int ac, char **av, char **env)
 {
 	char *input;
 	char *copy;
 
+	(void)ac;
+	(void)av;
+//	printer(env);
 	printf("\033[1mThe default interactive shell is now zsh.\nTo update your account to use zsh, please run chsh -s /bin/zsh.\n\033[0m");
-	input = (char *)1;
+//	input = (char *)1;
 	while (1)
 	{
 		input = readline("\033[1mbash-3.2$> \033[0m");
@@ -777,7 +881,7 @@ int main()
 		}
 		copy = ft_strdup(input);
 		if (char_counter(copy, '\"') || char_counter(copy, '\''))
-			parsing(&copy);
+			parsing(&copy, env);
 		else
 		{
 			make_some_space(&copy);
