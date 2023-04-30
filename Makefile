@@ -4,7 +4,7 @@ SRC = test.c
 
 CC = cc
 
-CFLAGS = -fsanitize=address
+CFLAGS = -g -fsanitize=address
 
 
 all : $(NAME)
