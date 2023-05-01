@@ -6,7 +6,7 @@
 /*   By: admansar <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/29 17:04:14 by admansar          #+#    #+#             */
-/*   Updated: 2023/04/23 15:29:10 by admansar         ###   ########.fr       */
+/*   Updated: 2023/05/01 18:13:57 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ int	ft_strcount(char **c)
 	int	i;
 
 	i = 0;
+	if (!c)
+		return (i);
 	while (c[i])
 		i++;
 	return (i);

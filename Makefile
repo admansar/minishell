@@ -4,13 +4,14 @@ SRC = test.c
 
 CC = cc
 
-CFLAGS = -g -fsanitize=address
+CFLAGS = -Wall -Wextra -Werror #-g -fsanitize=address
 
 
 all : $(NAME)
 
-$(NAME) : $(SRC)
+$(NAME) : $(SRC) 
 	@make -C libft
+	$(emo)
 	$(CC) $(SRC) $(CFLAGS) libft/libft.a -lreadline -o $(NAME)
 
 clean :
@@ -21,3 +22,13 @@ fclean : clean
 	rm -f $(NAME)
 
 re : fclean all
+
+
+define emo
+@echo "\033[0;91m" 
+@echo "\t█████████████████████████████████████████████████████"
+@echo "\t█▄─▀█▀─▄█▄─▄█▄─▀█▄─▄█▄─▄█─▄▄▄▄█─█─█▄─▄▄─█▄─▄███▄─▄███"
+@echo "\t██─█▄█─███─███─█▄▀─███─██▄▄▄▄─█─▄─██─▄█▀██─██▀██─██▀█"
+@echo "\t█▄▄▄█▄▄▄█▄▄▄█▄▄▄██▄▄█▄▄▄█▄▄▄▄▄█▄█▄█▄▄▄▄▄█▄▄▄▄▄█▄▄▄▄▄█"
+@echo "\033[0m"
+endef

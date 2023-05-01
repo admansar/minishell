@@ -256,6 +256,7 @@ void delete_non_sense(char **input)
 	s_delete(input);
 }
 
+void	free_double_array(char **new_str);
 //better for cheking errors the advantage of it that i split the double quote without waisting the double quotes
 char **split_without_weast(char **input) 
 {
@@ -313,6 +314,11 @@ char **split_without_weast(char **input)
 		i++;
 	}
 	new_str[j] = NULL;
+	if (start > end)
+	{
+		free_double_array(new_str);
+		return (NULL);
+	}
 	return (new_str);
 }
 
@@ -373,7 +379,6 @@ void should_i_replace_them(char **input)
 {
 	int i;
 	int j;
-	int k;
 	int taken;
 	int start;
 	int end;
@@ -416,7 +421,6 @@ void i_should_replace_them(char **input)
 {
 	int i;
 	int j;
-	int k;
 	int taken;
 	int start;
 	int end;
@@ -500,11 +504,12 @@ void free_double_array(char **c)
 	int	i;
 
 	i = 0;
-	while (c[i])
-	{
-		free(c[i]);
-		c[i++] = NULL;
-	}
+	if (c)
+		while (c[i])
+		{
+			free(c[i]);
+			c[i++] = NULL;
+		}
 	free(c);
 	c = NULL;
 }
@@ -562,6 +567,7 @@ void the_joiner(char ***str_pro_max)
 	i = 0;
 	k = 0;
 	j = 0;
+	if (i + 1 < ft_strcount(*str_pro_max))
 	while ((*str_pro_max)[i + 1])
 	{
 		h = ft_strlen((*str_pro_max)[i]) - 1;
@@ -684,7 +690,6 @@ void no_etxra_qoutes(char ***str)
 void make_some_space(char **str) 
 {
     char *tmp;
-    char **redirection;
     int j;
     int i;
 
@@ -778,7 +783,6 @@ void expand(char ***str_pro_max, char **env)
 					j++;
 				end = j;
 				tmp = take_copy((*str_pro_max)[i], start + 1, end);
-			//	printf ("j = %d and tmp is : %s\n", j, tmp);
 				k = 0;
 				while (env[k])
 				{
@@ -791,7 +795,7 @@ void expand(char ***str_pro_max, char **env)
 					k++;
 				}
 				free(tmp);	
-				if (j >= ft_strlen((*str_pro_max)[i]))
+				if (j >= (int)ft_strlen((*str_pro_max)[i]))
 					break;
 			}
 			else 
@@ -854,7 +858,8 @@ void expand(char ***str_pro_max, char **env)
 			free ((*str_pro_max)[i]);
 			(*str_pro_max)[i] = ft_strdup(str[i]);
 		}
-		i_should_replace_them(&(*str_pro_max)[i]);
+		else
+			i_should_replace_them(&(*str_pro_max)[i]);
 		i++;
 	}
 	free_double_array(str);
@@ -863,60 +868,20 @@ void expand(char ***str_pro_max, char **env)
 // te perfect parsing does not exis ... 
 char *parsing(char **input, char **env)
 {
-	int i;
-	int j;
-	int k;
-	int h;
-	int taken;
-	int start;
-	char *must_fus;
-	int end;
-	char **str;
 	char **new_str;
-	char *tmp1;
-	char *tmp2;
 	char **str_pro_max; // the best one to use till moument
-	char **split;
 
-//	if (!char_counter((*input), '\"') && !char_counter((*input), '\''))
-//		return (NULL);
-//	if (char_counter((*input), '\"') % 2 || char_counter((*input), '\'') % 2)
-//	{
-//		error_print ("bash: syntax error", NULL);
-//		return (NULL);
-//	}
 //	delete_non_sense(input);
 	new_str = split_without_weast (input);
-//	if (char_counter(new_str[0], ' ') && surounded_by(new_str[0], '\"'))
-//	{
-//		error_print ("command not found: ", clean_copy(new_str[0]));
-//		free_double_array(new_str);
-//		return (NULL);
-//	}
-	i = 0;
-	j = 0;
-//	while (new_str[i])
-//	{
-//		if ((char_counter(new_str[i], '\'') % 2))
-//		{
-//			error_print ("syntax error ", NULL);
-//			free_double_array(new_str);
-//			return (NULL);
-//		}
-//		i++;
-//	}
+	if (ft_strlen ((*input)) && !ft_strcount (new_str))
+	{
+		error_print ("syntax error", NULL);
+		free_double_array(new_str);
+		return (NULL);
+	}
 	expand(&new_str, env);
 	str_pro_max = ultra_split(new_str, input);
 	the_joiner(&str_pro_max);
-	i = 0;
-//	while (str_pro_max[i])
-//	{
-//		if (char_counter(str_pro_max[i], '\"') == 2 && ft_simularity_len(str_pro_max[i], '\"') <  ft_simularity_len(str_pro_max[i], '\''))
-//			rebuild_using(&str_pro_max[i], '\"');
-//		else if (char_counter(str_pro_max[i], '\'') == 2 &&  ft_simularity_len(str_pro_max[i], '\"') > ft_simularity_len(str_pro_max[i], '\''))
-//			rebuild_using(&str_pro_max[i], '\'');
-//		i++;
-//	}
 	no_etxra_qoutes(&str_pro_max);
 	//printer(new_str);
 	printer(str_pro_max);
