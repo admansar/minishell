@@ -790,6 +790,7 @@ int checking_direction(char *str, char *behind_str) //this function take a look 
 	int i;
 	char **split;
 
+	end = 1;
 	if (behind_str)
 	{
 		if (!surounded_by(str, '\'') && !surounded_by(str, '\"') && !char_counter(str, ' ') && (!ft_strncmp(behind_str, "<<", 2)))
@@ -816,15 +817,13 @@ int checking_direction(char *str, char *behind_str) //this function take a look 
 		else if (!surounded_by(str, '\'') && !surounded_by(str, '\"') && char_counter(str, ' '))
 		{
 			split = ft_split(str, ' ');
-			i = -1;		
+			i = -1;
 			while (split[++i])
 				if (char_counter(split[i], '$'))
 				{
 					end = checking_direction(split[i], split[i - 1]);
-
 					break;	
 				}
-			printer(split);
 			free_double_array(split);
 			return (end);
 		}
@@ -842,7 +841,6 @@ int checking_direction(char *str, char *behind_str) //this function take a look 
 
 					break;	
 				}
-			printer(split);
 			free_double_array(split);
 			return (end);
 		}
@@ -1000,14 +998,43 @@ char *parsing(char **input, char **env)
 	return (NULL);
 }
 
-int main(int ac, char **av, char **env)
+void shlvl(char ***env, int c)
+{
+	int i;
+	int h;
+	char *tmp;
+	char *tmp2;
+
+	h = ft_strlen ("SHLVL=");
+	i = 0;
+	while ((*env)[i])
+	{
+		if (!ft_strncmp((*env)[i], "SHLVL=", h))
+		{
+			tmp = take_copy((*env)[i], h, ft_strlen((*env)[i]));
+			tmp2 = ft_itoa(ft_atoi(tmp) + c);
+			free (tmp);
+			free ((*env)[i]);
+			(*env)[i] = ft_strjoin("SHLVL=", tmp2);
+			free (tmp2);
+			return ;
+		}
+		i++;
+	}
+}
+
+
+int main(int ac, char **av, char **envi)
 {
 	char *input;
 	char *copy;
 	char **split;
+	char **env;
 
 	(void)ac;
 	(void)av;
+	env = phil(envi);
+	shlvl(&env, 1);
 	in_env(NULL, env, 1);
 	printf("\033[1mThe default interactive shell is now zsh.\nTo update your account to use zsh, please run chsh -s /bin/zsh.\n\033[0m");
 	while (1)
@@ -1039,6 +1066,8 @@ int main(int ac, char **av, char **env)
 		add_history(input);
 		free(input);
 	}
+	shlvl(&env, -1);
+	in_env(NULL, env, 1);
 	return 0;
 }
 
