@@ -6,6 +6,7 @@
 #include "libft/ft_printf.h"
 
 void make_some_space(char **str);
+void	free_double_array(char **new_str);
 void should_i_replace_them(char **input);
 //how many worlds before the letter indicated as the second char 
 int ft_simularity_len(char *str, char c)
@@ -18,6 +19,7 @@ int ft_simularity_len(char *str, char c)
 	return (i);
 }
 
+//that function delete start and end if they are to close... i use it to delete the ussless quotes
 void delete_both(char **input, int start, int end, char c)
 {
 	int i;
@@ -148,7 +150,6 @@ int max_len(char **str)
 void d_delete(char **input) // d for double quotes
 {	
 	int i;
-	int j;
 	int taken;
 	int start;
 	int end;
@@ -156,7 +157,6 @@ void d_delete(char **input) // d for double quotes
 	int len;
 
 	i = 0;
-	j = 0;
 	taken = 1;
 	start = 0;
 	end = 0;
@@ -198,7 +198,6 @@ void d_delete(char **input) // d for double quotes
 void s_delete(char **input) // s for single quotes
 {	
 	int i;
-	int j;
 	int taken;
 	int start;
 	float used;
@@ -206,7 +205,6 @@ void s_delete(char **input) // s for single quotes
 	int len;
 
 	i = 0;
-	j = 0;
 	taken = 1;
 	start = 0;
 	end = 0;
@@ -256,7 +254,6 @@ void delete_non_sense(char **input)
 	s_delete(input);
 }
 
-void	free_double_array(char **new_str);
 //better for cheking errors the advantage of it that i split the double quote without waisting the double quotes
 char **split_without_weast(char **input) 
 {
@@ -327,7 +324,6 @@ char **split_without_weast(char **input)
 int insider(char **input, char c)
 {
 	int i;
-	int j;
 	int k;
 	int taken;
 	int start;
@@ -338,7 +334,6 @@ int insider(char **input, char c)
 	k = 0;
 	end = 0;
 	taken = 1;
-	j = 0;
 	i = 0;
 	while ((*input)[i])
 	{
@@ -378,7 +373,6 @@ int insider(char **input, char c)
 void should_i_replace_them(char **input)
 {
 	int i;
-	int j;
 	int taken;
 	int start;
 	int end;
@@ -387,7 +381,6 @@ void should_i_replace_them(char **input)
 	start = 0;
 	end = 0;
 	taken = 1;
-	j = 0;
 	i = 0;
 	while ((*input)[i])
 	{
@@ -417,10 +410,10 @@ void should_i_replace_them(char **input)
 	}
 }
 
+// i mean the name is really clear
 void i_should_replace_them(char **input)
 {
 	int i;
-	int j;
 	int taken;
 	int start;
 	int end;
@@ -429,7 +422,6 @@ void i_should_replace_them(char **input)
 	start = 0;
 	end = 0;
 	taken = 1;
-	j = 0;
 	i = 0;
 	while ((*input)[i])
 	{
@@ -460,7 +452,7 @@ void i_should_replace_them(char **input)
 }
 
 
-//to surounde a string by the quotes
+//to suround a string by the quotes
 void rebuild_using(char **ptr, char c)
 {
 	char *tmp;
@@ -495,7 +487,7 @@ void rebuild_using(char **ptr, char c)
 	tmp[j] = '\0';
 	free (*ptr);
 	*ptr = malloc (sizeof (char) * (ft_strlen(tmp) + 1));
-	strlcpy(*ptr, tmp, ft_strlen(tmp) + 1);
+	ft_strlcpy(*ptr, tmp, ft_strlen(tmp) + 1);
 	free(tmp);
 }
 
@@ -561,7 +553,6 @@ void the_joiner(char ***str_pro_max)
 	int i;
 	int j;
 	int k;
-	int n;
 	int h;
 
 	i = 0;
@@ -571,14 +562,7 @@ void the_joiner(char ***str_pro_max)
 	while ((*str_pro_max)[i + 1])
 	{
 		h = ft_strlen((*str_pro_max)[i]) - 1;
-		n = 0;
 		k = 0;
-//		while ((*str_pro_max)[i + 1][n])
-//		{
-//			if ((*str_pro_max)[i + 1][n] == '\'')
-//				k = 1;
-//			n++;
-//		}
 		if ((*str_pro_max)[i][h] != ' ' && !k && (*str_pro_max)[i + 1][0] != '>' && (*str_pro_max)[i + 1][0] != '<')
 		{
 			(*str_pro_max)[i] = ft_str_join((*str_pro_max)[i], (*str_pro_max)[i + 1]);
@@ -662,10 +646,11 @@ void delete_them_inside(char **ptr, char c)
 	tmp[j] = '\0';
 	free (*ptr);
 	*ptr = malloc (sizeof (char) * (ft_strlen(tmp) + 1));
-	strlcpy(*ptr, tmp, ft_strlen(tmp) + 1);
+	ft_strlcpy(*ptr, tmp, ft_strlen(tmp) + 1);
 	free(tmp);
 }
 
+//no comment
 void no_etxra_qoutes(char ***str)
 {
 	int	i;
@@ -750,6 +735,121 @@ void make_some_space(char **str)
 	}
 }
 
+
+// wanna make a copy of your double array , use phil function ... its your friend
+char **phil(char **str)
+{
+	int i;
+	char **re;
+
+	re = ft_calloc(sizeof(char *), ft_strcount(str) + 1);
+	i = 0;
+	while (str[i])
+	{
+		re[i] = ft_strdup(str[i]);
+		i++;
+	}
+	return (re);
+}
+
+int in_env(char *ptr, char **env, int flag) //this function cheeck if a pointer ptr is in the envirement and also save the env , you can  change it by sending 1 as a flag , it returns 1 in case the ptr its  exists in the env else it return 0
+{
+	static char **the_env;
+	int k;
+	int h;
+
+	if (flag == 1)
+	{
+		if (!the_env)
+		{
+			the_env = phil(env);
+		}
+		else if (env)
+		{
+			free_double_array(the_env);
+			the_env = phil(env);
+		}
+		return (2);
+	}
+	k = 0;
+	while (the_env[k])
+	{
+		h = ft_strlen (ptr);
+		if (!ft_strncmp(the_env[k], ptr, h) && the_env[k][h] == '=')
+			return (1);
+		k++;
+	}
+	return (0);
+	
+}
+
+int checking_direction(char *str, char *behind_str) //this function take a look the expand to make it more exact ...
+{
+	char *tmp;
+	int end;
+	int i;
+	char **split;
+
+	if (behind_str)
+	{
+		if (!surounded_by(str, '\'') && !surounded_by(str, '\"') && !char_counter(str, ' ') && (!ft_strncmp(behind_str, "<<", 2)))
+			return (0);
+		else if (!surounded_by(str, '\'') && !surounded_by(str, '\"') && !char_counter(str, ' ') && (!ft_strncmp(behind_str, ">>", 2) || !ft_strncmp(behind_str, "<", 1) || !ft_strncmp(behind_str, ">", 1)))
+		{
+			end = ft_simularity_len(str, '$');
+
+			while (str[end + 1] && (ft_isalpha(str[end + 1]) || ft_isdigit((str[end + 1])) || (str[end + 1] == '_')))
+				end++;
+
+			tmp = take_copy(str, ft_simularity_len(str, '$') + 1, end);
+			if (in_env(tmp, NULL, 0))
+			{
+				free (tmp);
+				return (1);
+			}
+			else
+			{
+				free (tmp);
+				return (0);
+			}
+		}
+		else if (!surounded_by(str, '\'') && !surounded_by(str, '\"') && char_counter(str, ' '))
+		{
+			split = ft_split(str, ' ');
+			i = -1;		
+			while (split[++i])
+				if (char_counter(split[i], '$'))
+				{
+					end = checking_direction(split[i], split[i - 1]);
+
+					break;	
+				}
+			printer(split);
+			free_double_array(split);
+			return (end);
+		}
+	}
+	else
+	{
+		if (!surounded_by(str, '\'') && !surounded_by(str, '\"') && char_counter(str, ' '))
+		{
+			split = ft_split(str, ' ');
+			i = -1;		
+			while (split[++i])
+				if (char_counter(split[i], '$'))
+				{
+					end = checking_direction(split[i], split[i - 1]);
+
+					break;	
+				}
+			printer(split);
+			free_double_array(split);
+			return (end);
+		}
+	}
+	return (1);
+}
+
 void expand(char ***str_pro_max, char **env)
 {
 	int i;
@@ -762,6 +862,8 @@ void expand(char ***str_pro_max, char **env)
 	char *tmp;
 	char *tmp2;
 	char **str;
+	int to_expand;
+
 	i = 0;
 	j = 0;
 	start = 0;
@@ -853,13 +955,21 @@ void expand(char ***str_pro_max, char **env)
 	i = 0;
 	while ((*str_pro_max)[i])
 	{
-		if (!surounded_by((*str_pro_max)[i], '\''))
+		if (char_counter((*str_pro_max)[i], '$'))
 		{
-			free ((*str_pro_max)[i]);
-			(*str_pro_max)[i] = ft_strdup(str[i]);
+			if (i > 0)
+				to_expand = checking_direction((*str_pro_max)[i], (*str_pro_max)[i - 1]);
+			else
+				to_expand = checking_direction((*str_pro_max)[i], NULL);
+
+			if (!surounded_by((*str_pro_max)[i], '\'') && to_expand)
+			{
+				free ((*str_pro_max)[i]);
+				(*str_pro_max)[i] = ft_strdup(str[i]);
+			}
+			else
+				i_should_replace_them(&(*str_pro_max)[i]);
 		}
-		else
-			i_should_replace_them(&(*str_pro_max)[i]);
 		i++;
 	}
 	free_double_array(str);
@@ -898,14 +1008,20 @@ int main(int ac, char **av, char **env)
 
 	(void)ac;
 	(void)av;
+	in_env(NULL, env, 1);
 	printf("\033[1mThe default interactive shell is now zsh.\nTo update your account to use zsh, please run chsh -s /bin/zsh.\n\033[0m");
-//	input = (char *)1;
 	while (1)
 	{
 		input = readline("\033[1mbash-3.2$> \033[0m");
 		if (input == NULL)
 		{
 			printf ("exit\n");
+			free (input);
+			break;
+		}
+		if (!ft_strncmp(input, "exit", 6))
+		{
+			free (input);
 			break;
 		}
 		copy = ft_strdup(input);
