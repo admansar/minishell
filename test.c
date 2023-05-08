@@ -5,6 +5,23 @@
 #include "libft/libft.h"
 #include "libft/ft_printf.h"
 
+typedef struct s_redirection
+{
+	int		type; //> 1 // >> 2 // < 3 // << 4 //0 nothing
+	int		position; 
+	char	*file_name;
+}			t_redirection;
+
+typedef struct s_input
+{
+	char			*cmd;
+	char			**arg;
+	t_redirection	*redirect;
+	int				pipe;
+	struct s_input	*next;
+}				t_input;
+
+
 void make_some_space(char **str);
 void	free_double_array(char **new_str);
 void should_i_replace_them(char **input);
@@ -559,26 +576,26 @@ void the_joiner(char ***str_pro_max)
 	k = 0;
 	j = 0;
 	if (i + 1 < ft_strcount(*str_pro_max))
-	while ((*str_pro_max)[i + 1])
-	{
-		h = ft_strlen((*str_pro_max)[i]) - 1;
-		k = 0;
-		if ((*str_pro_max)[i][h] != ' ' && !k && (*str_pro_max)[i + 1][0] != '>' && (*str_pro_max)[i + 1][0] != '<')
+		while ((*str_pro_max)[i + 1])
 		{
-			(*str_pro_max)[i] = ft_str_join((*str_pro_max)[i], (*str_pro_max)[i + 1]);
-			j = i + 1;
-			while ((*str_pro_max)[j + 1])
+			h = ft_strlen((*str_pro_max)[i]) - 1;
+			k = 0;
+			if ((*str_pro_max)[i][h] != ' ' && !k && (*str_pro_max)[i + 1][0] != '>' && (*str_pro_max)[i + 1][0] != '<')
 			{
-				free ((*str_pro_max)[j]);
-				(*str_pro_max)[j] = ft_strdup((*str_pro_max)[j + 1]);
-				j++;
+				(*str_pro_max)[i] = ft_str_join((*str_pro_max)[i], (*str_pro_max)[i + 1]);
+				j = i + 1;
+				while ((*str_pro_max)[j + 1])
+				{
+					free ((*str_pro_max)[j]);
+					(*str_pro_max)[j] = ft_strdup((*str_pro_max)[j + 1]);
+					j++;
+				}
+				free((*str_pro_max)[j]);
+				(*str_pro_max)[j] = NULL;
+				i = -1;
 			}
-			free((*str_pro_max)[j]);
-			(*str_pro_max)[j] = NULL;
-			i = -1;
+			i++;
 		}
-		i++;
-	}
 }
 
 //print the double array for me 
@@ -650,6 +667,69 @@ void delete_them_inside(char **ptr, char c)
 	free(tmp);
 }
 
+void check_delete(char **str)
+{	
+	int h;
+
+	h = ft_strlen (*str);
+	if (h > 0)
+	{
+		while (h > 0 && (*str)[h - 1] == ' ')
+		{
+			(*str)[h - 1] = '\0';
+			h--;
+		}
+	}
+}
+
+void disable(char **str, char c)
+{
+	int i;
+	int j;
+	char *re;
+
+	re = ft_calloc (sizeof (char), (ft_strlen (*str)));
+	i = 0;
+	j = 0;
+	while ((*str)[i])
+	{
+		if ((*str)[i] != c)
+		{
+			re[j++] = (*str)[i++];
+		}
+		else
+			i++;
+	}
+	free (*str);
+	*str = ft_strdup(re);
+	free (re);
+}
+
+void no_surounded_anymore(char ***str)
+{
+	int i;
+
+	i = 0;
+	while ((*str)[i])
+	{
+		if (surounded_by((*str)[i], '\''))
+			disable (&(*str)[i], '\'');
+		else if (surounded_by((*str)[i], '\"'))
+			disable (&(*str)[i], '\"');
+		i++;
+	}
+}
+
+void delete_last_spaces(char ***str)
+{
+	int i;
+
+	i = 0;
+	while ((*str)[i])
+		check_delete(&(*str)[i++]);
+	no_surounded_anymore(str);
+}
+
 //no comment
 void no_etxra_qoutes(char ***str)
 {
@@ -668,18 +748,19 @@ void no_etxra_qoutes(char ***str)
 			delete_them_inside (&(*str)[i], '\"');
 		i++;
 	}
+	delete_last_spaces(str);
 }
 
 
 // making space to let the "rederections" easy to detect inside by the ultra_split 
 void make_some_space(char **str) 
 {
-    char *tmp;
-    int j;
-    int i;
+	char *tmp;
+	int j;
+	int i;
 
-    j = 0;  
-    i = 0;
+	j = 0;  
+	i = 0;
 
 
 	if ((char_counter((*str),'>')) || (char_counter((*str),'<')) || (char_counter((*str),'|')))
@@ -752,7 +833,7 @@ char **phil(char **str)
 	return (re);
 }
 
-int in_env(char *ptr, char **env, int flag) //this function cheeck if a pointer ptr is in the envirement and also save the env , you can  change it by sending 1 as a flag , it returns 1 in case the ptr its  exists in the env else it return 0
+int in_env(char *ptr, char **env, int flag) //this function cheeck if a pointer ptr is in the envirement and also save the env , you can  change it by sending 1 as a flag , it returns in which place the ptr is, in case the ptr its  exists in the env else it return -1
 {
 	static char **the_env;
 	int k;
@@ -769,21 +850,21 @@ int in_env(char *ptr, char **env, int flag) //this function cheeck if a pointer 
 			free_double_array(the_env);
 			the_env = phil(env);
 		}
-		return (2);
+		return (-2);
 	}
 	k = 0;
 	while (the_env[k])
 	{
 		h = ft_strlen (ptr);
 		if (!ft_strncmp(the_env[k], ptr, h) && the_env[k][h] == '=')
-			return (1);
+			return (k);
 		k++;
 	}
-	return (0);
-	
+	return (-1);
+
 }
 
-int checking_direction(char *str, char *behind_str) //this function take a look the expand to make it more exact ...
+int checking_direction(char *str, char *behind_str, char **env) //this function take a look the expand to make it more exact ...
 {
 	char *tmp;
 	int end;
@@ -793,8 +874,8 @@ int checking_direction(char *str, char *behind_str) //this function take a look 
 	end = 1;
 	if (behind_str)
 	{
-		if (!surounded_by(str, '\'') && !surounded_by(str, '\"') && !char_counter(str, ' ') && (!ft_strncmp(behind_str, "<<", 2)))
-			return (0);
+		if (!surounded_by(str, '\'') && !char_counter(str, ' ') && (!ft_strncmp(behind_str + ft_simularity_len(behind_str, '<'), "<<", 2)))
+			return (2);
 		else if (!surounded_by(str, '\'') && !surounded_by(str, '\"') && !char_counter(str, ' ') && (!ft_strncmp(behind_str, ">>", 2) || !ft_strncmp(behind_str, "<", 1) || !ft_strncmp(behind_str, ">", 1)))
 		{
 			end = ft_simularity_len(str, '$');
@@ -803,10 +884,19 @@ int checking_direction(char *str, char *behind_str) //this function take a look 
 				end++;
 
 			tmp = take_copy(str, ft_simularity_len(str, '$') + 1, end);
-			if (in_env(tmp, NULL, 0))
+			i = in_env(tmp, NULL, 0);
+			if (i >= 0)
 			{
-				free (tmp);
-				return (1);
+				if (!char_counter(env[i], ' '))
+				{
+					free (tmp);
+					return (1);
+				}
+				else
+				{
+					free (tmp);
+					return (0);
+				}
 			}
 			else
 			{
@@ -821,7 +911,7 @@ int checking_direction(char *str, char *behind_str) //this function take a look 
 			while (split[++i])
 				if (char_counter(split[i], '$'))
 				{
-					end = checking_direction(split[i], split[i - 1]);
+					end = checking_direction(split[i], split[i - 1], env);
 					break;	
 				}
 			free_double_array(split);
@@ -837,7 +927,7 @@ int checking_direction(char *str, char *behind_str) //this function take a look 
 			while (split[++i])
 				if (char_counter(split[i], '$'))
 				{
-					end = checking_direction(split[i], split[i - 1]);
+					end = checking_direction(split[i], split[i - 1], env);
 
 					break;	
 				}
@@ -876,7 +966,7 @@ void expand(char ***str_pro_max, char **env)
 		end = 0;
 		while ((*str_pro_max)[i][j])
 		{
-			if ((*str_pro_max)[i][j] == '$' && (ft_isalpha((*str_pro_max)[i][j + 1]) || (*str_pro_max)[i][j + 1] == '_' || ft_isdigit((*str_pro_max)[i][j + 1])))
+			if ((*str_pro_max)[i][j] == '$' && (ft_isalpha((*str_pro_max)[i][j + 1]) || (*str_pro_max)[i][j + 1] == '_'/* || ft_isdigit((*str_pro_max)[i][j + 1])*/))
 			{
 				start = j;
 				while ((*str_pro_max)[i][j] && (ft_isalpha((*str_pro_max)[i][j + 1]) || ft_isdigit((*str_pro_max)[i][j + 1]) || (*str_pro_max)[i][j + 1] == '_'))
@@ -916,12 +1006,12 @@ void expand(char ***str_pro_max, char **env)
 		{
 			if ((*str_pro_max)[i][j] == '$' && ( ft_isalpha((*str_pro_max)[i][j + 1]) 
 						|| (*str_pro_max)[i][j + 1] == '_' 
-						|| ft_isdigit((*str_pro_max)[i][j + 1])))
+						/*|| ft_isdigit((*str_pro_max)[i][j + 1])*/))
 			{
 				start = j;
 				while ((*str_pro_max)[i][j] && (ft_isalpha((*str_pro_max)[i][j + 1])
-                        || ft_isdigit((*str_pro_max)[i][j + 1])
-                        || (*str_pro_max)[i][j + 1] == '_'))
+							|| ft_isdigit((*str_pro_max)[i][j + 1])
+							|| (*str_pro_max)[i][j + 1] == '_'))
 					j++;
 				end = j;
 				tmp = take_copy((*str_pro_max)[i], start + 1, end); 
@@ -956,11 +1046,18 @@ void expand(char ***str_pro_max, char **env)
 		if (char_counter((*str_pro_max)[i], '$'))
 		{
 			if (i > 0)
-				to_expand = checking_direction((*str_pro_max)[i], (*str_pro_max)[i - 1]);
+				to_expand = checking_direction((*str_pro_max)[i], (*str_pro_max)[i - 1], env);
 			else
-				to_expand = checking_direction((*str_pro_max)[i], NULL);
-
-			if (!surounded_by((*str_pro_max)[i], '\'') && to_expand)
+				to_expand = checking_direction((*str_pro_max)[i], NULL, env);
+			if (to_expand == 0)
+			{
+				(*str_pro_max)[i] = ft_str_join((*str_pro_max)[i]  ,"\a"); // if you see a '\a' it means only and one thing that this is a error "ambiguous redirect in this case", you also hear a 'ding' sound on it 
+			}
+			if (surounded_by((*str_pro_max)[i], '\"') && to_expand == 2)
+			{
+				i_should_replace_them(&(*str_pro_max)[i]);
+			}
+			else if (!surounded_by((*str_pro_max)[i], '\'') && to_expand == 1)
 			{
 				free ((*str_pro_max)[i]);
 				(*str_pro_max)[i] = ft_strdup(str[i]);
@@ -974,12 +1071,11 @@ void expand(char ***str_pro_max, char **env)
 }
 
 // te perfect parsing does not exis ... 
-char *parsing(char **input, char **env)
+char **parsing(char **input, char **env)
 {
 	char **new_str;
 	char **str_pro_max; // the best one to use till moument
 
-//	delete_non_sense(input);
 	new_str = split_without_weast (input);
 	if (ft_strlen ((*input)) && !ft_strcount (new_str))
 	{
@@ -989,13 +1085,10 @@ char *parsing(char **input, char **env)
 	}
 	expand(&new_str, env);
 	str_pro_max = ultra_split(new_str, input);
+	free_double_array(new_str);
 	the_joiner(&str_pro_max);
 	no_etxra_qoutes(&str_pro_max);
-	//printer(new_str);
-	printer(str_pro_max);
-	free_double_array(new_str);
-	free_double_array(str_pro_max);
-	return (NULL);
+	return (str_pro_max);
 }
 
 void shlvl(char ***env, int c)
@@ -1023,6 +1116,162 @@ void shlvl(char ***env, int c)
 	}
 }
 
+int fast_check(char *input)
+{
+	int i;
+
+	i = 0;
+	while (input [i] && input[i] == ' ')
+		i++;
+	if (input[i] == '|')
+	{
+		printf ("bash: syntax error near unexpected token `|'\n");
+		return (0);
+	}
+	while (input[i])
+		i++;
+	i--;
+	while (i > 0 && input[i] == ' ')
+		i--;
+	if (input[i] == '|')
+	{
+		printf ("bash: syntax error near unexpected token `|'\n");
+		return (0);
+	}
+	return (1);
+}
+
+void init_list(t_input **list, int count)
+{
+	(*list) = malloc (sizeof (t_input));
+	(*list)->next = NULL;
+	(*list)->cmd = NULL;
+	(*list)->arg = ft_calloc (sizeof(char *), count + 1);
+	(*list)->redirect = malloc (sizeof (t_redirection));
+	(*list)->redirect->file_name = NULL;
+	(*list)->redirect->type = 0;
+	(*list)->redirect->position = 0;
+	(*list)->pipe = 0;
+}
+
+t_input *append(t_input *list, int count)
+{
+	while (list->next)
+		list = list->next;
+	init_list(&list->next, count);
+	return (list);
+}
+
+int mega_counter(char **str, char c) // returns num of repetitions of a char in a double str
+{
+	int i;
+	int re;
+
+	i = 0;
+	re = 0;
+	while (str[i])
+	{
+		re += char_counter(str[i], c);
+		i++;
+	}
+	return (re);
+}
+
+void phil_list(t_input **list, char **split)
+{
+	int i;
+	int m;
+	int one_time;
+	int count;
+	t_input *tmp;
+
+	i = 0;
+	m = 0;
+	one_time = 0;
+	tmp = *list;
+	count = ft_strcount(split);
+	while (split[i])
+	{
+		one_time = 1;
+		while (split[i] && ft_strncmp(split [i], "|", 1))
+		{
+			if (!ft_strncmp(split[i], ">>" , 2))
+			{
+				(*list)->redirect->type = 2;
+				(*list)->redirect->file_name = ft_strdup (split[++i]);
+			//	printf ("file name : %s and type is %d\n", (*list)->redirect->file_name, (*list)->redirect->type);
+			}
+			else if (!ft_strncmp(split[i], "<<" , 2))
+			{
+				(*list)->redirect->type = 4;
+				(*list)->redirect->file_name = ft_strdup (split[++i]);
+			//	printf ("file name : %s and type is %d\n", (*list)->redirect->file_name, (*list)->redirect->type);
+			}
+			else if (!ft_strncmp(split[i], ">" , 1))
+			{
+				(*list)->redirect->type = 1;
+				(*list)->redirect->file_name = ft_strdup (split[++i]);
+			//	printf ("file name : %s and type is %d\n", (*list)->redirect->file_name, (*list)->redirect->type);
+			}
+			else if (!ft_strncmp(split[i], "<" , 1))
+			{
+				(*list)->redirect->type = 3;
+				(*list)->redirect->file_name = ft_strdup (split[++i]);
+				printf ("file name : %s and type is %d\n", (*list)->redirect->file_name, (*list)->redirect->type);
+			}
+			else if (one_time == 1)
+			{
+				(*list)->cmd = ft_strdup (split[i]);
+			//	printf ("cmd : %s\n", (*list)->cmd);
+				one_time = 0;
+			}
+			else
+			{
+				(*list)->arg[m] = ft_strdup(split[i]);
+			//	printf ("arg : %s\n", (*list)->arg[m]);
+				m++;
+			}
+			i++;
+		}
+		if (i >= count)
+			break;
+		if (!ft_strncmp(split [i], "|", 1))
+		{
+			(*list)->pipe = 1;
+			append (*list, count);
+			(*list) = (*list)->next;
+		//	printf ("-->pipe\n");
+		}
+		i++;
+	}
+	(*list) = tmp;
+}
+
+t_input *work_time(char **split)
+{
+	t_input *list;
+
+	init_list(&list, ft_strcount (split));
+	phil_list(&list, split);
+	return (list);
+}
+
+void free_list(t_input *list)
+{
+	t_input *tmp;
+
+	tmp = list;
+	while (tmp)
+	{
+		free(tmp->cmd);
+		free_double_array (tmp->arg);
+		free (tmp->redirect->file_name);
+		free (tmp->redirect);
+		free (tmp);
+		tmp = list->next;
+		list = list->next;
+	}
+}
 
 int main(int ac, char **av, char **envi)
 {
@@ -1030,6 +1279,7 @@ int main(int ac, char **av, char **envi)
 	char *copy;
 	char **split;
 	char **env;
+	t_input *list;
 
 	(void)ac;
 	(void)av;
@@ -1052,15 +1302,19 @@ int main(int ac, char **av, char **envi)
 			break;
 		}
 		copy = ft_strdup(input);
-		if (char_counter(copy, '\"') || char_counter(copy, '\''))
-			parsing(&copy, env);
-		else
+		if (fast_check(copy))
 		{
-			make_some_space(&copy);
-			split = ft_split (copy, ' ');
-			expand (&split, env);
-			printer (split);
+			if (char_counter(copy, '\"') || char_counter(copy, '\''))
+				split = parsing(&copy, env);
+			else
+			{
+				make_some_space(&copy);
+				split = ft_split (copy, ' ');
+				expand (&split, env);
+			}
+			list = work_time(split);
 			free_double_array(split);
+			free_list(list);
 		}
 		free (copy);
 		add_history(input);
