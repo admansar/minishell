@@ -9,7 +9,7 @@ typedef struct s_redirection
 {
 	int		type; //> 1 // >> 2 // < 3 // << 4 //0 nothing
 	int		position; 
-	char	*file_name;
+	char	**file_name;
 }			t_redirection;
 
 typedef struct s_input
@@ -25,6 +25,7 @@ typedef struct s_input
 void make_some_space(char **str);
 void	free_double_array(char **new_str);
 void should_i_replace_them(char **input);
+void printer(char **ptr);
 //how many worlds before the letter indicated as the second char 
 int ft_simularity_len(char *str, char c)
 {
@@ -297,7 +298,7 @@ char **split_without_weast(char **input)
 		}
 		else if (taken == 1) 
 		{
-			new_str[j] = ft_calloc (sizeof (char) , (ft_strlen((*input)) + 1));
+			new_str[j] = ft_calloc (sizeof (char), (ft_strlen((*input)) + 1));
 			k = 0;
 			while ((*input)[i] && (*input)[i] != '\''  && (*input)[i] != '\"')
 			{ 
@@ -540,7 +541,6 @@ char **ultra_split(char **new_str , char **input)
 	{
 		if (!surounded_by(new_str[i], '\"') && char_counter(new_str[i], ' ')  && !surounded_by(new_str[i], '\''))
 		{
-
 			make_some_space(&(new_str)[i]);
 			split = my_spliter(new_str[i], 0, 0, 0);
 			if (new_str[i][ft_strlen(new_str[i]) - 1] == ' ')
@@ -580,7 +580,7 @@ void the_joiner(char ***str_pro_max)
 		{
 			h = ft_strlen((*str_pro_max)[i]) - 1;
 			k = 0;
-			if ((*str_pro_max)[i][h] != ' ' && !k && (*str_pro_max)[i + 1][0] != '>' && (*str_pro_max)[i + 1][0] != '<')
+			if ((*str_pro_max)[i][h] != ' ' && !k && (*str_pro_max)[i + 1][0] != '>' && (*str_pro_max)[i + 1][0] != '<' && (*str_pro_max)[i + 1][0] != '|')
 			{
 				(*str_pro_max)[i] = ft_str_join((*str_pro_max)[i], (*str_pro_max)[i + 1]);
 				j = i + 1;
@@ -632,7 +632,7 @@ void delete_them_inside(char **ptr, char c)
 	k = 0;
 	h = ft_strlen((*ptr));
 	number_of_char = char_counter(*ptr, c);
-	tmp = ft_calloc (sizeof(char), (ft_strlen(*ptr) + 2));
+	tmp = ft_calloc (sizeof(char), (ft_strlen(*ptr) + 3));
 	tmp[j++] = c;
 	while ((*ptr)[i])
 	{
@@ -688,6 +688,7 @@ void disable(char **str, char c)
 	int j;
 	char *re;
 
+
 	re = ft_calloc (sizeof (char), (ft_strlen (*str)));
 	i = 0;
 	j = 0;
@@ -705,19 +706,12 @@ void disable(char **str, char c)
 	free (re);
 }
 
-void no_surounded_anymore(char ***str)
+void no_surounded_anymore(char **str)
 {
-	int i;
-
-	i = 0;
-	while ((*str)[i])
-	{
-		if (surounded_by((*str)[i], '\''))
-			disable (&(*str)[i], '\'');
-		else if (surounded_by((*str)[i], '\"'))
-			disable (&(*str)[i], '\"');
-		i++;
-	}
+	if (surounded_by((*str), '\''))
+		disable (&(*str), '\'');
+	else if (surounded_by((*str), '\"'))
+		disable (&(*str), '\"');
 }
 
 void delete_last_spaces(char ***str)
@@ -727,7 +721,6 @@ void delete_last_spaces(char ***str)
 	i = 0;
 	while ((*str)[i])
 		check_delete(&(*str)[i++]);
-	no_surounded_anymore(str);
 }
 
 //no comment
@@ -834,6 +827,7 @@ char **phil(char **str)
 }
 
 int in_env(char *ptr, char **env, int flag) //this function cheeck if a pointer ptr is in the envirement and also save the env , you can  change it by sending 1 as a flag , it returns in which place the ptr is, in case the ptr its  exists in the env else it return -1
+	// new feature added send flag 2 to print the current env !! have fun
 {
 	static char **the_env;
 	int k;
@@ -851,6 +845,13 @@ int in_env(char *ptr, char **env, int flag) //this function cheeck if a pointer 
 			the_env = phil(env);
 		}
 		return (-2);
+	}
+	if (flag == 2)
+	{
+		k = 0;
+		while (the_env[k])
+			printf ("%s\n", the_env[k++]);
+		return (-3);
 	}
 	k = 0;
 	while (the_env[k])
@@ -1062,33 +1063,12 @@ void expand(char ***str_pro_max, char **env)
 				free ((*str_pro_max)[i]);
 				(*str_pro_max)[i] = ft_strdup(str[i]);
 			}
-			else
-				i_should_replace_them(&(*str_pro_max)[i]);
+	//		else
+	//			i_should_replace_them(&(*str_pro_max)[i]);
 		}
 		i++;
 	}
 	free_double_array(str);
-}
-
-// te perfect parsing does not exis ... 
-char **parsing(char **input, char **env)
-{
-	char **new_str;
-	char **str_pro_max; // the best one to use till moument
-
-	new_str = split_without_weast (input);
-	if (ft_strlen ((*input)) && !ft_strcount (new_str))
-	{
-		error_print ("syntax error", NULL);
-		free_double_array(new_str);
-		return (NULL);
-	}
-	expand(&new_str, env);
-	str_pro_max = ultra_split(new_str, input);
-	free_double_array(new_str);
-	the_joiner(&str_pro_max);
-	no_etxra_qoutes(&str_pro_max);
-	return (str_pro_max);
 }
 
 void shlvl(char ***env, int c)
@@ -1148,7 +1128,7 @@ void init_list(t_input **list, int count)
 	(*list)->cmd = NULL;
 	(*list)->arg = ft_calloc (sizeof(char *), count + 1);
 	(*list)->redirect = malloc (sizeof (t_redirection));
-	(*list)->redirect->file_name = NULL;
+	(*list)->redirect->file_name = ft_calloc (sizeof(char *), count + 1);
 	(*list)->redirect->type = 0;
 	(*list)->redirect->position = 0;
 	(*list)->pipe = 0;
@@ -1190,6 +1170,7 @@ void phil_list(t_input **list, char **split)
 	one_time = 0;
 	tmp = *list;
 	count = ft_strcount(split);
+
 	while (split[i])
 	{
 		one_time = 1;
@@ -1197,38 +1178,47 @@ void phil_list(t_input **list, char **split)
 		{
 			if (!ft_strncmp(split[i], ">>" , 2))
 			{
+				no_surounded_anymore(&split[i + 1]);
 				(*list)->redirect->type = 2;
-				(*list)->redirect->file_name = ft_strdup (split[++i]);
-			//	printf ("file name : %s and type is %d\n", (*list)->redirect->file_name, (*list)->redirect->type);
+				(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
+				printf ("file name : %s taked the pos num : %d and type is %d\n", (*list)->redirect->file_name[(*list)->redirect->position], (*list)->redirect->position + 1 , (*list)->redirect->type);
+				(*list)->redirect->position++;
 			}
 			else if (!ft_strncmp(split[i], "<<" , 2))
 			{
 				(*list)->redirect->type = 4;
-				(*list)->redirect->file_name = ft_strdup (split[++i]);
-			//	printf ("file name : %s and type is %d\n", (*list)->redirect->file_name, (*list)->redirect->type);
+				(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
+				printf ("file name : %s taked the pos num : %d and type is %d\n", (*list)->redirect->file_name[(*list)->redirect->position], (*list)->redirect->position + 1 , (*list)->redirect->type);
+				(*list)->redirect->position++;
 			}
 			else if (!ft_strncmp(split[i], ">" , 1))
 			{
+				no_surounded_anymore(&split[i + 1]);
 				(*list)->redirect->type = 1;
-				(*list)->redirect->file_name = ft_strdup (split[++i]);
-			//	printf ("file name : %s and type is %d\n", (*list)->redirect->file_name, (*list)->redirect->type);
+				(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
+				printf ("file name : %s taked the pos num : %d and type is %d\n", (*list)->redirect->file_name[(*list)->redirect->position], (*list)->redirect->position + 1 , (*list)->redirect->type);
+				(*list)->redirect->position++;
 			}
 			else if (!ft_strncmp(split[i], "<" , 1))
 			{
+				no_surounded_anymore(&split[i + 1]);
 				(*list)->redirect->type = 3;
-				(*list)->redirect->file_name = ft_strdup (split[++i]);
-				printf ("file name : %s and type is %d\n", (*list)->redirect->file_name, (*list)->redirect->type);
+				(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
+				printf ("file name : %s taked the pos num : %d and type is %d\n", (*list)->redirect->file_name[(*list)->redirect->position], (*list)->redirect->position + 1 , (*list)->redirect->type);
+				(*list)->redirect->position++;
 			}
 			else if (one_time == 1)
 			{
+				no_surounded_anymore(&split[i + 1]);
 				(*list)->cmd = ft_strdup (split[i]);
-			//	printf ("cmd : %s\n", (*list)->cmd);
+				printf ("cmd : %s\n", (*list)->cmd);
 				one_time = 0;
 			}
 			else
 			{
+				no_surounded_anymore(&split[i]);
 				(*list)->arg[m] = ft_strdup(split[i]);
-			//	printf ("arg : %s\n", (*list)->arg[m]);
+				printf ("arg : %s\n", (*list)->arg[m]);
 				m++;
 			}
 			i++;
@@ -1240,7 +1230,7 @@ void phil_list(t_input **list, char **split)
 			(*list)->pipe = 1;
 			append (*list, count);
 			(*list) = (*list)->next;
-		//	printf ("-->pipe\n");
+			printf ("-->pipe\n");
 		}
 		i++;
 	}
@@ -1265,12 +1255,34 @@ void free_list(t_input *list)
 	{
 		free(tmp->cmd);
 		free_double_array (tmp->arg);
-		free (tmp->redirect->file_name);
+		free_double_array (tmp->redirect->file_name);
 		free (tmp->redirect);
-		free (tmp);
-		tmp = list->next;
 		list = list->next;
+		free (tmp);
+		tmp = list;
 	}
+}
+
+// te perfect parsing does not exis ... 
+char **parsing(char **input, char **env)
+{
+	char **new_str;
+	char **str_pro_max; // the best one to use till moument
+
+	new_str = split_without_weast (input);
+	if (ft_strlen ((*input)) && !ft_strcount (new_str))
+	{
+		error_print ("syntax error", NULL);
+		free_double_array(new_str);
+		return (NULL);
+	}
+	expand(&new_str, env);
+	str_pro_max = ultra_split(new_str, input);
+//	sleep (10);
+	free_double_array(new_str);
+	the_joiner(&str_pro_max);
+	no_etxra_qoutes(&str_pro_max);
+	return (str_pro_max);
 }
 
 int main(int ac, char **av, char **envi)
@@ -1296,11 +1308,15 @@ int main(int ac, char **av, char **envi)
 			free (input);
 			break;
 		}
-		if (!ft_strncmp(input, "exit", 6))
+		if (!ft_strncmp(input, "exit", 5))
 		{
 			free (input);
 			break;
 		}
+	//	if (!ft_strncmp(input, "env", 4))
+	//	{
+	//		in_env(NULL, NULL, 2);
+	//	}
 		copy = ft_strdup(input);
 		if (fast_check(copy))
 		{
@@ -1312,9 +1328,12 @@ int main(int ac, char **av, char **envi)
 				split = ft_split (copy, ' ');
 				expand (&split, env);
 			}
-			list = work_time(split);
-			free_double_array(split);
-			free_list(list);
+			if (split)
+			{
+				list = work_time(split);
+				free_double_array(split);
+				free_list(list);
+			}
 		}
 		free (copy);
 		add_history(input);
