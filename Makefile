@@ -1,18 +1,18 @@
 NAME = bash
 
-SRC = test.c
+SRC = *.c
 
 CC = cc
 
-CFLAGS = -Wall -Wextra -Werror #-g -fsanitize=address
-
+CFLAGS = #-g -fsanitize=address
+# -Wall -Wextra -Werror
 
 all : $(NAME)
 
 $(NAME) : $(SRC) 
 	@make -C libft
 	$(emo)
-	$(CC) $(SRC) $(CFLAGS) libft/libft.a -lreadline -o $(NAME)
+	$(CC) $(SRC) ${CFLAGS} libft/libft.a -lreadline -o $(NAME)
 
 clean :
 	make -C libft clean
