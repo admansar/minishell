@@ -1367,7 +1367,7 @@ int main(int ac, char **av, char **envi)
 				printer (split);
 				list = work_time(split);
 				free_double_array(split);
-			//	ft_execution(list, &env);
+				ft_execution(list, &env);
 				free_list(list);
 			}
 		}
