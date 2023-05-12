@@ -1264,6 +1264,8 @@ int last_check(char **str)
 	int h;
 
 	i = 0;
+	if (!str)
+		return (-1);
 	while (str[i + 1])
 	{
 		h = ft_strlen (str[i]);
