@@ -39,7 +39,6 @@ void	ft_unset(char ***env, t_input *list, char ***export)
 	int			ret;
 	(void)export;
 	(void)env;
-	
 	var_nbr = ft_strcount (list->arg);
 	valid_export_vars = ft_calloc (sizeof(char *), var_nbr + 1);
 	i = 0;
@@ -47,7 +46,7 @@ void	ft_unset(char ***env, t_input *list, char ***export)
 	while (list->arg[i])
 	{
 		ret = ft_get_var(list->arg[i], &tmp_name, &tmp_value);
-		if(ft_name_checker(tmp_name) == -1 || ret == -13)
+		if(ft_unset_name_checker(tmp_name) == -1 || ret == -13)
 		{
 			printf("bash: unset: `%s': not a valid identifier\n", list->arg[i]);
 		}
@@ -75,15 +74,15 @@ void	ft_unset(char ***env, t_input *list, char ***export)
 		i++;
 	}
 	i = 0;
-	while (valid_env_vars[i])
+	while (valid_export_vars[i])
 	{
-		ft_get_var_name(valid_env_vars[i], &tmp_name);
+		tmp_name = ft_substr(valid_export_vars[i], 0, ft_simularity_len(valid_export_vars[i], '='));
 		exist = ft_in_env(tmp_name, *env);
+		 printf ("------>%s<----\n", tmp_name);
 		if (exist >= 0)
 			*env = ft_remove(*env, exist);
 		free(tmp_name);
 		i++;
 	}
-
 	free_double_array(valid_env_vars);
 }
