@@ -1313,11 +1313,13 @@ int main(int ac, char **av, char **envi)
 	char *copy;
 	char **split;
 	char **env;
+	char **export;
 	t_input *list;
 	int check;
 
 	env = fill(envi);
 	shlvl(&env, 1);
+	export = fill(env);
 	in_env(NULL, env, 1);
 	printf("\033[1mThe default interactive shell is now zsh.\nTo update your account to use zsh, please run chsh -s /bin/zsh.\n\033[0m");
 	while (1)
@@ -1367,7 +1369,7 @@ int main(int ac, char **av, char **envi)
 				printer (split);
 				list = work_time(split);
 				free_double_array(split);
-				ft_execution(list, &env);
+				ft_execution(list, &env, &export);
 				free_list(list);
 			}
 		}
@@ -1378,5 +1380,6 @@ int main(int ac, char **av, char **envi)
 	shlvl(&env, -1);
 	in_env(NULL, env, 1);
 	free_double_array(env);
+	free_double_array(export);
 	return (0);
 }
