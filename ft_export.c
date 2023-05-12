@@ -32,43 +32,34 @@ char *ft_create_var(char *name, char *value)
 	int i;
 	int j;
 
-	len = ft_strlen(name) + ft_strlen(value) + 1;
+	len = ft_strlen(name) + ft_strlen(value);
 	var = ft_calloc(sizeof(char), len + 1);
 	i = -1;
-	while (name[++i])
-		var[i] = name[i];
-	var[i++] = '=';
+	if (name)
+		while (name[++i])
+			var[i] = name[i];
 	j = 0;
-	while (i < len)
-		var[i++] = value[j++];
+	if(value)
+		while (i < len)
+			var[i++] = value[j++];
 	return (var);
 }
 
 // check if my var is in the envirement
-int ft_in_env(char *ptr, char **env)
+int  ft_in_env(char *str, char **env)
 {
 	int i;
-	int len;
+	int	len;
 
 	i = 0;
-	len = ft_strlen(ptr);
+	len = ft_strlen(str);
 	while (env[i])
 	{
-		if (!ft_strncmp(env[i], ptr, len) && env[i][len] == '=')
+		if (!ft_strncmp(env[i], str, ft_strlen (str)) && env[i][len] == '=')
 			return (i);
 		i++;
 	}
 	return (-1);
-}
-
-// update the value of the variable if it is changed
-void ft_update_value(char **env, char *name, char *value, int index)
-{
-	char *new_value;
-
-	new_value = ft_create_var(name, value);
-	free(env[index]);
-	env[index] = new_value;
 }
 
 int ft_char_checker(char *str, char c)
@@ -83,6 +74,42 @@ int ft_char_checker(char *str, char c)
 		i++;
 	}
 	return (-1);
+}
+
+void	ft_get_var_name(char *var, char **var_name)
+{
+	int ret;
+	int len;
+
+	ret = ft_char_checker(var, '=');
+	if (ret == -1)
+	{
+		len = ft_strlen (var);
+		*var_name = take_copy(var, 0 , len);
+	}
+	else
+		*var_name = take_copy(var, 0, ret - 1);
+}
+
+
+void	ft_get_var_value(char *var, char *var_name, char **var_value)
+{
+	int i;
+	int ret;
+	int len;
+
+	ret = ft_char_checker(var, '=');
+	if (ret == -1)
+		*var_value = NULL;
+	else
+	{
+		ret++;
+		len = ft_strlen(var) - ft_strlen(var_name);
+		*var_value = (char *)ft_calloc(sizeof(char), len + 3);
+		i = -1;
+		while (++i < len)
+			(*var_value)[i] = var[i + ret];
+	}
 }
 
 int ft_get_var(char *var, char **name, char **value)
@@ -116,11 +143,30 @@ int ft_get_var(char *var, char **name, char **value)
 	return (0);
 }
 
-int	ft_name_checker(char *str)
+int	ft_unset_name_checker(char *str)
 {
 	int i;
 	
-	// printf("%s\n", str);
+	if (!str)
+		return (0);
+	if (!(ft_isalpha(str[0]) || str[0] == '_'))
+		return (-1);
+	i = 1;
+
+	while (str[i])
+	{
+		if (ft_isalpha(str[i]) || ft_isdigit(str[i]) || str[i] == '_')
+			i++;
+		else
+			return (-1);
+	}
+	return (0);
+}
+
+int	ft_export_name_checker(char *str)
+{
+	int i;
+	
 	if (!str)
 		return (0);
 	if (!(ft_isalpha(str[0]) || str[0] == '_'))
@@ -151,10 +197,10 @@ void	ft_export_printer(char **export)
 		len = ft_simularity_len(export[i], '=');
 		tmp1 = take_copy(export[i], 0, len - 1);
 		tmp2 = take_copy(export[i], len + 1, ft_strlen(export[i]));
-	//	if (ft_char_checker(export[i], '=') == -1)
-	//		printf ("declare -x %s\n", tmp1);
-	//	else
-	//		printf ("declare -x %s=\"%s\"\n", tmp1, tmp2);
+		if (ft_char_checker(export[i], '=') == -1)
+			printf ("declare -x %s\n", tmp1);
+		else
+			printf ("declare -x %s=\"%s\"\n", tmp1, tmp2);
 		free (tmp1);
 		free (tmp2);
 		i++;
@@ -162,19 +208,19 @@ void	ft_export_printer(char **export)
 }
 
 // join double array with a single array
-char	**ft_allocate_extra_pointer(char **arr1, char *str)
+char	**ft_join_ptr_to_double_ptr(char **arr1, char *str)
 {
 	int len;
 	int i;
 	char	**joined;
 
-	len = ft_strcount(arr1) + 1;
-	joined = (char **)ft_calloc(sizeof(char *), len + 1);
+	len = ft_strcount(arr1);
+	joined = (char **)ft_calloc(sizeof(char *), len + 2);
 	i = -1;
-	if (arr1)
-		while (arr1[++i])
-			joined[i] = arr1[i];
-	joined[i] = str;
+	while (arr1[++i])
+		joined[i] = ft_strdup(arr1[i]);
+	joined[i] = ft_strdup(str);
+	free_double_array(arr1);
 	return (joined);
 }
 
@@ -215,12 +261,14 @@ void	ft_clean_up_name(char **str)
 		{
 			tmp = take_copy(str[i], 0 , ret - 1);
 			tmp1 = take_copy(str[i], ret + 1 , ft_strlen(str[i]));
-			str[i] = ft_str_join(tmp, tmp1);
+			free(str[i]);
+			str[i] = ft_strjoin(tmp, tmp1);
 			free(tmp);
 			free(tmp1);
 		}
 		i++;
 	}
+	
 }
 
 void	ft_clean_up_vars(char ***export)
@@ -244,52 +292,121 @@ void	ft_clean_up_vars(char ***export)
 	}
 }
 
-void ft_export(char ***env, t_input *list)
-{
-	static char	**export = NULL;
-	char 	**valid_var_names;
-	char *tmp_name;
-	char *tmp_value;
-	int var_nbr;
-	int var;
-	int i;
-	int ret;
 
-	i = 0;
-	var = 0;
-	if (!export)
-		export = fill(*env);
+char **ft_check_env_var(char **valid_export_vars)
+{
+	char	**env_vars;
+	int		i;
+	int		j;
+	int		count;
+	int		*arr;
+	int		len;
+
+	len = ft_strcount(valid_export_vars) + 1;
+	arr = (int *)ft_calloc(sizeof(int) , len);
+	i = -1;
+	count = 0;
+	while(valid_export_vars[++i]) 
+	{
+		if (ft_char_checker(valid_export_vars[i], '=') >= 0)
+		{
+			arr[i] = 1;
+			count++;
+		}
+	}
+	env_vars = (char **)ft_calloc(sizeof(char *), count + 1);
+	i = -1;
+	j = 0;
+	while (++i < len)
+	{
+		if (arr[i])
+		{
+			env_vars[j] = ft_strdup(valid_export_vars[i]);
+			j++;
+		}
+	}
+	free(arr);
+	return(env_vars);
+}
+
+void	ft_update_value_env(char *arr , char ***export, int pos)
+{
+	printf("changing : \n");
+	free((*export)[pos]);
+	(*export)[pos] = ft_strdup(arr);
+}
+
+
+void ft_export(char ***env, t_input *list, char ***export)
+{
+	char 		**valid_export_vars;
+	char		**valid_env_vars;
+	int			exist;
+	char		*tmp_name;
+	char		*tmp_value;
+	int			var_nbr;
+	int			j;
+	int			i;
+	int			ret;
+	
 	if (!list->arg[0])
-		ft_export_printer(export);
+	{
+		ft_export_printer(*export);
+		return ;
+	}
 	var_nbr = ft_strcount (list->arg);
-	valid_var_names = ft_calloc (sizeof(char *), var_nbr + 1);
+	valid_export_vars = ft_calloc (sizeof(char *), var_nbr + 1);
+	i = 0;
+	j = 0;
 	while (list->arg[i])
 	{
 		ret = ft_get_var(list->arg[i], &tmp_name, &tmp_value);
-		if(ft_name_checker(tmp_name) == -1 || ret == -13)
+		if(ft_export_name_checker(tmp_name) == -1 || ret == -13)
 		{
 			printf("bash: export: `%s': not a valid identifier\n", list->arg[i]);
-			free(tmp_name);
-			free(tmp_value);
 		}
 		else
 		{
-			valid_var_names[var] = strdup(list->arg[i]);
-			ft_clean_up_name(&(valid_var_names[var]));
-			var++;
+			valid_export_vars[j] = ft_strdup(list->arg[i]);
+			ft_clean_up_name(&(valid_export_vars[j]));
+			j++;
 		}
+		free(tmp_name);
+		free(tmp_value);
 		i++;
 	}
-	export = ft_double_array_joiner(export, valid_var_names);
-	ft_export_printer(export);
-
-	// 	exist = ft_in_env(tmp_name, *env);
-	// 	if (exist == -1)
-	// 		ft_add_var_to_env(env, var, value);
-	// 	else if (ft_strcmp(saved_value, value))
-	// 		ft_update_value(*env, tmp_name, value, exist);
-	// }
-
-	// var = ft_create_var(tmp_name, value);
-	// free(var);
+	valid_env_vars = ft_check_env_var(valid_export_vars);
+	printer(valid_export_vars);
+	printer(valid_env_vars);
+	i = 0;
+	while (valid_export_vars[i])
+	{
+		ft_get_var_name(valid_export_vars[i], &tmp_name);
+		ft_get_var_value(valid_export_vars[i], tmp_name, &tmp_value);
+		exist = ft_in_env(tmp_name, *export);
+		if (exist == -1)
+			*export = ft_join_ptr_to_double_ptr(*export, valid_export_vars[i]);
+		else if (tmp_value)
+			ft_update_value_env (valid_export_vars[i] , export, exist);
+		free(tmp_name);
+		free(tmp_value);
+		i++;
+	}
+	i = 0;
+	while (valid_env_vars[i])
+	{
+		ft_get_var_name(valid_env_vars[i], &tmp_name);
+		ft_get_var_value(valid_env_vars[i], tmp_name, &tmp_value);
+		exist = ft_in_env(tmp_name, *env);
+		if (exist == -1)
+			*env = ft_join_ptr_to_double_ptr(*env, valid_env_vars[i]);
+		else if (tmp_value)
+			ft_update_value_env (valid_env_vars[i] , env, exist);
+		free(tmp_name);
+		free(tmp_value);
+		i++;
+	}
+	in_env(NULL, *env, 1);
+	free_double_array(valid_env_vars);
+	free_double_array(valid_export_vars);
 }

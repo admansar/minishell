@@ -6,11 +6,20 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 17:17:33 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/05/12 12:43:10 by admansar         ###   ########.fr       */
+/*   Updated: 2023/05/12 20:39:08 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "libft/libft.h"
+
+// typedef struct s_mini
+// {
+// 	char 			*cmd;
+// 	char 			**args;
+// 	char 			*operator;
+// 	struct s_mini	*next;
+// }				t_mini;
 
 void ft_check_access(char **paths, char *cmd)
 {
@@ -84,28 +93,27 @@ char **ft_get_path(char **env)
 }
 
 // execution
-void ft_execution(t_input *list, char ***env)
+void ft_execution(t_input *list, char ***env, char ***export)
 {
-	(void)env;
+	// (void)env;
 	t_input *tmp;
 
 	tmp = list;
 
-	// printer(*env);
-	while (tmp)
-	{
-		if (tmp->cmd)
-	//	printf("%s\n", tmp->cmd);
-		printer(tmp->arg);
-		if (tmp->redirect->type)
-		{
-	//		printf("%d\n", tmp->redirect->type);
-			printer(tmp->redirect->file_name);
-		}
-//		if (tmp->pipe)
-//			printf("|\n");
-		tmp = tmp->next;
-	}
+	// while (tmp)
+	// {
+	// 	if (tmp->cmd)
+	// 	printf("%s\n", tmp->cmd);
+	// 	printer(tmp->arg);
+	// 	if (tmp->redirect->type)
+	// 	{
+	// 		printf("%d\n", tmp->redirect->type);
+	// 		printer(tmp->redirect->file_name);
+	// 	}
+	// 	if (tmp->pipe)
+	// 		printf("|\n");
+	// 	tmp = tmp->next;
+	// }
 	
 	// printf("\n###############################\n");
 	
@@ -120,8 +128,13 @@ void ft_execution(t_input *list, char ***env)
 	
 	tmp = list;
 	if (!ft_strncmp(tmp->cmd, "export", ft_strlen(tmp->cmd)))
-		ft_export(env, list);
-
+		ft_export(env, list, export);
+	if (!ft_strncmp(tmp->cmd, "unset", ft_strlen(tmp->cmd)))
+		ft_unset(env, list, export);
+	if (!ft_strncmp(tmp->cmd, "env", ft_strlen(tmp->cmd)))
+		printer(*env);
+	
+	// export akldfjasf=lkjasf daskljf+=lakjsdf kljadsf= asdklfjasdf kljasdf kjasdf kljadsf kljasdf
 	// ft_unset(env, name);
 }
 
