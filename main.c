@@ -1295,8 +1295,11 @@ char **parsing(char **input, char **env)
 		return (NULL);
 	}
 	expand(&new_str, env);
+	printer (new_str);
 	str_pro_max = ultra_split(new_str, input);
 	free_double_array(new_str);
+	printer (str_pro_max);
+	printf ("after\n");
 	the_joiner(&str_pro_max);
 	no_etxra_qoutes(&str_pro_max);
 	return (str_pro_max);
@@ -1311,8 +1314,6 @@ int main(int ac, char **av, char **envi)
 	t_input *list;
 	int check;
 
-	(void)ac;
-	(void)av;
 	env = fill(envi);
 	shlvl(&env, 1);
 	in_env(NULL, env, 1);
@@ -1326,15 +1327,18 @@ int main(int ac, char **av, char **envi)
 			free (input);
 			break;
 		}
+		if (!ft_strncmp(input, av[0], ft_strlen (av[0]) + 1))
+		{
+			int id = fork();
+			if (id == 0)
+				main (ac, av, env);
+			wait (NULL);
+		}
 		if (!ft_strncmp(input, "exit", 5))
 		{
 			free (input);
 			break;
 		}
-		// if (!ft_strncmp(input, "env", 4))
-		// {
-		// 	in_env(NULL, NULL, 2);
-		// }
 		copy = ft_strdup(input);
 		if (fast_check(copy))
 		{
@@ -1350,7 +1354,7 @@ int main(int ac, char **av, char **envi)
 			if (check != -1)
 			{
 				if (check  + 1 < ft_strcount(split))
-				error_print ("bash: syntax error near unexpected token ", clean_copy(split[check + 1]));
+					error_print ("bash: syntax error near unexpected token ", clean_copy(split[check + 1]));
 				else
 				error_print ("bash: syntax error near unexpected token `newline'", NULL);
 				free_double_array(split);
@@ -1361,7 +1365,7 @@ int main(int ac, char **av, char **envi)
 				printer (split);
 				list = work_time(split);
 				free_double_array(split);
-				ft_execution(list, &env);
+			//	ft_execution(list, &env);
 				free_list(list);
 			}
 		}
@@ -1372,5 +1376,5 @@ int main(int ac, char **av, char **envi)
 	shlvl(&env, -1);
 	in_env(NULL, env, 1);
 	free_double_array(env);
-	return 0;
+	return (0);
 }
