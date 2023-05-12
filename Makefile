@@ -1,11 +1,11 @@
 NAME = bash
 
-SRC = *.c
+SRC = execution.c	ft_export.c	ft_unset.c	ft_utils.c	main.c
 
 CC = cc
 
-CFLAGS = #-g -fsanitize=address
-# -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -g -fsanitize=address
+ 
 
 all : $(NAME)
 
@@ -16,6 +16,7 @@ $(NAME) : $(SRC)
 
 clean :
 	make -C libft clean
+	@rm -rf bash.dSYM
 
 fclean : clean
 	make -C libft fclean

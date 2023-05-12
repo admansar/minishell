@@ -6,7 +6,6 @@
 #include "libft/ft_printf.h"
 #include "minishell.h"
 
-
 void make_some_space(char **str);
 void	free_double_array(char **new_str);
 void should_i_replace_them(char **input);
@@ -955,7 +954,7 @@ void expand(char ***str_pro_max, char **env)
 		end = 0;
 		while ((*str_pro_max)[i][j])
 		{
-			if ((*str_pro_max)[i][j] == '$' && (ft_isalpha((*str_pro_max)[i][j + 1]) || (*str_pro_max)[i][j + 1] == '_'/* || ft_isdigit((*str_pro_max)[i][j + 1])*/))
+			if ((*str_pro_max)[i][j] == '$' && (ft_isalpha((*str_pro_max)[i][j + 1]) || (*str_pro_max)[i][j + 1] == '_' || ft_isdigit((*str_pro_max)[i][j + 1])))
 			{
 				start = j;
 				while ((*str_pro_max)[i][j] && (ft_isalpha((*str_pro_max)[i][j + 1]) || ft_isdigit((*str_pro_max)[i][j + 1]) || (*str_pro_max)[i][j + 1] == '_'))
@@ -995,7 +994,7 @@ void expand(char ***str_pro_max, char **env)
 		{
 			if ((*str_pro_max)[i][j] == '$' && ( ft_isalpha((*str_pro_max)[i][j + 1]) 
 						|| (*str_pro_max)[i][j + 1] == '_' 
-						/*|| ft_isdigit((*str_pro_max)[i][j + 1])*/))
+						|| ft_isdigit((*str_pro_max)[i][j + 1])))
 			{
 				start = j;
 				while ((*str_pro_max)[i][j] && (ft_isalpha((*str_pro_max)[i][j + 1])
@@ -1259,6 +1258,29 @@ void free_list(t_input *list)
 	}
 }
 
+int last_check(char **str)
+{
+	int i;
+	int h;
+
+	i = 0;
+	while (str[i + 1])
+	{
+		h = ft_strlen (str[i]);
+		if (str[i + 1][0] == '|' && str[i][h - 1] == '>')
+			return (i);
+		if (str[i + 1][0] == '|' && str[i][h - 1] == '<')
+			return (i);
+		i++;
+	}
+	h = ft_strlen (str[i]);
+	if (str[i][h - 1] == '>')
+		return (i);
+	if (str[i][h - 1] == '<')
+		return (i);
+	return (-1);
+}
+
 // te perfect parsing does not exis ... 
 char **parsing(char **input, char **env)
 {
@@ -1274,7 +1296,6 @@ char **parsing(char **input, char **env)
 	}
 	expand(&new_str, env);
 	str_pro_max = ultra_split(new_str, input);
-//	sleep (10);
 	free_double_array(new_str);
 	the_joiner(&str_pro_max);
 	no_etxra_qoutes(&str_pro_max);
@@ -1288,6 +1309,7 @@ int main(int ac, char **av, char **envi)
 	char **split;
 	char **env;
 	t_input *list;
+	int check;
 
 	(void)ac;
 	(void)av;
@@ -1323,6 +1345,16 @@ int main(int ac, char **av, char **envi)
 				make_some_space(&copy);
 				split = ft_split (copy, ' ');
 				expand (&split, env);
+			}
+			check = last_check(split);
+			if (check != -1)
+			{
+				if (check  + 1 < ft_strcount(split))
+				error_print ("bash: syntax error near unexpected token ", clean_copy(split[check + 1]));
+				else
+				error_print ("bash: syntax error near unexpected token `newline'", NULL);
+				free_double_array(split);
+				split = NULL;
 			}
 			if (split)
 			{

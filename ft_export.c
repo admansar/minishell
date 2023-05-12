@@ -151,10 +151,10 @@ void	ft_export_printer(char **export)
 		len = ft_simularity_len(export[i], '=');
 		tmp1 = take_copy(export[i], 0, len - 1);
 		tmp2 = take_copy(export[i], len + 1, ft_strlen(export[i]));
-		if (ft_char_checker(export[i], '=') == -1)
-			printf ("declare -x %s\n", tmp1);
-		else
-			printf ("declare -x %s=\"%s\"\n", tmp1, tmp2);
+	//	if (ft_char_checker(export[i], '=') == -1)
+	//		printf ("declare -x %s\n", tmp1);
+	//	else
+	//		printf ("declare -x %s=\"%s\"\n", tmp1, tmp2);
 		free (tmp1);
 		free (tmp2);
 		i++;
@@ -166,7 +166,6 @@ char	**ft_allocate_extra_pointer(char **arr1, char *str)
 {
 	int len;
 	int i;
-	int j;
 	char	**joined;
 
 	len = ft_strcount(arr1) + 1;
@@ -208,6 +207,7 @@ void	ft_clean_up_name(char **str)
 	char	*tmp;
 	char	*tmp1;
 
+	i = 0;
 	while (str[i])
 	{
 		ret = ft_char_checker(str[i], '+');
@@ -230,6 +230,7 @@ void	ft_clean_up_vars(char ***export)
 	char	*tmp;
 	char	*tmp1;
 
+	i = 0;
 	while ((*export)[i])
 	{
 		ret = ft_char_checker((*export)[i], '+');
@@ -247,10 +248,8 @@ void ft_export(char ***env, t_input *list)
 {
 	static char	**export = NULL;
 	char 	**valid_var_names;
-	int		exist;
 	char *tmp_name;
 	char *tmp_value;
-	char *error;
 	int var_nbr;
 	int var;
 	int i;
