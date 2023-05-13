@@ -1,11 +1,10 @@
 NAME = bash
 
-SRC = execution.c	ft_export.c	ft_unset.c	ft_utils.c	main.c
+SRC = execution.c ft_export.c ft_unset.c  ft_utils.c  main.c
 
 CC = cc
 
-CFLAGS = -Wall -Wextra -Werror #-g -fsanitize=address
- 
+CFLAGS =-Wall -Wextra -Werror #-g -fsanitize=address
 
 all : $(NAME)
 
@@ -16,14 +15,13 @@ $(NAME) : $(SRC)
 
 clean :
 	make -C libft clean
-	@rm -rf bash.dSYM
 
 fclean : clean
+	rm -rf ${NAME}.dSYM
 	make -C libft fclean
 	rm -f $(NAME)
 
 re : fclean all
-
 
 define emo
 @echo "\033[0;91m" 

@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 17:17:33 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/05/12 20:39:08 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/05/13 14:57:45 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,10 +129,13 @@ void ft_execution(t_input *list, char ***env, char ***export)
 	tmp = list;
 	if (!ft_strncmp(tmp->cmd, "export", ft_strlen(tmp->cmd)))
 		ft_export(env, list, export);
-	if (!ft_strncmp(tmp->cmd, "unset", ft_strlen(tmp->cmd)))
+	else if (!ft_strncmp(tmp->cmd, "unset", ft_strlen(tmp->cmd)))
 		ft_unset(env, list, export);
-	if (!ft_strncmp(tmp->cmd, "env", ft_strlen(tmp->cmd)))
+	else if (!ft_strncmp(tmp->cmd, "env", ft_strlen(tmp->cmd)))
 		printer(*env);
+	// else 
+	// 	ft_execute(env , export, list);
+		
 	
 	// export akldfjasf=lkjasf daskljf+=lakjsdf kljadsf= asdklfjasdf kljasdf kjasdf kljadsf kljasdf
 	// ft_unset(env, name);

@@ -331,7 +331,6 @@ char **ft_check_env_var(char **valid_export_vars)
 
 void	ft_update_value_env(char *arr , char ***export, int pos)
 {
-	printf("changing : \n");
 	free((*export)[pos]);
 	(*export)[pos] = ft_strdup(arr);
 }

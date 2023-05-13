@@ -1264,8 +1264,6 @@ int last_check(char **str)
 	int h;
 
 	i = 0;
-	if (!str)
-		return (-1);
 	while (str[i + 1])
 	{
 		h = ft_strlen (str[i]);
@@ -1313,17 +1311,18 @@ int main(int ac, char **av, char **envi)
 	char *copy;
 	char **split;
 	char **env;
-	char **export;
 	t_input *list;
 	int check;
+	char **export;
 
 	env = fill(envi);
 	shlvl(&env, 1);
-	export = fill(env);
 	in_env(NULL, env, 1);
+	export = fill(env);
 	printf("\033[1mThe default interactive shell is now zsh.\nTo update your account to use zsh, please run chsh -s /bin/zsh.\n\033[0m");
 	while (1)
 	{
+		// printer (export);
 		input = readline("\033[1mbash-3.2$> \033[0m");
 		if (input == NULL)
 		{
@@ -1370,6 +1369,7 @@ int main(int ac, char **av, char **envi)
 				list = work_time(split);
 				free_double_array(split);
 				ft_execution(list, &env, &export);
+
 				free_list(list);
 			}
 		}

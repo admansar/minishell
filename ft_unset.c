@@ -29,7 +29,6 @@ char	**ft_remove (char **ptr, int pos)
 void	ft_unset(char ***env, t_input *list, char ***export)
 {
 	char 		**valid_export_vars;
-	char		**valid_env_vars;
 	int			exist;
 	char		*tmp_name;
 	char		*tmp_value;
@@ -60,29 +59,21 @@ void	ft_unset(char ***env, t_input *list, char ***export)
 		free(tmp_value);
 		i++;
 	}
-	valid_env_vars = ft_check_env_var(valid_export_vars);
 	i = 0;
 	while (valid_export_vars[i])
 	{
-		ft_get_var_name(valid_export_vars[i], &tmp_name);
-		exist = ft_in_env(tmp_name, *export);
+		exist = ft_in_env(valid_export_vars[i], *export);
 		if (exist >= 0)
-		{
 			*export = ft_remove(*export, exist);
-		}
-		free(tmp_name);
 		i++;
 	}
 	i = 0;
 	while (valid_export_vars[i])
 	{
-		tmp_name = ft_substr(valid_export_vars[i], 0, ft_simularity_len(valid_export_vars[i], '='));
-		exist = ft_in_env(tmp_name, *env);
-		 printf ("------>%s<----\n", tmp_name);
+		exist = ft_in_env(valid_export_vars[i], *env);
 		if (exist >= 0)
 			*env = ft_remove(*env, exist);
-		free(tmp_name);
 		i++;
 	}
-	free_double_array(valid_env_vars);
+	free_double_array(valid_export_vars);
 }
