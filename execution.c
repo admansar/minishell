@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 17:17:33 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/05/13 14:57:45 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/05/14 11:42:16 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,27 +127,124 @@ void ft_execution(t_input *list, char ***env, char ***export)
 	// char name2[] = "var";
 	
 	tmp = list;
-	if (!ft_strncmp(tmp->cmd, "export", ft_strlen(tmp->cmd)))
+	if (!ft_strncmp(tmp->cmd, "export", 7))
 		ft_export(env, list, export);
-	else if (!ft_strncmp(tmp->cmd, "unset", ft_strlen(tmp->cmd)))
+	else if (!ft_strncmp(tmp->cmd, "unset", 7))
 		ft_unset(env, list, export);
-	else if (!ft_strncmp(tmp->cmd, "env", ft_strlen(tmp->cmd)))
+	else if (!ft_strncmp(tmp->cmd, "env", 4))
 		printer(*env);
+	else 
+		ft_pipe(list, *env);
 	// else 
 	// 	ft_execute(env , export, list);
-		
-	
-	// export akldfjasf=lkjasf daskljf+=lakjsdf kljadsf= asdklfjasdf kljasdf kjasdf kljadsf kljasdf
-	// ft_unset(env, name);
 }
 
-void ft_pipe(t_input *list)
+
+
+void ft_exec(t_input *list, char **envi)
+{
+	(void)list;
+	int id1;
+	int inside;
+	char *tmp;
+	char **env;
+	char **acces;
+	char **arg;
+	char **env_support;
+	int found;
+	int	i;
+
+	inside = ft_in_env("PATH", envi);
+	if (access(list->cmd, F_OK | X_OK) + 1 && !ft_strncmp(list->cmd, "./", 3))
+	{
+		id1 = fork();
+		if (id1 == 0)
+		{
+			arg = ft_join_double_ptr_to_ptr(list->cmd, list->arg);
+			execve(list->cmd, arg, envi);
+			free(arg);
+		}
+		wait(NULL);
+	}
+	else if (char_counter(list->cmd, '/') && access(list->cmd, F_OK | X_OK) + 1)
+	{
+		id1 = fork();
+		if (id1 == 0)
+		{
+			env = ft_calloc (2, sizeof (char *));
+			env[0] = take_copy (list->cmd, ft_strrchr(list->cmd, '/') - list->cmd, ft_strlen (list->cmd));
+			arg = ft_join_double_ptr_to_ptr(list->cmd, list->arg);
+			execve(list->cmd, arg, env);
+			free_double_array (env);
+			free (arg);
+		}
+		wait (NULL);
+	}
+	else if (inside + 1 && !char_counter(list->cmd, '/'))
+	{
+		tmp = take_copy(envi[inside], ft_simularity_len(envi[inside],'=') + 1, ft_strlen (envi[inside]));
+		env = ft_split (tmp, ':');
+		free (tmp);
+		acces = ft_calloc (sizeof (char *), ft_strcount (env) + 1);
+		i = 0;
+		while (env[i])
+		{
+			tmp = ft_strjoin ("/", list->cmd);
+			acces[i] = ft_strjoin(env[i], tmp);
+			free (tmp);
+			i++;
+		}
+		i = 0;
+		found = 0;
+		while (acces[i])
+		{
+			if (access(acces[i], F_OK | X_OK) + 1)
+			{
+				found = 1;
+				break;
+			}
+			i++;
+		}
+		if (found)
+		{
+			id1 = fork();
+			if (id1 == 0)
+			{
+				env_support = ft_calloc (sizeof (char *), 2);
+				env_support[0] = ft_strdup (acces[i]);
+				arg = ft_join_double_ptr_to_ptr(acces[i], list->arg);
+				execve(acces[i], arg, env_support);
+				free_double_array(env_support);
+				free(arg);
+			}
+			wait (NULL);
+		}
+		else
+		{
+			printf ("bash: %s: command not found\n", list->cmd);
+		}
+		free_double_array(env);
+		free_double_array(acces);
+	}
+	else
+	{
+		printf ("bash: %s: command not found\n", list->cmd);
+	}
+
+}
+
+void ft_pipe(t_input *list, char **envi)
 {
 	(void)list;
 	int pipe_fd[2];
 	int pid1;
 	int pid2;
 
+	if (!list->pipe)
+	{
+		ft_exec(list, envi);
+		return ;
+	}
 	if (pipe(pipe_fd) == -1)
 	{
 		perror("pipe");
@@ -164,10 +261,13 @@ void ft_pipe(t_input *list)
 		dup2(pipe_fd[1], STDOUT_FILENO);
 		close(pipe_fd[0]);
 		close(pipe_fd[1]);
-		char *args[] = {"/bin/ls", "-la", NULL};
-		char *env[] = {"/bin", NULL};
-		execve("/bin/ls", args, env);
+		ft_exec(list, envi);
+		exit(1);
+//		char *args[] = {"/bin/ls", "-la", NULL};
+//		char *env[] = {"/bin", NULL};
+//		execve("/bin/ls", args, env);
 	}
+	list = list->next;
 	pid2 = fork();
 	if (pid2 == -1)
 	{
@@ -179,9 +279,11 @@ void ft_pipe(t_input *list)
 		dup2(pipe_fd[0], STDIN_FILENO);
 		close(pipe_fd[0]);
 		close(pipe_fd[1]);
-		char *args[] = {"/usr/bin/sort",NULL, NULL};
-		char *env[] = {"/usr/bin", NULL};
-		execve("/usr/bin/sort", args, env);
+		ft_exec(list, envi);
+		exit(1);
+	//	char *args[] = {"/usr/bin/sort",NULL, NULL};
+	//	char *env[] = {"/usr/bin", NULL};
+	//	execve("/usr/bin/sort", args, env);
 	}
 	close(pipe_fd[0]);
 	close(pipe_fd[1]);

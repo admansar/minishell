@@ -207,6 +207,22 @@ void	ft_export_printer(char **export)
 	}
 }
 
+char	**ft_join_double_ptr_to_ptr(char *str, char **arr1)
+{
+	int len;
+	int i;
+	char	**joined;
+
+	len = ft_strcount(arr1);
+	joined = (char **)ft_calloc(sizeof(char *), len + 2);
+	i = -1;
+	joined[0] = ft_strdup(str);
+	while (arr1[++i])
+		joined[i + 1] = ft_strdup(arr1[i]);
+	free_double_array(arr1);
+	return (joined);
+}
+
 // join double array with a single array
 char	**ft_join_ptr_to_double_ptr(char **arr1, char *str)
 {

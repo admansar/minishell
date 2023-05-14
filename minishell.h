@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/06 11:52:20 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/05/13 14:46:18 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/05/14 11:08:38 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,12 +50,14 @@ char *take_copy(char *s1, int start, int end);
 int in_env(char *ptr, char **env, int flag);
 int ft_simularity_len(char *str, char c);
 void free_double_array(char **c);
-void	ft_pipe(t_input *list);
+void	ft_pipe(t_input *list, char **envi);
+void ft_exec(t_input *list, char **envi);
 void printer(char **ptr);
 int char_counter(const char *co, char c);
 
 
 /********************EXPORT/UNSET********************/
+
 void	ft_export(char ***env, t_input *list, char ***export);
 void	ft_unset(char ***env, t_input *list, char ***export);
 void	ft_export_printer(char **export);
@@ -67,6 +69,7 @@ void	ft_clean_up_name(char **str);
 int		mega_counter(char **str, char c);
 int	ft_unset_name_checker(char *str);
 int	ft_export_name_checker(char *str);
+char	**ft_join_double_ptr_to_ptr(char *str, char **arr1);
 
 /********************BUILT-IN UITLS********************/
 int		ft_in_env(char *ptr, char **env);

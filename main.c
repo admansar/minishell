@@ -1264,6 +1264,8 @@ int last_check(char **str)
 	int h;
 
 	i = 0;
+	if (!str)
+		return (-1);
 	while (str[i + 1])
 	{
 		h = ft_strlen (str[i]);
@@ -1315,6 +1317,8 @@ int main(int ac, char **av, char **envi)
 	int check;
 	char **export;
 
+	(void)ac;
+	(void)av;
 	env = fill(envi);
 	shlvl(&env, 1);
 	in_env(NULL, env, 1);
@@ -1329,13 +1333,6 @@ int main(int ac, char **av, char **envi)
 			printf ("exit\n");
 			free (input);
 			break;
-		}
-		if (!ft_strncmp(input, av[0], ft_strlen (av[0]) + 1))
-		{
-			int id = fork();
-			if (id == 0)
-				main (ac, av, env);
-			wait (NULL);
 		}
 		if (!ft_strncmp(input, "exit", 5))
 		{
@@ -1369,7 +1366,6 @@ int main(int ac, char **av, char **envi)
 				list = work_time(split);
 				free_double_array(split);
 				ft_execution(list, &env, &export);
-
 				free_list(list);
 			}
 		}
@@ -1381,5 +1377,5 @@ int main(int ac, char **av, char **envi)
 	in_env(NULL, env, 1);
 	free_double_array(env);
 	free_double_array(export);
-	return (0);
+	exit (0);
 }
