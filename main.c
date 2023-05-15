@@ -590,8 +590,8 @@ void printer(char **ptr)
 
 	i = 0;
 	while (ptr[i])
-		printf ("%s$\n", ptr[i++]);
-	printf ("-------%d\n", ft_strcount(ptr));
+		printf ("%s\n", ptr[i++]);
+//	printf ("-------%d\n", ft_strcount(ptr));
 }
 
 //the dual of qoutes and double qoutes 
@@ -1123,7 +1123,7 @@ void init_list(t_input **list, int count)
 	(*list)->arg = ft_calloc (sizeof(char *), count + 1);
 	(*list)->redirect = malloc (sizeof (t_redirection));
 	(*list)->redirect->file_name = ft_calloc (sizeof(char *), count + 1);
-	(*list)->redirect->type = 0;
+	(*list)->redirect->type = ft_calloc (sizeof(char *), count + 1);
 	(*list)->redirect->position = 0;
 	(*list)->pipe = 0;
 }
@@ -1173,39 +1173,39 @@ void phil_list(t_input **list, char **split)
 			if (!ft_strncmp(split[i], ">>" , 2))
 			{
 				no_surounded_anymore(&split[i + 1]);
-				(*list)->redirect->type = 2;
+				(*list)->redirect->type[(*list)->redirect->position] = "2";
 				(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
-				//  printf ("file name : %s taked the pos num : %d and type is %d\n", (*list)->redirect->file_name[(*list)->redirect->position], (*list)->redirect->position + 1 , (*list)->redirect->type);
+			//	  printf ("file name : %s taked the pos num : %d and type is %s\n", (*list)->redirect->file_name[(*list)->redirect->position], (*list)->redirect->position + 1 , (*list)->redirect->type[(*list)->redirect->position]);
 				(*list)->redirect->position++;
 			}
 			else if (!ft_strncmp(split[i], "<<" , 2))
 			{
-				(*list)->redirect->type = 4;
+				(*list)->redirect->type[(*list)->redirect->position] = "4";
 				(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
-				//  printf ("file name : %s taked the pos num : %d and type is %d\n", (*list)->redirect->file_name[(*list)->redirect->position], (*list)->redirect->position + 1 , (*list)->redirect->type);
+			//	  printf ("file name : %s taked the pos num : %d and type is %s\n", (*list)->redirect->file_name[(*list)->redirect->position], (*list)->redirect->position + 1 , (*list)->redirect->type[(*list)->redirect->position]);
 				(*list)->redirect->position++;
 			}
 			else if (!ft_strncmp(split[i], ">" , 1))
 			{
 				no_surounded_anymore(&split[i + 1]);
-				(*list)->redirect->type = 1;
+				(*list)->redirect->type[(*list)->redirect->position] = "1";
 				(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
-				//  printf ("file name : %s taked the pos num : %d and type is %d\n", (*list)->redirect->file_name[(*list)->redirect->position], (*list)->redirect->position + 1 , (*list)->redirect->type);
+			//	  printf ("file name : %s taked the pos num : %d and type is %s\n", (*list)->redirect->file_name[(*list)->redirect->position], (*list)->redirect->position + 1 , (*list)->redirect->type[(*list)->redirect->position]);
 				(*list)->redirect->position++;
 			}
 			else if (!ft_strncmp(split[i], "<" , 1))
 			{
 				no_surounded_anymore(&split[i + 1]);
-				(*list)->redirect->type = 3;
+				(*list)->redirect->type[(*list)->redirect->position] = "3";
 				(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
-				//  printf ("file name : %s taked the pos num : %d and type is %d\n", (*list)->redirect->file_name[(*list)->redirect->position], (*list)->redirect->position + 1 , (*list)->redirect->type);
+			//	  printf ("file name : %s taked the pos num : %d and type is %s\n", (*list)->redirect->file_name[(*list)->redirect->position], (*list)->redirect->position + 1 , (*list)->redirect->type[(*list)->redirect->position]);
 				(*list)->redirect->position++;
 			}
 			else if (one_time == 1)
 			{
 				no_surounded_anymore(&split[i + 1]);
 				(*list)->cmd = ft_strdup (split[i]);
-				//  printf ("cmd : %s\n", (*list)->cmd);
+			//	  printf ("cmd : %s\n", (*list)->cmd);
 				one_time = 0;
 			}
 			else
@@ -1224,7 +1224,7 @@ void phil_list(t_input **list, char **split)
 			(*list)->pipe = 1;
 			append (*list, count);
 			(*list) = (*list)->next;
-			printf ("-->pipe\n");
+	//		printf ("-->pipe\n");
 			m = 0;
 		}
 		i++;
@@ -1250,6 +1250,7 @@ void free_list(t_input *list)
 	{
 		free(tmp->cmd);
 		free_double_array (tmp->arg);
+		free(tmp->redirect->type);
 		free_double_array (tmp->redirect->file_name);
 		free (tmp->redirect);
 		list = list->next;
@@ -1266,6 +1267,11 @@ int last_check(char **str)
 	i = 0;
 	if (!str)
 		return (-1);
+	if (!str[i])
+	{
+		free_double_array(str);
+		return (-2);
+	}
 	while (str[i + 1])
 	{
 		h = ft_strlen (str[i]);
@@ -1300,8 +1306,6 @@ char **parsing(char **input, char **env)
 	printer (new_str);
 	str_pro_max = ultra_split(new_str, input);
 	free_double_array(new_str);
-	printer (str_pro_max);
-	printf ("after\n");
 	the_joiner(&str_pro_max);
 	no_etxra_qoutes(&str_pro_max);
 	return (str_pro_max);
@@ -1326,7 +1330,6 @@ int main(int ac, char **av, char **envi)
 	printf("\033[1mThe default interactive shell is now zsh.\nTo update your account to use zsh, please run chsh -s /bin/zsh.\n\033[0m");
 	while (1)
 	{
-		// printer (export);
 		input = readline("\033[1mbash-3.2$> \033[0m");
 		if (input == NULL)
 		{
@@ -1351,7 +1354,9 @@ int main(int ac, char **av, char **envi)
 				expand (&split, env);
 			}
 			check = last_check(split);
-			if (check != -1)
+			if (check == -2)
+				split = NULL;
+			if (check != -1 && split)
 			{
 				if (check  + 1 < ft_strcount(split))
 					error_print ("bash: syntax error near unexpected token ", clean_copy(split[check + 1]));
@@ -1362,7 +1367,6 @@ int main(int ac, char **av, char **envi)
 			}
 			if (split)
 			{
-				printer (split);
 				list = work_time(split);
 				free_double_array(split);
 				ft_execution(list, &env, &export);

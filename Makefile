@@ -1,10 +1,10 @@
 NAME = bash
 
-SRC = execution.c ft_export.c ft_unset.c  ft_utils.c  main.c
+SRC = ft_redirections.c execution.c ft_export.c ft_unset.c  ft_utils.c  main.c ft_change_dir.c ft_pwd.c ft_echo.c
 
 CC = cc
 
-CFLAGS =-Wall -Wextra -Werror -g -fsanitize=address
+CFLAGS =-Wall -Wextra -Werror #-g -fsanitize=address
 
 all : $(NAME)
 

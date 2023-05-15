@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/29 12:11:46 by admansar          #+#    #+#             */
-/*   Updated: 2023/05/06 12:32:14 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/05/16 00:08:09 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ void			ft_putstr_fd(char *s, int fd);
 void			ft_putendl_fd(char *s, int fd);
 void			ft_putnbr_fd(int n, int fd);
 char			**ft_split(char const *s1, char c);
-size_t	count_words(char const *s, char c);
+size_t			count_words(char const *s, char c);
 t_list			*ft_lstnew(void *content);
 void			ft_lstadd_front(t_list **lst, t_list *new);
 int				ft_lstsize(t_list *lst);

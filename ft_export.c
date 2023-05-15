@@ -378,7 +378,7 @@ void ft_export(char ***env, t_input *list, char ***export)
 		ret = ft_get_var(list->arg[i], &tmp_name, &tmp_value);
 		if(ft_export_name_checker(tmp_name) == -1 || ret == -13)
 		{
-			printf("bash: export: `%s': not a valid identifier\n", list->arg[i]);
+			ft_printf("bash: export: `%s': not a valid identifier\n", list->arg[i]);
 		}
 		else
 		{
@@ -391,8 +391,8 @@ void ft_export(char ***env, t_input *list, char ***export)
 		i++;
 	}
 	valid_env_vars = ft_check_env_var(valid_export_vars);
-	printer(valid_export_vars);
-	printer(valid_env_vars);
+//	printer(valid_export_vars);
+//	printer(valid_env_vars);
 	i = 0;
 	while (valid_export_vars[i])
 	{
