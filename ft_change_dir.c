@@ -4,6 +4,7 @@ void    ft_change_dir(t_input *list, char ***env, char ***export)
 {
     char    *old_pwd;
 	char	*pwd;
+	char	*leaks;
 	char	*home_path;
     char    old_name[]="OLDPWD=";
     char    pwd_name[]="PWD=";
@@ -34,7 +35,9 @@ void    ft_change_dir(t_input *list, char ***env, char ***export)
 			if(index_old_pwd > 0)
 			{
 				ft_get_var_value((*env)[index_pwd], pwd_name, &old_pwd);
-				old_pwd = ft_strjoin(old_name, old_pwd);
+				leaks = ft_strjoin(old_name, old_pwd);
+				free (old_pwd);
+				old_pwd = leaks;
 				pwd = ft_strjoin(pwd_name, path);
 				ft_update_value_env(old_pwd, env, index_old_pwd);
 				ft_update_value_env(pwd, env, index_pwd);
@@ -42,7 +45,9 @@ void    ft_change_dir(t_input *list, char ***env, char ***export)
 			else
 			{
 				ft_get_var_value((*env)[index_pwd], pwd_name, &old_pwd);
-				old_pwd = ft_strjoin(old_name, old_pwd);
+				leaks = ft_strjoin(old_name, old_pwd);
+				free (old_pwd);
+				old_pwd = leaks;
 				pwd = ft_strjoin(pwd_name, path);
 				ft_update_value_env(pwd, env, index_pwd);
 				*env = ft_join_ptr_to_double_ptr(*env, old_pwd);
@@ -58,7 +63,9 @@ void    ft_change_dir(t_input *list, char ***env, char ***export)
 			if(index_old_pwd > 0)
 			{
 				ft_get_var_value((*export)[index_pwd], pwd_name, &old_pwd);
-				old_pwd = ft_strjoin(old_name, old_pwd);
+				leaks = ft_strjoin(old_name, old_pwd);
+				free (old_pwd);
+				old_pwd = leaks;
 				pwd = ft_strjoin(pwd_name, path);
 				ft_update_value_env(old_pwd, export, index_old_pwd);
 				ft_update_value_env(pwd, export, index_pwd);
@@ -66,7 +73,9 @@ void    ft_change_dir(t_input *list, char ***env, char ***export)
 			else
 			{
 				ft_get_var_value((*export)[index_pwd], pwd_name, &old_pwd);
-				old_pwd = ft_strjoin(old_name, old_pwd);
+				leaks = ft_strjoin(old_name, old_pwd);
+				free (old_pwd);
+				old_pwd = leaks;
 				pwd = ft_strjoin(pwd_name, path);
 				ft_update_value_env(pwd, export, index_pwd);
 				*export = ft_join_ptr_to_double_ptr(*export, old_pwd);
@@ -95,7 +104,9 @@ void    ft_change_dir(t_input *list, char ***env, char ***export)
 			if(index_old_pwd > 0)
 			{
 				ft_get_var_value((*env)[index_pwd], pwd_name, &old_pwd);
-				old_pwd = ft_strjoin(old_name, old_pwd);
+				leaks = ft_strjoin(old_name, old_pwd);
+				free (old_pwd);
+				old_pwd = leaks;
 				pwd = ft_strjoin(pwd_name, path);
 				ft_update_value_env(old_pwd, env, index_old_pwd);
 				ft_update_value_env(pwd, env, index_pwd);
@@ -103,7 +114,9 @@ void    ft_change_dir(t_input *list, char ***env, char ***export)
 			else
 			{
 				ft_get_var_value((*env)[index_pwd], pwd_name, &old_pwd);
-				old_pwd = ft_strjoin(old_name, old_pwd);
+				leaks = ft_strjoin(old_name, old_pwd);
+				free (old_pwd);
+				old_pwd = leaks;
 				pwd = ft_strjoin(pwd_name, path);
 				ft_update_value_env(pwd, env, index_pwd);
 				*env = ft_join_ptr_to_double_ptr(*env, old_pwd);
@@ -119,7 +132,9 @@ void    ft_change_dir(t_input *list, char ***env, char ***export)
 			if(index_old_pwd > 0)
 			{
 				ft_get_var_value((*export)[index_pwd], pwd_name, &old_pwd);
-				old_pwd = ft_strjoin(old_name, old_pwd);
+				leaks = ft_strjoin(old_name, old_pwd);
+				free (old_pwd);
+				old_pwd = leaks;
 				pwd = ft_strjoin(pwd_name, path);
 				ft_update_value_env(old_pwd, export, index_old_pwd);
 				ft_update_value_env(pwd, export, index_pwd);
@@ -127,7 +142,9 @@ void    ft_change_dir(t_input *list, char ***env, char ***export)
 			else
 			{
 				ft_get_var_value((*export)[index_pwd], pwd_name, &old_pwd);
-				old_pwd = ft_strjoin(old_name, old_pwd);
+				leaks = ft_strjoin(old_name, old_pwd);
+				free (old_pwd);
+				old_pwd = leaks;
 				pwd = ft_strjoin(pwd_name, path);
 				ft_update_value_env(pwd, export, index_pwd);
 				*export = ft_join_ptr_to_double_ptr(*export, old_pwd);
