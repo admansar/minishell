@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/06 11:52:20 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/05/16 00:09:16 by admansar         ###   ########.fr       */
+/*   Updated: 2023/05/18 20:19:10 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/wait.h>
+#include <signal.h>
 
 
 #define OUTPUT "1"

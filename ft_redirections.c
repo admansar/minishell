@@ -79,7 +79,6 @@ void ft_input_redirection(t_input *list, int input_count, int *pos, char ***env,
 		}
 		stdin_fd = dup(STDIN_FILENO);
 		dup2(input_fd, STDIN_FILENO);
-		close(input_fd);
 		if (list->cmd)
 			ft_exec(list, env, export);
 		dup2(stdin_fd , STDIN_FILENO);

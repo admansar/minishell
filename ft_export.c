@@ -391,8 +391,6 @@ void ft_export(char ***env, t_input *list, char ***export)
 		i++;
 	}
 	valid_env_vars = ft_check_env_var(valid_export_vars);
-//	printer(valid_export_vars);
-//	printer(valid_env_vars);
 	i = 0;
 	while (valid_export_vars[i])
 	{

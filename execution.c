@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 17:17:33 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/05/16 00:42:31 by admansar         ###   ########.fr       */
+/*   Updated: 2023/05/18 20:25:18 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,11 +122,29 @@ void ft_exec(t_input *list, char ***envi, char ***export)
 	}
 }
 
+int ft_list_size(t_input *list)
+{
+	int i;
+
+	i = 0;
+	if (!list)
+		return (i);
+	while (list)
+	{
+		list = list->next;
+		i++;
+	}
+	return (i);
+}
+
+
 void ft_pipe(t_input *list, char ***envi, char ***export)
 {
-	int pipe_fd[2];
-	int pid1;
-	int pid2;
+	int **pipe_fd;
+	int *pid;
+	int pipe_num;
+	int i;
+	t_input *tmp;
 
 	if (!list->pipe)
 	{
@@ -136,50 +154,99 @@ void ft_pipe(t_input *list, char ***envi, char ***export)
 			ft_exec(list, envi, export);
 		return;
 	}
-	if (pipe(pipe_fd) == -1)
+	pipe_num = ft_list_size(list) - 1;
+	pipe_fd = malloc (sizeof (int *) * (pipe_num));
+	i = 0;
+	while (i < pipe_num)
 	{
-		perror("pipe");
-		exit(EXIT_FAILURE);
+		pipe_fd[i] = malloc (sizeof (int) * 2);
+		i++;
 	}
-	pid1 = fork();
-	if (pid1 == -1)
+	pid = malloc (sizeof (int) * (pipe_num + 1));
+	i = 0;
+	tmp = list;
+	while (i < pipe_num)
 	{
-		perror("fork");
-		exit(EXIT_FAILURE);
+		pipe(pipe_fd[i]);
+		i++;
 	}
-	if (pid1 == 0)
+	i = 0;
+	list = tmp;
+	int j = 0;
+	while (list)
 	{
-		dup2(pipe_fd[1], STDOUT_FILENO);
-		close(pipe_fd[0]);
-		close(pipe_fd[1]);
-		if (list->redirect->position)
-			ft_redirections(list, envi, export);
-		else
-		ft_exec(list, envi, export);
-
-		exit(1);
+		pid[i] = fork();
+		if (pid[i] == -1)
+		{
+			perror ("fork");
+			while (i--)
+			{
+				kill (pid[i], SIGKILL);
+				free (pipe_fd[i]);
+			}
+			free (pipe_fd);
+			free (pid);
+			return ;
+//			exit (1);
+		}
+		if (pid[i] == 0)
+		{
+			if (i == 0)
+			{
+				close (pipe_fd[i][0]);
+				dup2 (pipe_fd[i][1], STDOUT_FILENO);
+				close (pipe_fd[i][1]);
+			}
+			else if (i == pipe_num)
+			{	
+				close (pipe_fd[i-1][1]);
+				dup2 (pipe_fd[i-1][0], STDIN_FILENO);
+				close (pipe_fd[i-1][0]);
+			}
+			else
+			{
+				close (pipe_fd[i-1][1]);
+				close (pipe_fd[i][0]);
+				dup2 (pipe_fd[i-1][0],STDIN_FILENO);
+				close (pipe_fd[i-1][0]);
+				dup2(pipe_fd[i][1], STDOUT_FILENO);
+				close (pipe_fd[i][1]);
+			}
+			j = 0;
+			while (j < pipe_num)
+			{
+				close (pipe_fd[j][0]);
+				close (pipe_fd[j][1]);
+				j++;
+			}
+			ft_exec(list, envi, export);
+			exit (1);
+		}
+		i++;
+		list = list->next;
 	}
-	list = list->next;
-	pid2 = fork();
-	if (pid2 == -1)
+	list = tmp;
+	j = 0;
+	while (j < pipe_num)
 	{
-		perror("fork");
-		exit(EXIT_FAILURE);
+		close (pipe_fd[j][0]);
+		close (pipe_fd[j][1]);
+		j++;
 	}
-	if (pid2 == 0)
+	i = 0;
+	while (i <= pipe_num)
 	{
-		dup2(pipe_fd[0], STDIN_FILENO);
-		close(pipe_fd[0]);
-		close(pipe_fd[1]);
-		if (list->redirect->position)
-			ft_redirections(list, envi, export);
-		else
-		ft_exec(list, envi, export);
-
-		exit(1);
+		waitpid(pid[i], NULL, 0);
+		i++;
 	}
-	close(pipe_fd[0]);
-	close(pipe_fd[1]);
-	waitpid(pid1, NULL, 0);
-	waitpid(pid2, NULL, 0);
+	i = 0;
+	while (i < pipe_num)
+	{
+		kill (pid[i], SIGKILL);
+		free (pipe_fd[i]);
+		i++;
+	}
+	kill (pid[i], SIGKILL);
+	free (pipe_fd);
+	free (pid);
 }
