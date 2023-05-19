@@ -1331,7 +1331,7 @@ int main(int ac, char **av, char **envi)
 	printf("\033[1mThe default interactive shell is now zsh.\nTo update your account to use zsh, please run chsh -s /bin/zsh.\n\033[0m");
 	while (1)
 	{
-		input = readline("\033[1mbash-3.2$> \033[0m");
+		input = readline("\033[1mbash-4.2$> \033[0m");
 		if (input == NULL)
 		{
 			printf ("exit\n");
