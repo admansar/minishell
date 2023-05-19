@@ -15,7 +15,11 @@ void    ft_change_dir(t_input *list, char ***env, char ***export)
 
 
     if (ft_strcount(list->arg) > 1)
-        printf("bash: cd: too many arguments\n");
+	{
+       ft_printf("bash: cd: too many arguments\n");
+	   g_exit_status = 1;
+	   return;
+	}
 	else if (!ft_strcount(list->arg))
 	{
 		home_index = ft_in_env("HOME", *env);
@@ -25,7 +29,8 @@ void    ft_change_dir(t_input *list, char ***env, char ***export)
 			chdir(home_path);
 			if (!getcwd(path, sizeof(path)))
 		{
-			printf("ERROR : path_name too long\n");
+			ft_printf("ERROR : path_name too long\n");
+			g_exit_status = 1;
 			return;
 		}
 		index_pwd = ft_in_env("PWD", *env);
@@ -85,16 +90,25 @@ void    ft_change_dir(t_input *list, char ***env, char ***export)
 		}
 		}
 		else
-			printf("bash: cd: HOME not set\n");
+		{
+			ft_printf("bash: cd: HOME not set\n");
+			g_exit_status = 1;
+			return;
+		}
 	}
     else if (access(list->arg[0], F_OK | R_OK) == -1)
-        printf("bash: cd: %s: No such file or directory\n", list->arg[0]);
+	{
+        ft_printf("bash: cd: %s: No such file or directory\n", list->arg[0]);
+		g_exit_status = 1;
+		return;
+	}
     else
     {
         chdir(list->arg[0]);
 		if (!getcwd(path, sizeof(path)))
 		{
-			printf("ERROR : path_name too long\n");
+			ft_printf("ERROR : path_name too long\n");
+			g_exit_status = 1;
 			return;
 		}
 		index_pwd = ft_in_env("PWD", *env);
@@ -153,4 +167,5 @@ void    ft_change_dir(t_input *list, char ***env, char ***export)
 			free(pwd);
 		}
     }
+	g_exit_status = 0;
 }

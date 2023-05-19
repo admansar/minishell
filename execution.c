@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 17:17:33 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/05/18 20:25:18 by admansar         ###   ########.fr       */
+/*   Updated: 2023/05/19 18:41:03 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,22 +16,129 @@
 // execution
 void ft_execution(t_input *list, char ***env, char ***export)
 {
-	ft_pipe(list, env, export);
+	if (!list->pipe)
+	{
+		if (list->redirect->position)
+			ft_redirections(list, env, export);
+		else
+			ft_exec(list, env, export);
+		return;
+	}
+	else
+		ft_pipe(list, env, export);
 }
 
-void ft_exec(t_input *list, char ***envi, char ***export)
+void basic_execution (t_input *list, char ***envi)
 {
-	(void)list;
-	int id1;
 	int inside;
+	int id1;
 	char *tmp;
 	char **env;
 	char **acces;
 	char **arg;
 	int found;
 	int i;
+	int status;
+	struct stat cmd_stat;
 
 	inside = ft_in_env("PATH", *envi);
+	stat(list->cmd, &cmd_stat);
+	/*if (!(cmd_stat.st_mode & S_IXUSR))
+	{
+		ft_printf ("bash: permission denied: %s\n", list->cmd);
+		g_exit_status = 126;
+	}
+	else */if (access(list->cmd, F_OK | X_OK) + 1 && !ft_strncmp(list->cmd, "./", 3))
+	{
+		id1 = fork();
+		if (id1 == 0)
+		{
+			arg = ft_join_double_ptr_to_ptr(list->cmd, list->arg);
+			execve(list->cmd, arg, *envi);
+			perror("execve");
+		}
+		waitpid(-1, &status, 0);
+		status= WEXITSTATUS(status);
+		g_exit_status = status;
+	}
+	else if (!ft_strncmp(list->cmd, "/", 3))
+	{
+		ft_printf ("bash: /: is a directory\n");
+		g_exit_status = 126;
+	}
+	else if (char_counter(list->cmd, '/') && access(list->cmd, F_OK | X_OK) + 1)
+	{
+		id1 = fork();
+		if (id1 == 0)
+		{
+			env = ft_calloc(2, sizeof(char *));
+			env[0] = take_copy(list->cmd, ft_strrchr(list->cmd, '/') - list->cmd, ft_strlen(list->cmd));
+			list->arg = ft_join_double_ptr_to_ptr(list->cmd, list->arg);
+			execve(list->cmd, list->arg, *envi);
+			perror("execve");
+		}
+		waitpid(-1, &status, 0);
+		status= WEXITSTATUS(status);
+		g_exit_status = status;
+	}
+	else if (inside + 1 && !char_counter(list->cmd, '/'))
+	{
+		tmp = take_copy((*envi)[inside], ft_simularity_len((*envi)[inside], '=') + 1, ft_strlen((*envi)[inside]));
+		env = ft_split(tmp, ':');
+		free(tmp);
+		acces = ft_calloc(sizeof(char *), ft_strcount(env) + 1);
+		i = 0;
+		while (env[i])
+		{
+			tmp = ft_strjoin("/", list->cmd);
+			acces[i] = ft_strjoin(env[i], tmp);
+			free(tmp);
+			i++;
+		}
+		i = 0;
+		found = 0;
+		while (acces[i])
+		{
+			if (access(acces[i], F_OK | X_OK) + 1)
+			{
+				found = 1;
+				break;
+			}
+			i++;
+		}
+		if (found)
+		{
+			id1 = fork();
+			if (id1 == 0)
+			{
+				arg = ft_join_double_ptr_to_ptr(acces[i], list->arg);
+				execve(acces[i], arg, *envi);
+				perror("execve");
+			}
+			waitpid(-1, &status, 0);
+			status= WEXITSTATUS(status);
+			g_exit_status = status;
+		}
+		else
+		{
+			ft_printf("bash: %s: command not found\n", list->cmd);
+			status = 127;
+			g_exit_status = status;
+		}
+		free_double_array(env);
+		free_double_array(acces);
+	}
+	else
+	{
+		ft_printf("bash: %s: command not found\n", list->cmd);
+		status = 127;
+		g_exit_status = status;
+	}
+}
+
+
+void ft_exec(t_input *list, char ***envi, char ***export)
+{
 	if (!ft_strcmp(list->cmd, "export"))
 		ft_export(envi, list, export);
 	else if (!ft_strcmp(list->cmd, "unset"))
@@ -45,81 +152,8 @@ void ft_exec(t_input *list, char ***envi, char ***export)
 	else if(!ft_strcmp(list->cmd, "echo"))
 		ft_echo(list);
 	else
-	{
-
-		if (access(list->cmd, F_OK | X_OK) + 1 && !ft_strncmp(list->cmd, "./", 3))
-		{
-			id1 = fork();
-			if (id1 == 0)
-			{
-				arg = ft_join_double_ptr_to_ptr(list->cmd, list->arg);
-				execve(list->cmd, arg, *envi);
-				free(arg);
-			}
-			wait(NULL);
-		}
-		else if (char_counter(list->cmd, '/') && access(list->cmd, F_OK | X_OK) + 1)
-		{
-			id1 = fork();
-			if (id1 == 0)
-			{
-				env = ft_calloc(2, sizeof(char *));
-				env[0] = take_copy(list->cmd, ft_strrchr(list->cmd, '/') - list->cmd, ft_strlen(list->cmd));
-				arg = ft_join_double_ptr_to_ptr(list->cmd, list->arg);
-				execve(list->cmd, arg, *envi);
-				free_double_array(env);
-				free(arg);
-			}
-			wait(NULL);
-		}
-		else if (inside + 1 && !char_counter(list->cmd, '/'))
-		{
-			tmp = take_copy((*envi)[inside], ft_simularity_len((*envi)[inside], '=') + 1, ft_strlen((*envi)[inside]));
-			env = ft_split(tmp, ':');
-			free(tmp);
-			acces = ft_calloc(sizeof(char *), ft_strcount(env) + 1);
-			i = 0;
-			while (env[i])
-			{
-				tmp = ft_strjoin("/", list->cmd);
-				acces[i] = ft_strjoin(env[i], tmp);
-				free(tmp);
-				i++;
-			}
-			i = 0;
-			found = 0;
-			while (acces[i])
-			{
-				if (access(acces[i], F_OK | X_OK) + 1)
-				{
-					found = 1;
-					break;
-				}
-				i++;
-			}
-			if (found)
-			{
-				id1 = fork();
-				if (id1 == 0)
-				{
-					arg = ft_join_double_ptr_to_ptr(acces[i], list->arg);
-					execve(acces[i], arg, *envi);
-					free(arg);
-				}
-				wait(NULL);
-			}
-			else
-			{
-				ft_printf("bash: %s: command not found\n", list->cmd);
-			}
-			free_double_array(env);
-			free_double_array(acces);
-		}
-		else
-		{
-			ft_printf("bash: %s: command not found\n", list->cmd);
-		}
-	}
+		basic_execution(list, envi);
+	printf ("exit with status :%d\n", g_exit_status);
 }
 
 int ft_list_size(t_input *list)
@@ -146,14 +180,6 @@ void ft_pipe(t_input *list, char ***envi, char ***export)
 	int i;
 	t_input *tmp;
 
-	if (!list->pipe)
-	{
-		if (list->redirect->position)
-			ft_redirections(list, envi, export);
-		else
-			ft_exec(list, envi, export);
-		return;
-	}
 	pipe_num = ft_list_size(list) - 1;
 	pipe_fd = malloc (sizeof (int *) * (pipe_num));
 	i = 0;
@@ -178,7 +204,6 @@ void ft_pipe(t_input *list, char ***envi, char ***export)
 		pid[i] = fork();
 		if (pid[i] == -1)
 		{
-			perror ("fork");
 			while (i--)
 			{
 				kill (pid[i], SIGKILL);
@@ -186,8 +211,8 @@ void ft_pipe(t_input *list, char ***envi, char ***export)
 			}
 			free (pipe_fd);
 			free (pid);
+			perror ("fork");
 			return ;
-//			exit (1);
 		}
 		if (pid[i] == 0)
 		{

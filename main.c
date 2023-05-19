@@ -591,6 +591,7 @@ void printer(char **ptr)
 	i = 0;
 	while (ptr[i])
 		printf ("%s\n", ptr[i++]);
+	g_exit_status = 0;
 //	printf ("-------%d\n", ft_strcount(ptr));
 }
 
@@ -1203,7 +1204,7 @@ void phil_list(t_input **list, char **split)
 			}
 			else if (one_time == 1)
 			{
-				no_surounded_anymore(&split[i + 1]);
+				no_surounded_anymore(&split[i]);
 				(*list)->cmd = ft_strdup (split[i]);
 			//	  printf ("cmd : %s\n", (*list)->cmd);
 				one_time = 0;
@@ -1303,7 +1304,7 @@ char **parsing(char **input, char **env)
 		return (NULL);
 	}
 	expand(&new_str, env);
-	printer (new_str);
+	//printer (new_str);
 	str_pro_max = ultra_split(new_str, input);
 	free_double_array(new_str);
 	the_joiner(&str_pro_max);

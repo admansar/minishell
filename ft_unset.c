@@ -47,7 +47,7 @@ void	ft_unset(char ***env, t_input *list, char ***export)
 		ret = ft_get_var(list->arg[i], &tmp_name, &tmp_value);
 		if(ft_unset_name_checker(tmp_name) == -1 || ret == -13)
 		{
-			printf("bash: unset: `%s': not a valid identifier\n", list->arg[i]);
+			ft_printf("bash: unset: `%s': not a valid identifier\n", list->arg[i]);
 		}
 		else
 		{
@@ -76,4 +76,5 @@ void	ft_unset(char ***env, t_input *list, char ***export)
 		i++;
 	}
 	free_double_array(valid_export_vars);
+	g_exit_status = 0;
 }

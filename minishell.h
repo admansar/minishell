@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/06 11:52:20 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/05/18 20:19:10 by admansar         ###   ########.fr       */
+/*   Updated: 2023/05/19 18:31:12 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 #include <signal.h>
-
+#include <sys/stat.h>
 
 #define OUTPUT "1"
 #define INPUT "3"
@@ -46,6 +46,7 @@ typedef struct s_input
 	struct s_input		*next;
 }						t_input;
 
+int g_exit_status;
 
 void ft_execution(t_input *list, char ***env, char ***export);
 char *take_copy(char *s1, int start, int end);

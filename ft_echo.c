@@ -48,7 +48,12 @@ void ft_echo(t_input *list)
         i = skip;
         while (list->arg[i])
         {
-            printf("%s", list->arg[i]);
+			if (!ft_strncmp(list->arg[i], "$?", 3))
+			{
+				printf ("%d", g_exit_status);
+			}
+			else
+            	printf("%s", list->arg[i]);
             if (i < count - 1)
                 printf(" ");
             i++;
@@ -59,7 +64,12 @@ void ft_echo(t_input *list)
         i = skip;
         while (list->arg[i])
         {
-            printf("%s", list->arg[i]);
+           	if (!ft_strncmp(list->arg[i], "$?", 3))
+			{
+				printf ("%d", g_exit_status);
+			}
+			else
+            	 printf("%s", list->arg[i]);
             if (i < count - 1)
                 printf(" ");
             if (i == count - 1)
@@ -67,6 +77,6 @@ void ft_echo(t_input *list)
             i++;
         }
     }
-
+	g_exit_status = 0;
     return;
 }

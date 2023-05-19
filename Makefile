@@ -4,7 +4,7 @@ SRC = ft_redirections.c execution.c ft_export.c ft_unset.c  ft_utils.c  main.c f
 
 CC = cc
 
-CFLAGS =-Wall -Wextra -Werror -g -fsanitize=address
+CFLAGS =-Wall -Wextra -Werror #-g -fsanitize=address
 
 all : $(NAME)
 
