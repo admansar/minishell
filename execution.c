@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 17:17:33 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/05/19 18:41:03 by admansar         ###   ########.fr       */
+/*   Updated: 2023/05/20 21:50:48 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,16 +39,9 @@ void basic_execution (t_input *list, char ***envi)
 	int found;
 	int i;
 	int status;
-	struct stat cmd_stat;
 
 	inside = ft_in_env("PATH", *envi);
-	stat(list->cmd, &cmd_stat);
-	/*if (!(cmd_stat.st_mode & S_IXUSR))
-	{
-		ft_printf ("bash: permission denied: %s\n", list->cmd);
-		g_exit_status = 126;
-	}
-	else */if (access(list->cmd, F_OK | X_OK) + 1 && !ft_strncmp(list->cmd, "./", 3))
+	if (access(list->cmd, F_OK | X_OK) + 1 && !ft_strncmp(list->cmd, "./", 3))
 	{
 		id1 = fork();
 		if (id1 == 0)
@@ -57,7 +50,7 @@ void basic_execution (t_input *list, char ***envi)
 			execve(list->cmd, arg, *envi);
 			perror("execve");
 		}
-		waitpid(-1, &status, 0);
+		waitpid(id1, &status, 0);
 		status= WEXITSTATUS(status);
 		g_exit_status = status;
 	}
@@ -77,7 +70,7 @@ void basic_execution (t_input *list, char ***envi)
 			execve(list->cmd, list->arg, *envi);
 			perror("execve");
 		}
-		waitpid(-1, &status, 0);
+		waitpid(id1, &status, 0);
 		status= WEXITSTATUS(status);
 		g_exit_status = status;
 	}
@@ -111,11 +104,11 @@ void basic_execution (t_input *list, char ***envi)
 			id1 = fork();
 			if (id1 == 0)
 			{
-				arg = ft_join_double_ptr_to_ptr(acces[i], list->arg);
-				execve(acces[i], arg, *envi);
-				perror("execve");
+				list->arg = ft_join_double_ptr_to_ptr(acces[i], list->arg);
+				execve(acces[i], list->arg, *envi);
+				ft_printf ("bash : %s:%s \n", list->cmd, strerror(errno));
 			}
-			waitpid(-1, &status, 0);
+			waitpid(id1, &status, 0);
 			status= WEXITSTATUS(status);
 			g_exit_status = status;
 		}
@@ -136,11 +129,61 @@ void basic_execution (t_input *list, char ***envi)
 	}
 }
 
+int have_just_digits (char *c)
+{
+	int i;
+
+	i = 0;
+	while (c[i])
+	{
+		if (ft_isdigit(c[i]))
+		i++;
+		else 
+			return (0);
+	}
+	return (1);
+}
+
+
+void ft_exit(t_input *list)
+{
+	if (list->arg[0])
+	{
+		if (have_just_digits(list->arg[0]) && !list->arg[1])
+		{
+			ft_printf ("exit\n");
+			exit (ft_atoi(list->arg[0]));
+		}
+		else if (list->arg[0] && list->arg[1])
+		{
+			ft_printf ("exit");
+			ft_printf ("bash: exit: too many arguments\n");
+			return ;
+		}
+		else if (!have_just_digits(list->arg[0]))
+		{
+			ft_printf ("exit\n");
+			ft_printf ("bash: exit: %s: numeric argument required\n", list->arg[0]);
+			exit (255);
+		}
+	}
+	else
+	{
+		ft_printf ("exit\n");
+		exit (0);
+	}
+}
+
+void super_printer()
+{
+}
 
 void ft_exec(t_input *list, char ***envi, char ***export)
 {
 	if (!ft_strcmp(list->cmd, "export"))
 		ft_export(envi, list, export);
+	else if (!ft_strncmp(list->cmd, "exit", 5))
+		ft_exit(list);
 	else if (!ft_strcmp(list->cmd, "unset"))
 		ft_unset(envi, list, export);
 	else if (!ft_strcmp(list->cmd, "env"))
@@ -153,7 +196,7 @@ void ft_exec(t_input *list, char ***envi, char ***export)
 		ft_echo(list);
 	else
 		basic_execution(list, envi);
-	printf ("exit with status :%d\n", g_exit_status);
+//	printf ("exit with status :%d\n", g_exit_status);
 }
 
 int ft_list_size(t_input *list)
@@ -179,6 +222,7 @@ void ft_pipe(t_input *list, char ***envi, char ***export)
 	int pipe_num;
 	int i;
 	t_input *tmp;
+	int status;
 
 	pipe_num = ft_list_size(list) - 1;
 	pipe_fd = malloc (sizeof (int *) * (pipe_num));
@@ -245,7 +289,7 @@ void ft_pipe(t_input *list, char ***envi, char ***export)
 				j++;
 			}
 			ft_exec(list, envi, export);
-			exit (1);
+			exit (g_exit_status);
 		}
 		i++;
 		list = list->next;
@@ -261,7 +305,9 @@ void ft_pipe(t_input *list, char ***envi, char ***export)
 	i = 0;
 	while (i <= pipe_num)
 	{
-		waitpid(pid[i], NULL, 0);
+		waitpid(pid[i], &status, 0);
+		status= WEXITSTATUS(status);
+		g_exit_status = status;
 		i++;
 	}
 	i = 0;

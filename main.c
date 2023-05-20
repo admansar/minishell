@@ -1328,18 +1328,17 @@ int main(int ac, char **av, char **envi)
 	shlvl(&env, 1);
 	in_env(NULL, env, 1);
 	export = fill(env);
-	printf("\033[1mThe default interactive shell is now zsh.\nTo update your account to use zsh, please run chsh -s /bin/zsh.\n\033[0m");
+	g_exit_status = 0;
+	printf("\033[37mThe default interactive shell is now zsh.\nTo update your account to use zsh, please run chsh -s /bin/zsh.\n\033[0m");
 	while (1)
 	{
-		input = readline("\033[1mbash-4.2$> \033[0m");
+		if (!g_exit_status)
+			input = readline("\033[37mbash-4.2$> \033[0m");
+		else
+			input = readline("❗\033[33mbash-4.2$> \033[0m");
 		if (input == NULL)
 		{
-			printf ("exit\n");
-			free (input);
-			break;
-		}
-		if (!ft_strncmp(input, "exit", 5))
-		{
+			ft_printf ("exit\n");
 			free (input);
 			break;
 		}
