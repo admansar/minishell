@@ -1168,7 +1168,7 @@ void phil_list(t_input **list, char **split)
 
 	while (split[i])
 	{
-		one_time = 1;
+		one_time = 1; 
 		while (split[i] && ft_strncmp(split [i], "|", 1))
 		{
 			if (!ft_strncmp(split[i], ">>" , 2))
@@ -1280,6 +1280,10 @@ int last_check(char **str)
 			return (i);
 		if (str[i + 1][0] == '|' && str[i][h - 1] == '<')
 			return (i);
+		if (str[i + 1][0] == '>' && str[i][h - 1] == '<')
+			return (i);
+		if (str[i + 1][0] == '<' && str[i][h - 1] == '>')
+			return (i);
 		i++;
 	}
 	h = ft_strlen (str[i]);
@@ -1359,7 +1363,7 @@ int main(int ac, char **av, char **envi)
 			if (check != -1 && split)
 			{
 				if (check  + 1 < ft_strcount(split))
-					error_print ("bash: syntax error near unexpected token ", clean_copy(split[check + 1]));
+					ft_printf ("bash: syntax error near unexpected token `%s'\n", split[check + 1]);
 				else
 				error_print ("bash: syntax error near unexpected token `newline'", NULL);
 				free_double_array(split);

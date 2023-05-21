@@ -1,10 +1,15 @@
 
 #include "minishell.h"
 
-void    ft_pwd(t_input *list, char ***env, char ***export)
+void    ft_pwd(void)
 {
-    (void)list;
-    (void)env;
-    (void)export;
+    char	path[PATH_MAX];
+
+	if (!getcwd(path, sizeof(path)))
+	{
+		ft_printf("bash : %s\n", strerror(errno));
+		return;
+	}
+    printf("%s\n", path);
     return;
 }

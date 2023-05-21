@@ -31,6 +31,8 @@ void ft_echo(t_input *list)
     int skip;
 
     count = ft_strcount(list->arg);
+    if (!count)
+        printf("\n");
     i = 0;
     option = 0;
     skip = 0;

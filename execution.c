@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 17:17:33 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/05/20 21:50:48 by admansar         ###   ########.fr       */
+/*   Updated: 2023/05/21 22:43:19 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,16 +16,19 @@
 // execution
 void ft_execution(t_input *list, char ***env, char ***export)
 {
+	t_redir	data;
+	
+	ft_execute_here_docs(list, &data, env, export);
 	if (!list->pipe)
 	{
 		if (list->redirect->position)
-			ft_redirections(list, env, export);
+			ft_redirections(list, &data, env, export);
 		else
 			ft_exec(list, env, export);
 		return;
 	}
 	else
-		ft_pipe(list, env, export);
+		ft_pipe(list, &data, env, export);
 }
 
 void basic_execution (t_input *list, char ***envi)
@@ -114,7 +117,7 @@ void basic_execution (t_input *list, char ***envi)
 		}
 		else
 		{
-			ft_printf("bash: %s: command not found\n", list->cmd);
+			ft_printf("bash: %s : command not found\n", list->cmd);
 			status = 127;
 			g_exit_status = status;
 		}
@@ -123,7 +126,7 @@ void basic_execution (t_input *list, char ***envi)
 	}
 	else
 	{
-		ft_printf("bash: %s: command not found\n", list->cmd);
+		ft_printf ("bash : %s : %s\n", list->cmd, strerror(errno));
 		status = 127;
 		g_exit_status = status;
 	}
@@ -174,10 +177,6 @@ void ft_exit(t_input *list)
 	}
 }
 
-void super_printer()
-{
-}
-
 void ft_exec(t_input *list, char ***envi, char ***export)
 {
 	if (!ft_strcmp(list->cmd, "export"))
@@ -196,7 +195,6 @@ void ft_exec(t_input *list, char ***envi, char ***export)
 		ft_echo(list);
 	else
 		basic_execution(list, envi);
-//	printf ("exit with status :%d\n", g_exit_status);
 }
 
 int ft_list_size(t_input *list)
@@ -215,7 +213,7 @@ int ft_list_size(t_input *list)
 }
 
 
-void ft_pipe(t_input *list, char ***envi, char ***export)
+void ft_pipe(t_input *list, t_redir *data, char ***envi, char ***export)
 {
 	int **pipe_fd;
 	int *pid;
@@ -288,7 +286,10 @@ void ft_pipe(t_input *list, char ***envi, char ***export)
 				close (pipe_fd[j][1]);
 				j++;
 			}
-			ft_exec(list, envi, export);
+			if (list->redirect->position)
+				ft_redirections(list, data,envi, export);
+			else
+				ft_exec(list, envi, export);
 			exit (g_exit_status);
 		}
 		i++;

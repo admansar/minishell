@@ -1,6 +1,6 @@
 NAME = bash
 
-SRC = ft_redirections.c execution.c ft_export.c ft_unset.c  ft_utils.c  main.c ft_change_dir.c ft_pwd.c ft_echo.c
+SRC = ft_redirections.c execution.c ft_export.c ft_unset.c  ft_utils.c  main.c ft_change_dir.c ft_pwd.c ft_echo.c ft_here_doc.c
 
 CC = cc
 
