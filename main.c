@@ -1337,9 +1337,9 @@ int main(int ac, char **av, char **envi)
 	while (1)
 	{
 		if (!g_exit_status)
-			input = readline("\033[37mbash-4.2$> \033[0m");
+			input = readline("😄\033[0;32mbash-4.2\033[34m$▶️ \033[0m");
 		else
-			input = readline("❗\033[33mbash-4.2$> \033[0m");
+			input = readline("😡\033[31mbash-4.2\033[34m$❌ \033[0m");
 		if (input == NULL)
 		{
 			ft_printf ("exit\n");

@@ -1,10 +1,16 @@
 
 #include "minishell.h"
 
-unsigned int ft_random()
+unsigned int ft_random(void)
 {
     static unsigned int rand = 0;
-    rand = (rand * 1103515245 + 12345) & 0xFFFFFFFF;
+	char *p;
+	int i;
+
+	p = malloc (sizeof (char) * 2);
+	i = (unsigned char)&p[0];
+    rand = ((rand + i) * 1103515245 + 12345) & 0xFFFFFFFF;
+	free (p);
     return (rand);
 }
 
@@ -83,6 +89,7 @@ void	ft_here_doc(t_input *list, int *pos, t_redir *data)
 	list->redirect->herdoc_file_name = ft_strdup(tmp);
 	in_fd = open(tmp, O_RDWR | O_CREAT | O_TRUNC, 0644);
 	close(in_fd);
+	//unlink (tmp);
 	free(ruin_name);
 	while (i < data->herdoc_count)
 	{
@@ -132,9 +139,10 @@ void	ft_execute_here_docs(t_input *list, t_redir *data, char ***env, char ***exp
 		data->pos_herdoc = ft_get_operators_pos(tmp, HERDOC, &(data->herdoc_count));
 		data->pos_output = ft_get_operators_pos(tmp, OUTPUT, &(data->output_count));
 		ft_here_doc(tmp, data->pos_herdoc, data);
-		printf("file_name : %s\n", tmp->redirect->herdoc_file_name);
+	//	printf("file_name : %s\n", tmp->redirect->herdoc_file_name);
 		free(data->pos_output);
 		free(data->pos_herdoc);
+		free (list->redirect->herdoc_file_name);
 		tmp = tmp->next;
 	}
 }
