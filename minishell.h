@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/06 11:52:20 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/05/23 00:05:50 by admansar         ###   ########.fr       */
+/*   Updated: 2023/05/23 19:01:59 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ typedef struct s_global
 {
     int g_exit_status;
     int pid[PIPE_BUF];
+	int index;
 }               t_global;
 
 t_global g_vars;

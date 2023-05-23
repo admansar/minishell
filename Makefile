@@ -1,10 +1,13 @@
-NAME = bash
+NAME = minishell
+
+USER_NAME := $(USER)
+
 
 SRC = ft_redirections.c execution.c ft_export.c ft_unset.c  ft_utils.c  main.c ft_change_dir.c ft_pwd.c ft_echo.c ft_here_doc.c
 
 CC = cc
 
-CFLAGS =-Wall -Wextra -Werror -I/goinfre/admansar/homebrew/opt/readline/include -L/goinfre/admansar/homebrew/opt/readline/lib -g -fsanitize=address
+CFLAGS =-Wall -Wextra -Werror -fsanitize=address -g#-I/goinfre/${USER_NAME}/homebrew/opt/readline/include -L/goinfre/${USER_NAME}/homebrew/opt/readline/lib -g -fsanitize=address
 
 all : $(NAME)
 

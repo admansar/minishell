@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 17:17:33 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/05/23 17:43:36 by admansar         ###   ########.fr       */
+/*   Updated: 2023/05/23 20:21:40 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 void ft_execution(t_input *list, char ***env, char ***export)
 {
 	t_redir	data;
-
+	
 	ft_execute_here_docs(list, &data, env, export);
 	t_input *tmp;
 	tmp  = list;
@@ -55,14 +55,14 @@ void basic_execution (t_input *list, char ***envi)
 	inside = ft_in_env("PATH", *envi);
 	if (access(list->cmd, F_OK | X_OK) + 1 && !ft_strncmp(list->cmd, "./", 3))
 	{
-		g_vars.pid[0] = fork();
-		if (g_vars.pid[0] == 0)
+		g_vars.pid[g_vars.index] = fork();
+		if (g_vars.pid[g_vars.index] == 0)
 		{
 			arg = ft_join_double_ptr_to_ptr(list->cmd, list->arg);
 			execve(list->cmd, arg, *envi);
 			perror("execve");
 		}
-		waitpid(g_vars.pid[0], &status, 0);
+		waitpid(g_vars.pid[g_vars.index++], &status, 0);
 		if (WEXITSTATUS(status))
 			status= WEXITSTATUS(status);
 		else if (WIFSIGNALED(status))
@@ -78,8 +78,8 @@ void basic_execution (t_input *list, char ***envi)
 	}
 	else if (char_counter(list->cmd, '/') && access(list->cmd, F_OK | X_OK) + 1)
 	{
-		g_vars.pid[0] = fork();
-		if (g_vars.pid[0] == 0)
+		g_vars.pid[g_vars.index] = fork();
+		if (g_vars.pid[g_vars.index] == 0)
 		{
 			env = ft_calloc(2, sizeof(char *));
 			env[0] = take_copy(list->cmd, ft_strrchr(list->cmd, '/') - list->cmd, ft_strlen(list->cmd));
@@ -87,7 +87,7 @@ void basic_execution (t_input *list, char ***envi)
 			execve(list->cmd, list->arg, *envi);
 			perror("execve");
 		}
-		waitpid(g_vars.pid[0], &status, 0);
+		waitpid(g_vars.pid[g_vars.index++], &status, 0);
 		if (WEXITSTATUS(status))
 			status= WEXITSTATUS(status);
 		else if (WIFSIGNALED(status))
@@ -123,14 +123,14 @@ void basic_execution (t_input *list, char ***envi)
 		}
 		if (found)
 		{
-			g_vars.pid[0] = fork();
-			if (g_vars.pid[0] == 0)
+			g_vars.pid[g_vars.index] = fork();
+			if (g_vars.pid[g_vars.index] == 0)
 			{
 				list->arg = ft_join_double_ptr_to_ptr(acces[i], list->arg);
 				execve(acces[i], list->arg, *envi);
 				ft_printf ("bash : %s:%s \n", list->cmd, strerror(errno));
 			}
-			waitpid(g_vars.pid[0], &status, 0);
+			waitpid(g_vars.pid[g_vars.index++], &status, 0);
 			if (WEXITSTATUS(status))
 				status= WEXITSTATUS(status);
 			else if (WIFSIGNALED(status)) 
@@ -150,8 +150,8 @@ void basic_execution (t_input *list, char ***envi)
 	}
 	else
 	{
-		ft_printf ("bash : %s : %s\n", list->cmd, strerror(errno));
-		status = 127;
+		ft_printf ("bash: %s\n", strerror(errno));
+		status = 0;
 		g_vars.g_exit_status = status;
 	}
 }
@@ -178,12 +178,12 @@ void ft_exit(t_input *list)
 	{
 		if (have_just_digits(list->arg[0]) && !list->arg[1])
 		{
-			ft_printf ("exit\n");
+			// ft_printf ("exit\n");
 			exit (ft_atoi(list->arg[0]));
 		}
 		else if (!have_just_digits(list->arg[0]))
 		{
-			ft_printf ("exit\n");
+			// ft_printf ("exit\n");
 			ft_printf ("bash: exit: %s: numeric argument required\n", list->arg[0]);
 			exit (255);
 		}
@@ -196,7 +196,7 @@ void ft_exit(t_input *list)
 	}
 	else
 	{
-		ft_printf ("exit\n");
+		// ft_printf ("exit\n");
 		exit (0);
 	}
 }
@@ -239,21 +239,21 @@ int ft_list_size(t_input *list)
 
 void ft_pipe(t_input *list, t_redir *data, char ***envi, char ***export)
 {
-	int pipe_fd[PIPE_BUF][2];
-//	int *pid;
+	int **pipe_fd;
+	// int *pid;
 	int pipe_num;
 	int i;
 	t_input *tmp;
 	int status;
 
 	pipe_num = ft_list_size(list) - 1;
-//	pipe_fd = malloc (sizeof (int *) * (pipe_num));
-//	i = 0;
-//	while (i < pipe_num)
-//	{
-//		pipe_fd[i] = malloc (sizeof (int) * 2);
-//		i++;
-//	}
+	pipe_fd = malloc (sizeof (int *) * (pipe_num));
+	i = 0;
+	while (i < pipe_num)
+	{
+		pipe_fd[i] = malloc (sizeof (int) * 2);
+		i++;
+	}
 //	pid = malloc (sizeof (int) * (pipe_num + 1));
 	i = 0;
 	tmp = list;
@@ -269,8 +269,8 @@ void ft_pipe(t_input *list, t_redir *data, char ***envi, char ***export)
 	int j = 0;
 	while (list)
 	{
-		g_vars.pid[i] = fork();
-		if (g_vars.pid[i] == -1)
+		g_vars.pid[g_vars.index] = fork();
+		if (g_vars.pid[g_vars.index] == -1)
 		{
 			while (i--)
 			{
@@ -280,7 +280,7 @@ void ft_pipe(t_input *list, t_redir *data, char ***envi, char ***export)
 			perror ("fork");
 			return ;
 		}
-		if (g_vars.pid[i] == 0)
+		if (g_vars.pid[g_vars.index] == 0)
 		{
 			if (i == 0)
 			{
@@ -317,6 +317,7 @@ void ft_pipe(t_input *list, t_redir *data, char ***envi, char ***export)
 			exit (g_vars.g_exit_status);
 		}
 		i++;
+		g_vars.index++;
 		list = list->next;
 	}
 	list = tmp;
@@ -342,15 +343,16 @@ void ft_pipe(t_input *list, t_redir *data, char ***envi, char ***export)
 		g_vars.g_exit_status = status;
 		i++;
 	}
-	i = 0;
-	while (i <= pipe_num)
-	{
-		if (g_vars.pid[i])
-			kill (g_vars.pid[i], SIGKILL);
-		//		free (pipe_fd[i]);
-		i++;
-	}
+	// i = 0;
+	// while (i <= pipe_num)
+	// {
+	// 	if (g_vars.pid[g_vars.index++])
+	// 		kill (g_vars.pid[g_vars.index++], SIGKILL);
+	// 	//		free (pipe_fd[i]);
+	// 	i++;
+	// }
 	ft_bzero (g_vars.pid, i + 1);
+	g_vars.index = 0;
 //	free (pipe_fd);
 //	free (g_vars.pid);
 }

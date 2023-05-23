@@ -1095,7 +1095,8 @@ int fast_check(char *input)
 		i++;
 	if (input[i] == '|')
 	{
-		printf ("bash: syntax error near unexpected token `|'\n");
+		ft_printf ("bash: syntax error near unexpected token `|'\n");
+		g_vars.g_exit_status = 2;
 		return (0);
 	}
 	while (input[i])
@@ -1107,7 +1108,8 @@ int fast_check(char *input)
 	{
 		if (input[i] == '|')
 		{
-			printf ("bash: syntax error near unexpected token `|'\n");
+			ft_printf ("bash: syntax error near unexpected token `|'\n");
+			g_vars.g_exit_status = 2;
 			return (0);
 		}
 	}
@@ -1309,6 +1311,7 @@ char **parsing(char **input, char **env)
 	if (ft_strlen ((*input)) && !ft_strcount (new_str))
 	{
 		error_print ("syntax error", NULL);
+		g_vars.g_exit_status = 2;
 		free_double_array(new_str);
 		return (NULL);
 	}
@@ -1322,45 +1325,48 @@ char **parsing(char **input, char **env)
 }
 
 
-void signals(int signum)
-{
-	int i;
+// void signals(int signum)
+// {
+// 	int i;
 
-	i = 0;
-	if (signum == SIGINT)
-	{
-		if (g_vars.pid[i] == 0)
-		{
-			ft_printf("\n");
-			rl_on_new_line();
-			rl_replace_line("", 1);
-			rl_redisplay();
-		}
-		else
-		{
-			while (g_vars.pid[i] != 0)
-			{
-				kill (g_vars.pid[i], SIGINT);
-				printf ("%d is dead now\n", g_vars.pid[i]);
-				g_vars.pid[i] = 0;
-				i++;
-			}
-			ft_bzero (g_vars.pid, PIPE_BUF);
-		}
-		g_vars.g_exit_status = 130;
-	}
-	else if (signum == SIGQUIT)
-	{
-		while (g_vars.pid[i] != 0)
-		{
-			kill (g_vars.pid[i], SIGINT);
-			printf ("%d is dead now\n", g_vars.pid[i]);
-			g_vars.pid[i] = 0;
-			i++;
-		}
-		ft_printf("Quit: 3\n");
-	}
-}
+// 	i = 0;
+// 	if (signum == SIGINT)
+// 	{
+// 		if (g_vars.pid[i] == 0)
+// 		{
+// 			ft_printf("\n");
+// 			rl_on_new_line();
+// 			rl_replace_line("", 1);
+// 			rl_redisplay();
+// 		}
+// 		else
+// 		{
+// 			while (g_vars.pid[i] != 0)
+// 			{
+// 				kill (g_vars.pid[i], SIGINT);
+// 				printf ("%d is dead now\n", g_vars.pid[i]);
+// 				g_vars.pid[i] = 0;
+// 				i++;
+// 			}
+// 			ft_bzero (g_vars.pid, PIPE_BUF);
+// 			g_vars.index = 0;
+// 		}
+// 		g_vars.g_exit_status = 130;
+// 	}
+// 	else if (signum == SIGQUIT)
+// 	{
+// 		while (g_vars.pid[i] != 0)
+// 		{
+// 			kill (g_vars.pid[i], SIGINT);
+// 			printf ("%d is dead now\n", g_vars.pid[i]);
+// 			g_vars.pid[i] = 0;
+// 			i++;
+// 		}
+// 		ft_bzero (g_vars.pid, PIPE_BUF);
+// 		g_vars.index = 0;
+// 		ft_printf("Quit: 3\n");
+// 	}
+// }
 
 void split_and_join(char ***split)
 {
@@ -1412,8 +1418,9 @@ int main(int ac, char **av, char **envi)
 	in_env(NULL, env, 1);
 	export = fill(env);
 	g_vars.g_exit_status = 0;
-	signal (SIGINT, signals);
-	signal (SIGQUIT, signals);
+	g_vars.index = 0;
+	// signal (SIGINT, signals);
+	// signal (SIGQUIT, signals);
 	//	ft_printf("\033[37mThe default interactive shell is now zsh.\nTo update your account to use zsh, please run chsh -s /bin/zsh.\n\033[0m");
 	while (1)
 	{
@@ -1423,9 +1430,9 @@ int main(int ac, char **av, char **envi)
 			input = readline("😡\033[31mbash-4.2\033[34m$❌ \033[0m");
 		if (input == NULL)
 		{
-			ft_printf ("exit\n");
+			// ft_printf ("exit\n");
 			free (input);
-			break;
+			exit (g_vars.g_exit_status);	
 		}
 		copy = ft_strdup(input);
 		if (fast_check(copy))
@@ -1448,6 +1455,7 @@ int main(int ac, char **av, char **envi)
 					ft_printf ("bash: syntax error near unexpected token `%s'\n", split[check + 1]);
 				else
 					error_print ("bash: syntax error near unexpected token `newline'", NULL);
+				g_vars.g_exit_status = 2;
 				free_double_array(split);
 				split = NULL;
 			}
@@ -1463,6 +1471,7 @@ int main(int ac, char **av, char **envi)
 		add_history(input);
 		free(input);
 		ft_bzero (g_vars.pid, PIPE_BUF);
+		g_vars.index = 0;
 	}
 	shlvl(&env, -1);
 	in_env(NULL, env, 1);
