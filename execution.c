@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 17:17:33 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/05/21 22:43:19 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/05/23 01:09:40 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,19 @@
 void ft_execution(t_input *list, char ***env, char ***export)
 {
 	t_redir	data;
-	
+
 	ft_execute_here_docs(list, &data, env, export);
+	t_input *tmp;
+	tmp  = list;
+	// while (tmp)
+	// {
+	// 	printf("hiiiiiiii\n");
+	// 	printer(tmp->redirect->file_name);
+	// 	printf("file_name : %s\n", tmp->redirect->herdoc_file_name);
+	// 	tmp = tmp->next;
+	// }
+	// printf("######################################\n");
+
 	if (!list->pipe)
 	{
 		if (list->redirect->position)
@@ -29,12 +40,18 @@ void ft_execution(t_input *list, char ***env, char ***export)
 	}
 	else
 		ft_pipe(list, &data, env, export);
+	tmp  = list;
+	while (tmp)
+	{
+		free(tmp->redirect->herdoc_file_name);
+		tmp = tmp->next;
+	}
+
 }
 
 void basic_execution (t_input *list, char ***envi)
 {
 	int inside;
-	int id1;
 	char *tmp;
 	char **env;
 	char **acces;
@@ -46,26 +63,31 @@ void basic_execution (t_input *list, char ***envi)
 	inside = ft_in_env("PATH", *envi);
 	if (access(list->cmd, F_OK | X_OK) + 1 && !ft_strncmp(list->cmd, "./", 3))
 	{
-		id1 = fork();
-		if (id1 == 0)
+		g_vars.pid[0] = fork();
+		if (g_vars.pid[0] == 0)
 		{
 			arg = ft_join_double_ptr_to_ptr(list->cmd, list->arg);
 			execve(list->cmd, arg, *envi);
 			perror("execve");
 		}
-		waitpid(id1, &status, 0);
-		status= WEXITSTATUS(status);
-		g_exit_status = status;
+		waitpid(g_vars.pid[0], &status, 0);
+		if (WEXITSTATUS(status))
+			status= WEXITSTATUS(status);
+		else if (WIFSIGNALED(status))
+		{
+			status = WTERMSIG(status) + 128;
+		}
+		g_vars.g_exit_status = status;
 	}
 	else if (!ft_strncmp(list->cmd, "/", 3))
 	{
 		ft_printf ("bash: /: is a directory\n");
-		g_exit_status = 126;
+		g_vars.g_exit_status = 126;
 	}
 	else if (char_counter(list->cmd, '/') && access(list->cmd, F_OK | X_OK) + 1)
 	{
-		id1 = fork();
-		if (id1 == 0)
+		g_vars.pid[0] = fork();
+		if (g_vars.pid[0] == 0)
 		{
 			env = ft_calloc(2, sizeof(char *));
 			env[0] = take_copy(list->cmd, ft_strrchr(list->cmd, '/') - list->cmd, ft_strlen(list->cmd));
@@ -73,9 +95,14 @@ void basic_execution (t_input *list, char ***envi)
 			execve(list->cmd, list->arg, *envi);
 			perror("execve");
 		}
-		waitpid(id1, &status, 0);
-		status= WEXITSTATUS(status);
-		g_exit_status = status;
+		waitpid(g_vars.pid[0], &status, 0);
+		if (WEXITSTATUS(status))
+			status= WEXITSTATUS(status);
+		else if (WIFSIGNALED(status))
+		{
+			status = WTERMSIG(status) + 128;
+		}
+		g_vars.g_exit_status = status;
 	}
 	else if (inside + 1 && !char_counter(list->cmd, '/'))
 	{
@@ -104,22 +131,27 @@ void basic_execution (t_input *list, char ***envi)
 		}
 		if (found)
 		{
-			id1 = fork();
-			if (id1 == 0)
+			g_vars.pid[0] = fork();
+			if (g_vars.pid[0] == 0)
 			{
 				list->arg = ft_join_double_ptr_to_ptr(acces[i], list->arg);
 				execve(acces[i], list->arg, *envi);
 				ft_printf ("bash : %s:%s \n", list->cmd, strerror(errno));
 			}
-			waitpid(id1, &status, 0);
-			status= WEXITSTATUS(status);
-			g_exit_status = status;
+			waitpid(g_vars.pid[0], &status, 0);
+			if (WEXITSTATUS(status))
+				status= WEXITSTATUS(status);
+			else if (WIFSIGNALED(status)) 
+			{
+				status = WTERMSIG(status) + 128;
+			}
+			g_vars.g_exit_status = status;
 		}
 		else
 		{
 			ft_printf("bash: %s : command not found\n", list->cmd);
 			status = 127;
-			g_exit_status = status;
+			g_vars.g_exit_status = status;
 		}
 		free_double_array(env);
 		free_double_array(acces);
@@ -128,7 +160,7 @@ void basic_execution (t_input *list, char ***envi)
 	{
 		ft_printf ("bash : %s : %s\n", list->cmd, strerror(errno));
 		status = 127;
-		g_exit_status = status;
+		g_vars.g_exit_status = status;
 	}
 }
 
@@ -140,7 +172,7 @@ int have_just_digits (char *c)
 	while (c[i])
 	{
 		if (ft_isdigit(c[i]))
-		i++;
+			i++;
 		else 
 			return (0);
 	}
@@ -290,7 +322,7 @@ void ft_pipe(t_input *list, t_redir *data, char ***envi, char ***export)
 				ft_redirections(list, data,envi, export);
 			else
 				ft_exec(list, envi, export);
-			exit (g_exit_status);
+			exit (g_vars.g_exit_status);
 		}
 		i++;
 		list = list->next;
@@ -307,8 +339,13 @@ void ft_pipe(t_input *list, t_redir *data, char ***envi, char ***export)
 	while (i <= pipe_num)
 	{
 		waitpid(pid[i], &status, 0);
-		status= WEXITSTATUS(status);
-		g_exit_status = status;
+		if (WEXITSTATUS(status))
+			status= WEXITSTATUS(status);
+		else if (WIFSIGNALED(status))
+		{
+			status = WTERMSIG(status) + 128;
+		}
+		g_vars.g_exit_status = status;
 		i++;
 	}
 	i = 0;

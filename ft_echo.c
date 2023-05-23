@@ -52,7 +52,7 @@ void ft_echo(t_input *list)
         {
 			if (!ft_strncmp(list->arg[i], "$?", 3))
 			{
-				printf ("%d", g_exit_status);
+				printf ("%d", g_vars.g_exit_status);
 			}
 			else
             	printf("%s", list->arg[i]);
@@ -68,7 +68,7 @@ void ft_echo(t_input *list)
         {
            	if (!ft_strncmp(list->arg[i], "$?", 3))
 			{
-				printf ("%d", g_exit_status);
+				printf ("%d", g_vars.g_exit_status);
 			}
 			else
             	 printf("%s", list->arg[i]);
@@ -79,6 +79,6 @@ void ft_echo(t_input *list)
             i++;
         }
     }
-	g_exit_status = 0;
+	g_vars.g_exit_status = 0;
     return;
 }

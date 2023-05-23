@@ -422,5 +422,5 @@ void ft_export(char ***env, t_input *list, char ***export)
 	in_env(NULL, *env, 1);
 	free_double_array(valid_env_vars);
 	free_double_array(valid_export_vars);
-	g_exit_status = 0;
+	g_vars.g_exit_status = 0;
 }

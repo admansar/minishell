@@ -591,7 +591,7 @@ void printer(char **ptr)
 	i = 0;
 	while (ptr[i])
 		printf ("%s\n", ptr[i++]);
-	g_exit_status = 0;
+	g_vars.g_exit_status = 0;
 //	printf ("-------%d\n", ft_strcount(ptr));
 }
 
@@ -1316,6 +1316,45 @@ char **parsing(char **input, char **env)
 	return (str_pro_max);
 }
 
+
+void signals(int signum)
+{
+	int i;
+
+	i = 0;
+	if (signum == SIGINT)
+	{
+		if (g_vars.pid[i] == 0)
+		{
+			ft_printf("\n");
+			rl_on_new_line();
+			rl_replace_line("", 1);
+			rl_redisplay();
+		}
+		else
+			while (g_vars.pid[i] != 0)
+			{
+				kill (g_vars.pid[i], SIGINT);
+				printf ("%d is dead now\n", g_vars.pid[i]);
+				g_vars.pid[i] = 0;
+				i++;
+			}
+		g_vars.g_exit_status = 130;
+	}
+	else if (signum == SIGQUIT)
+	{
+		while (g_vars.pid[i] != 0)
+		{
+			kill (g_vars.pid[i], SIGINT);
+			printf ("%d is dead now\n", g_vars.pid[i]);
+			g_vars.pid[i] = 0;
+			i++;
+		}
+			ft_printf("\nQuit: 3\n");
+	}
+}
+
+
 int main(int ac, char **av, char **envi)
 {
 	char *input;
@@ -1332,11 +1371,13 @@ int main(int ac, char **av, char **envi)
 	shlvl(&env, 1);
 	in_env(NULL, env, 1);
 	export = fill(env);
-	g_exit_status = 0;
+	g_vars.g_exit_status = 0;
+	signal (SIGINT, signals);
+	signal (SIGQUIT, signals);
 	printf("\033[37mThe default interactive shell is now zsh.\nTo update your account to use zsh, please run chsh -s /bin/zsh.\n\033[0m");
 	while (1)
 	{
-		if (!g_exit_status)
+		if (!g_vars.g_exit_status)
 			input = readline("😄\033[0;32mbash-4.2\033[34m$▶️ \033[0m");
 		else
 			input = readline("😡\033[31mbash-4.2\033[34m$❌ \033[0m");
@@ -1380,6 +1421,7 @@ int main(int ac, char **av, char **envi)
 		free (copy);
 		add_history(input);
 		free(input);
+		ft_bzero (g_vars.pid, PIPE_BUF);
 	}
 	shlvl(&env, -1);
 	in_env(NULL, env, 1);

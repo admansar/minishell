@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/06 11:52:20 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/05/21 22:48:15 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/05/23 00:05:50 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,12 +28,18 @@
 #include <sys/errno.h>
 
 #define OUTPUT "1"
+#define APPEND "2"
 #define INPUT "3"
 #define HERDOC "4"
-#define APPEND "2"
 #define MAX_PATH 4096
 
-int g_exit_status;
+typedef struct s_global
+{
+    int g_exit_status;
+    int pid[PIPE_BUF];
+}               t_global;
+
+t_global g_vars;
 
 typedef struct s_redir
 {
@@ -45,14 +51,13 @@ typedef struct s_redir
 	int			append_count;
 	int			*pos_herdoc;
 	int			*pos_output;
-	int			*pos_input;
-	int			*pos_append;
 	int			output;
 	int			input;
 	int			out_fd;
 	int			in_fd;
 	int			her_doc;
 	int			input_error;
+	int			expand;
 }				t_redir;
 
 typedef struct s_redirection
@@ -117,5 +122,7 @@ void	ft_get_var_value(char *var, char *var_name, char **var_value);
 char	**ft_join_ptr_to_double_ptr(char **arr1, char *str);
 int		ft_list_size(t_input *list);
 void	ft_execute_here_docs(t_input *list, t_redir *data, char ***env, char ***export);
+int		surounded_by(char *str, char c);
+void	no_surounded_anymore(char **str);
 
 #endif

@@ -64,7 +64,7 @@ void	ft_join_str_to_double_array(char ***arg, char **to_join)
 
 	len = ft_strcount((*arg));
 	joined = (char **)ft_calloc(sizeof(char *), len + 2);
-	i = -1;
+	i = -1; 
 	while ((*arg)[++i])
 		joined[i] = ft_strdup((*arg)[i]);
 	joined[i] = ft_strdup(*to_join);
@@ -73,39 +73,45 @@ void	ft_join_str_to_double_array(char ***arg, char **to_join)
 }
 
 // launch here-doc as many times as it appear in the input
-void	ft_here_doc(t_input *list, int *pos, t_redir *data)
+void	ft_here_doc(t_input *list, int *pos, t_redir *data, char **env)
 {
 	char	*input;
 	char	*tmp;
+	char	*to_expand;
+	char	*expanded;
+	char	*dollar_str;
 	char	*ruin_name;
 	int		i;
+	int		j;
 	int		rand;
 	int		in_fd;
 
+	data->expand = 1;
 	i = 0;
 	rand = ft_random() % 63;
 	ruin_name = ft_generate_rand_str(data->herdoc_count + rand);
 	tmp = ft_strjoin("/tmp/", ruin_name);
 	list->redirect->herdoc_file_name = ft_strdup(tmp);
-	in_fd = open(tmp, O_RDWR | O_CREAT | O_TRUNC, 0644);
-	close(in_fd);
+	if (data->herdoc_count)
+	{
+		in_fd = open(tmp, O_RDWR | O_CREAT | O_TRUNC, 0644);
+		close(in_fd);
+	}
 	//unlink (tmp);
 	free(ruin_name);
 	while (i < data->herdoc_count)
 	{
-		// if (surounded_by(list->redirect->file_name[pos[i]] , '\"')
-		// 	|| surounded_by(list->redirect->file_name[pos[i]], '\''))
-		// {
-		// 	no_surounded_anymore(&(list->redirect->file_name[pos[i]]));
-		// 	expand = 1;
-		// }
+		if (surounded_by(list->redirect->file_name[pos[i]] , '\"')
+			|| surounded_by(list->redirect->file_name[pos[i]], '\''))
+		{
+			no_surounded_anymore(&(list->redirect->file_name[pos[i]]));
+			data->expand = 0;
+		}
 		while (1)
 		{
 			input = readline("> ");
 			if (!ft_strcmp(input, list->redirect->file_name[pos[i]]))
 			{
-				if(list->cmd && i == data->herdoc_count - 1)
-					ft_join_str_to_double_array(&(list->arg), &tmp);
 				free(input);
 				input = NULL;
 				close(in_fd);
@@ -114,8 +120,35 @@ void	ft_here_doc(t_input *list, int *pos, t_redir *data)
 			else if (i == data->herdoc_count - 1)
 			{
 				in_fd = open(tmp, O_RDWR | O_CREAT | O_APPEND, 0644);
-				write(in_fd, input, ft_strlen(input));
-				write(in_fd, "\n", 1);
+				if (input[0] == '$' && data->expand)
+				{
+					j = 0;
+					while (input[j])
+					{
+						if (input[j] == '$')
+							j++;
+						else
+							break;
+					}
+					dollar_str = take_copy(input, 0 , j - 2);
+					write(in_fd, dollar_str, ft_strlen(dollar_str));
+					to_expand = take_copy(input, j, ft_strlen(input));
+					int pos_env = ft_in_env(to_expand, env);
+					if (pos_env >= 0)
+					{
+						ft_get_var_value(env[pos_env], to_expand, &expanded);
+						write(in_fd, expanded, ft_strlen(expanded));
+						write(in_fd, "\n", 1);
+						free(expanded);
+					}
+					free(dollar_str);
+					free(to_expand);
+				}
+				else
+				{
+					write(in_fd, input, ft_strlen(input));
+					write(in_fd, "\n", 1);
+				}
 			}
 			if (input)
 				free(input);
@@ -138,11 +171,9 @@ void	ft_execute_here_docs(t_input *list, t_redir *data, char ***env, char ***exp
 	{
 		data->pos_herdoc = ft_get_operators_pos(tmp, HERDOC, &(data->herdoc_count));
 		data->pos_output = ft_get_operators_pos(tmp, OUTPUT, &(data->output_count));
-		ft_here_doc(tmp, data->pos_herdoc, data);
-	//	printf("file_name : %s\n", tmp->redirect->herdoc_file_name);
+		ft_here_doc(tmp, data->pos_herdoc, data, *env);
 		free(data->pos_output);
 		free(data->pos_herdoc);
-		free (list->redirect->herdoc_file_name);
 		tmp = tmp->next;
 	}
 }

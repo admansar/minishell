@@ -76,5 +76,5 @@ void	ft_unset(char ***env, t_input *list, char ***export)
 		i++;
 	}
 	free_double_array(valid_export_vars);
-	g_exit_status = 0;
+	g_vars.g_exit_status = 0;
 }
