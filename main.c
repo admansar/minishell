@@ -851,7 +851,7 @@ int in_env(char *ptr, char **env, int flag) //this function cheeck if a pointer 
 
 }
 
-int checking_direction(char *str, char *behind_str, char **env) //this function take a look the expand to make it more exact ...
+int	checking_direction(char *str, char *behind_str, char **env) //this function take a look the expand to make it more exact ...
 {
 	char *tmp;
 	int end;
@@ -898,7 +898,11 @@ int checking_direction(char *str, char *behind_str, char **env) //this function 
 			while (split[++i])
 				if (char_counter(split[i], '$'))
 				{
-					end = checking_direction(split[i], split[i - 1], env);
+					if (i > 0)
+						end = checking_direction(split[i], split[i - 1], env);
+					else
+						end = checking_direction(split[i], NULL, env);
+
 					break;	
 				}
 			free_double_array(split);
@@ -1310,7 +1314,7 @@ char **parsing(char **input, char **env)
 	new_str = split_without_weast (input);
 	if (ft_strlen ((*input)) && !ft_strcount (new_str))
 	{
-		error_print ("syntax error", NULL);
+		error_print ("bash: unexpected EOF while looking for matching", NULL);
 		g_vars.g_exit_status = 2;
 		free_double_array(new_str);
 		return (NULL);
@@ -1446,6 +1450,7 @@ int main(int ac, char **av, char **envi)
 				expand (&split, env);
 				split_and_join(&split);
 			}
+				// printer(split);
 			check = last_check(split);
 			if (check == -2)
 				split = NULL;

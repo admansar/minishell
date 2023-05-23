@@ -24,7 +24,7 @@ void ft_file_creation(t_input *list, t_redir *data)
 		}
 		else if (!ft_strcmp(list->redirect->type[i], INPUT))
 		{
-			if (access(list->redirect->file_name[i], F_OK | R_OK) == -1)
+			if (access(list->redirect->file_name[i], F_OK | R_OK | W_OK | X_OK) == -1)
 			{
 				data->input_error = 1;
 				printf("bash: %s: %s\n", list->redirect->file_name[i], strerror(errno));

@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 17:17:33 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/05/23 20:21:40 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/05/23 22:38:00 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,13 @@
 // execution
 void ft_execution(t_input *list, char ***env, char ***export)
 {
+	// (void)env;
+	// (void)export;
 	t_redir	data;
-	
-	ft_execute_here_docs(list, &data, env, export);
 	t_input *tmp;
 	tmp  = list;
+	ft_execute_here_docs(list, &data, env, export);
+	
 	if (!list->pipe)
 	{
 		if (list->redirect->position)
@@ -38,7 +40,6 @@ void ft_execution(t_input *list, char ***env, char ***export)
 			free(tmp->redirect->herdoc_file_name);
 		tmp = tmp->next;
 	}
-
 }
 
 void basic_execution (t_input *list, char ***envi)
@@ -161,6 +162,8 @@ int have_just_digits (char *c)
 	int i;
 
 	i = 0;
+	if (c[i] == '-')
+	i++;
 	while (c[i])
 	{
 		if (ft_isdigit(c[i]))
@@ -190,6 +193,7 @@ void ft_exit(t_input *list)
 		else if (list->arg[0] && list->arg[1])
 		{
 			ft_printf ("bash: exit: too many arguments\n");
+			g_vars.g_exit_status = 1;
 			return ;
 		}
 
@@ -197,7 +201,7 @@ void ft_exit(t_input *list)
 	else
 	{
 		// ft_printf ("exit\n");
-		exit (0);
+		exit (g_vars.g_exit_status);
 	}
 }
 

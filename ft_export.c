@@ -187,6 +187,7 @@ int	ft_export_name_checker(char *str)
 void	ft_export_printer(char **export)
 {
 	int i;
+	int	j;
 	char *tmp1;
 	char *tmp2;
 	int len;
@@ -200,7 +201,18 @@ void	ft_export_printer(char **export)
 		if (ft_char_checker(export[i], '=') == -1)
 			printf ("declare -x %s\n", tmp1);
 		else
-			printf ("declare -x %s=\"%s\"\n", tmp1, tmp2);
+		{
+			printf ("declare -x %s=\"", tmp1);
+			j = 0;
+			while (tmp2[j])
+			{
+				if (tmp2[j] == '$' || tmp2[j] == '\"')
+					printf("\\");
+				printf("%c", tmp2[j]);
+				j++;
+			}
+			printf("\"\n");
+		}
 		free (tmp1);
 		free (tmp2);
 		i++;
@@ -379,12 +391,14 @@ void ft_export(char ***env, t_input *list, char ***export)
 		if(ft_export_name_checker(tmp_name) == -1 || ret == -13)
 		{
 			ft_printf("bash: export: `%s': not a valid identifier\n", list->arg[i]);
+			g_vars.g_exit_status = 1;
 		}
 		else
 		{
 			valid_export_vars[j] = ft_strdup(list->arg[i]);
 			ft_clean_up_name(&(valid_export_vars[j]));
 			j++;
+			g_vars.g_exit_status = 0;
 		}
 		free(tmp_name);
 		free(tmp_value);
@@ -422,5 +436,4 @@ void ft_export(char ***env, t_input *list, char ***export)
 	in_env(NULL, *env, 1);
 	free_double_array(valid_env_vars);
 	free_double_array(valid_export_vars);
-	g_vars.g_exit_status = 0;
 }
