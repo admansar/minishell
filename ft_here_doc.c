@@ -91,6 +91,7 @@ void	ft_here_doc(t_input *list, int *pos, t_redir *data, char **env)
 	rand = ft_random() % 63;
 	ruin_name = ft_generate_rand_str(data->herdoc_count + rand);
 	tmp = ft_strjoin("/tmp/", ruin_name);
+	free(ruin_name);
 	list->redirect->herdoc_file_name = ft_strdup(tmp);
 	if (data->herdoc_count)
 	{
@@ -98,7 +99,6 @@ void	ft_here_doc(t_input *list, int *pos, t_redir *data, char **env)
 		close(in_fd);
 	}
 	//unlink (tmp);
-	free(ruin_name);
 	while (i < data->herdoc_count)
 	{
 		if (surounded_by(list->redirect->file_name[pos[i]] , '\"')
@@ -110,6 +110,8 @@ void	ft_here_doc(t_input *list, int *pos, t_redir *data, char **env)
 		while (1)
 		{
 			input = readline("> ");
+			if (!input)
+				break;
 			if (!ft_strcmp(input, list->redirect->file_name[pos[i]]))
 			{
 				free(input);
@@ -150,8 +152,7 @@ void	ft_here_doc(t_input *list, int *pos, t_redir *data, char **env)
 					write(in_fd, "\n", 1);
 				}
 			}
-			if (input)
-				free(input);
+			free(input);
 		}
 		i++;
 	}
@@ -169,11 +170,14 @@ void	ft_execute_here_docs(t_input *list, t_redir *data, char ***env, char ***exp
 	data->output_count = 0;
 	while (tmp)
 	{
-		data->pos_herdoc = ft_get_operators_pos(tmp, HERDOC, &(data->herdoc_count));
-		data->pos_output = ft_get_operators_pos(tmp, OUTPUT, &(data->output_count));
-		ft_here_doc(tmp, data->pos_herdoc, data, *env);
-		free(data->pos_output);
-		free(data->pos_herdoc);
+		if (tmp->redirect->position)
+		{
+			data->pos_herdoc = ft_get_operators_pos(tmp, HERDOC, &(data->herdoc_count));
+			data->pos_output = ft_get_operators_pos(tmp, OUTPUT, &(data->output_count));
+			ft_here_doc(tmp, data->pos_herdoc, data, *env);
+			free(data->pos_output);
+			free(data->pos_herdoc);
+		}
 		tmp = tmp->next;
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 17:17:33 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/05/23 01:09:40 by admansar         ###   ########.fr       */
+/*   Updated: 2023/05/23 17:43:36 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,15 +21,6 @@ void ft_execution(t_input *list, char ***env, char ***export)
 	ft_execute_here_docs(list, &data, env, export);
 	t_input *tmp;
 	tmp  = list;
-	// while (tmp)
-	// {
-	// 	printf("hiiiiiiii\n");
-	// 	printer(tmp->redirect->file_name);
-	// 	printf("file_name : %s\n", tmp->redirect->herdoc_file_name);
-	// 	tmp = tmp->next;
-	// }
-	// printf("######################################\n");
-
 	if (!list->pipe)
 	{
 		if (list->redirect->position)
@@ -43,7 +34,8 @@ void ft_execution(t_input *list, char ***env, char ***export)
 	tmp  = list;
 	while (tmp)
 	{
-		free(tmp->redirect->herdoc_file_name);
+		if (tmp->redirect->position)
+			free(tmp->redirect->herdoc_file_name);
 		tmp = tmp->next;
 	}
 
@@ -79,7 +71,7 @@ void basic_execution (t_input *list, char ***envi)
 		}
 		g_vars.g_exit_status = status;
 	}
-	else if (!ft_strncmp(list->cmd, "/", 3))
+	else if (!ft_strcmp(list->cmd, "/"))
 	{
 		ft_printf ("bash: /: is a directory\n");
 		g_vars.g_exit_status = 126;
@@ -149,7 +141,7 @@ void basic_execution (t_input *list, char ***envi)
 		}
 		else
 		{
-			ft_printf("bash: %s : command not found\n", list->cmd);
+			ft_printf("bash: %s: command not found\n", list->cmd);
 			status = 127;
 			g_vars.g_exit_status = status;
 		}
@@ -189,18 +181,18 @@ void ft_exit(t_input *list)
 			ft_printf ("exit\n");
 			exit (ft_atoi(list->arg[0]));
 		}
-		else if (list->arg[0] && list->arg[1])
-		{
-			ft_printf ("exit");
-			ft_printf ("bash: exit: too many arguments\n");
-			return ;
-		}
 		else if (!have_just_digits(list->arg[0]))
 		{
 			ft_printf ("exit\n");
 			ft_printf ("bash: exit: %s: numeric argument required\n", list->arg[0]);
 			exit (255);
 		}
+		else if (list->arg[0] && list->arg[1])
+		{
+			ft_printf ("bash: exit: too many arguments\n");
+			return ;
+		}
+
 	}
 	else
 	{
@@ -213,7 +205,7 @@ void ft_exec(t_input *list, char ***envi, char ***export)
 {
 	if (!ft_strcmp(list->cmd, "export"))
 		ft_export(envi, list, export);
-	else if (!ft_strncmp(list->cmd, "exit", 5))
+	else if (!ft_strcmp(list->cmd, "exit"))
 		ft_exit(list);
 	else if (!ft_strcmp(list->cmd, "unset"))
 		ft_unset(envi, list, export);
@@ -247,24 +239,26 @@ int ft_list_size(t_input *list)
 
 void ft_pipe(t_input *list, t_redir *data, char ***envi, char ***export)
 {
-	int **pipe_fd;
-	int *pid;
+	int pipe_fd[PIPE_BUF][2];
+//	int *pid;
 	int pipe_num;
 	int i;
 	t_input *tmp;
 	int status;
 
 	pipe_num = ft_list_size(list) - 1;
-	pipe_fd = malloc (sizeof (int *) * (pipe_num));
-	i = 0;
-	while (i < pipe_num)
-	{
-		pipe_fd[i] = malloc (sizeof (int) * 2);
-		i++;
-	}
-	pid = malloc (sizeof (int) * (pipe_num + 1));
+//	pipe_fd = malloc (sizeof (int *) * (pipe_num));
+//	i = 0;
+//	while (i < pipe_num)
+//	{
+//		pipe_fd[i] = malloc (sizeof (int) * 2);
+//		i++;
+//	}
+//	pid = malloc (sizeof (int) * (pipe_num + 1));
 	i = 0;
 	tmp = list;
+	if (pipe_num > PIPE_BUF)
+		ft_printf ("bash: %s\n", strerror(errno));
 	while (i < pipe_num)
 	{
 		pipe(pipe_fd[i]);
@@ -275,20 +269,18 @@ void ft_pipe(t_input *list, t_redir *data, char ***envi, char ***export)
 	int j = 0;
 	while (list)
 	{
-		pid[i] = fork();
-		if (pid[i] == -1)
+		g_vars.pid[i] = fork();
+		if (g_vars.pid[i] == -1)
 		{
 			while (i--)
 			{
-				kill (pid[i], SIGKILL);
+				kill (g_vars.pid[i], SIGKILL);
 				free (pipe_fd[i]);
 			}
-			free (pipe_fd);
-			free (pid);
 			perror ("fork");
 			return ;
 		}
-		if (pid[i] == 0)
+		if (g_vars.pid[i] == 0)
 		{
 			if (i == 0)
 			{
@@ -338,24 +330,27 @@ void ft_pipe(t_input *list, t_redir *data, char ***envi, char ***export)
 	i = 0;
 	while (i <= pipe_num)
 	{
-		waitpid(pid[i], &status, 0);
+		waitpid(g_vars.pid[i], &status, 0);
 		if (WEXITSTATUS(status))
 			status= WEXITSTATUS(status);
 		else if (WIFSIGNALED(status))
 		{
 			status = WTERMSIG(status) + 128;
+			if (status == 141)
+				status = 0;
 		}
 		g_vars.g_exit_status = status;
 		i++;
 	}
 	i = 0;
-	while (i < pipe_num)
+	while (i <= pipe_num)
 	{
-		kill (pid[i], SIGKILL);
-		free (pipe_fd[i]);
+		if (g_vars.pid[i])
+			kill (g_vars.pid[i], SIGKILL);
+		//		free (pipe_fd[i]);
 		i++;
 	}
-	kill (pid[i], SIGKILL);
-	free (pipe_fd);
-	free (pid);
+	ft_bzero (g_vars.pid, i + 1);
+//	free (pipe_fd);
+//	free (g_vars.pid);
 }

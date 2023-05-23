@@ -592,7 +592,7 @@ void printer(char **ptr)
 	while (ptr[i])
 		printf ("%s\n", ptr[i++]);
 	g_vars.g_exit_status = 0;
-//	printf ("-------%d\n", ft_strcount(ptr));
+	//	printf ("-------%d\n", ft_strcount(ptr));
 }
 
 //the dual of qoutes and double qoutes 
@@ -1051,8 +1051,8 @@ void expand(char ***str_pro_max, char **env)
 				free ((*str_pro_max)[i]);
 				(*str_pro_max)[i] = ft_strdup(str[i]);
 			}
-	//		else
-	//			i_should_replace_them(&(*str_pro_max)[i]);
+			//		else
+			//			i_should_replace_them(&(*str_pro_max)[i]);
 		}
 		i++;
 	}
@@ -1169,21 +1169,21 @@ void phil_list(t_input **list, char **split)
 	while (split[i])
 	{
 		one_time = 1; 
-		while (split[i] && ft_strncmp(split [i], "|", 1))
+		while (split[i])
 		{
 			if (!ft_strncmp(split[i], ">>" , 2))
 			{
 				no_surounded_anymore(&split[i + 1]);
 				(*list)->redirect->type[(*list)->redirect->position] = "2";
 				(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
-			//	  printf ("file name : %s taked the pos num : %d and type is %s\n", (*list)->redirect->file_name[(*list)->redirect->position], (*list)->redirect->position + 1 , (*list)->redirect->type[(*list)->redirect->position]);
+				//	  printf ("file name : %s taked the pos num : %d and type is %s\n", (*list)->redirect->file_name[(*list)->redirect->position], (*list)->redirect->position + 1 , (*list)->redirect->type[(*list)->redirect->position]);
 				(*list)->redirect->position++;
 			}
 			else if (!ft_strncmp(split[i], "<<" , 2))
 			{
 				(*list)->redirect->type[(*list)->redirect->position] = "4";
 				(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
-			//	  printf ("file name : %s taked the pos num : %d and type is %s\n", (*list)->redirect->file_name[(*list)->redirect->position], (*list)->redirect->position + 1 , (*list)->redirect->type[(*list)->redirect->position]);
+				//	  printf ("file name : %s taked the pos num : %d and type is %s\n", (*list)->redirect->file_name[(*list)->redirect->position], (*list)->redirect->position + 1 , (*list)->redirect->type[(*list)->redirect->position]);
 				(*list)->redirect->position++;
 			}
 			else if (!ft_strncmp(split[i], ">" , 1))
@@ -1191,7 +1191,7 @@ void phil_list(t_input **list, char **split)
 				no_surounded_anymore(&split[i + 1]);
 				(*list)->redirect->type[(*list)->redirect->position] = "1";
 				(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
-			//	  printf ("file name : %s taked the pos num : %d and type is %s\n", (*list)->redirect->file_name[(*list)->redirect->position], (*list)->redirect->position + 1 , (*list)->redirect->type[(*list)->redirect->position]);
+				//	  printf ("file name : %s taked the pos num : %d and type is %s\n", (*list)->redirect->file_name[(*list)->redirect->position], (*list)->redirect->position + 1 , (*list)->redirect->type[(*list)->redirect->position]);
 				(*list)->redirect->position++;
 			}
 			else if (!ft_strncmp(split[i], "<" , 1))
@@ -1199,16 +1199,18 @@ void phil_list(t_input **list, char **split)
 				no_surounded_anymore(&split[i + 1]);
 				(*list)->redirect->type[(*list)->redirect->position] = "3";
 				(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
-			//	  printf ("file name : %s taked the pos num : %d and type is %s\n", (*list)->redirect->file_name[(*list)->redirect->position], (*list)->redirect->position + 1 , (*list)->redirect->type[(*list)->redirect->position]);
+				//	  printf ("file name : %s taked the pos num : %d and type is %s\n", (*list)->redirect->file_name[(*list)->redirect->position], (*list)->redirect->position + 1 , (*list)->redirect->type[(*list)->redirect->position]);
 				(*list)->redirect->position++;
 			}
 			else if (one_time == 1)
 			{
 				no_surounded_anymore(&split[i]);
 				(*list)->cmd = ft_strdup (split[i]);
-			//	  printf ("cmd : %s\n", (*list)->cmd);
+				//	  printf ("cmd : %s\n", (*list)->cmd);
 				one_time = 0;
 			}
+			else if (!ft_strncmp(split [i], "|", 1))
+				break;
 			else
 			{
 				no_surounded_anymore(&split[i]);
@@ -1225,7 +1227,7 @@ void phil_list(t_input **list, char **split)
 			(*list)->pipe = 1;
 			append (*list, count);
 			(*list) = (*list)->next;
-	//		printf ("-->pipe\n");
+			//		printf ("-->pipe\n");
 			m = 0;
 		}
 		i++;
@@ -1287,10 +1289,13 @@ int last_check(char **str)
 		i++;
 	}
 	h = ft_strlen (str[i]);
-	if (str[i][h - 1] == '>')
-		return (i);
-	if (str[i][h - 1] == '<')
-		return (i);
+	if (h > 0)
+	{
+		if (str[i][h - 1] == '>')
+			return (i);
+		if (str[i][h - 1] == '<')
+			return (i);
+	}
 	return (-1);
 }
 
@@ -1332,6 +1337,7 @@ void signals(int signum)
 			rl_redisplay();
 		}
 		else
+		{
 			while (g_vars.pid[i] != 0)
 			{
 				kill (g_vars.pid[i], SIGINT);
@@ -1339,6 +1345,8 @@ void signals(int signum)
 				g_vars.pid[i] = 0;
 				i++;
 			}
+			ft_bzero (g_vars.pid, PIPE_BUF);
+		}
 		g_vars.g_exit_status = 130;
 	}
 	else if (signum == SIGQUIT)
@@ -1350,9 +1358,41 @@ void signals(int signum)
 			g_vars.pid[i] = 0;
 			i++;
 		}
-			ft_printf("\nQuit: 3\n");
+		ft_printf("Quit: 3\n");
 	}
 }
+
+void split_and_join(char ***split)
+{
+	int i;
+	int j;
+	int k;
+	char **ptr;
+	char **tmp;
+	if (!(*split))
+		return ;
+	tmp = ft_calloc (sizeof (char *) ,ft_strcount((*split)) + mega_counter(*split, ' ') + 2);
+	i = 0;
+	j = 0;
+	while ((*split)[i])
+	{
+		if (char_counter ((*split)[i], ' '))
+		{
+			ptr = ft_split((*split)[i], ' ');
+			k = 0;
+			while (ptr[k])
+				tmp[j++] = ptr[k++];
+			free (ptr);
+		}
+		else
+			tmp[j] = (*split)[i];
+		j++;
+		i++;
+	}
+	free (*split);
+	*split = tmp;
+}
+
 
 
 int main(int ac, char **av, char **envi)
@@ -1374,7 +1414,7 @@ int main(int ac, char **av, char **envi)
 	g_vars.g_exit_status = 0;
 	signal (SIGINT, signals);
 	signal (SIGQUIT, signals);
-	printf("\033[37mThe default interactive shell is now zsh.\nTo update your account to use zsh, please run chsh -s /bin/zsh.\n\033[0m");
+	//	ft_printf("\033[37mThe default interactive shell is now zsh.\nTo update your account to use zsh, please run chsh -s /bin/zsh.\n\033[0m");
 	while (1)
 	{
 		if (!g_vars.g_exit_status)
@@ -1397,6 +1437,7 @@ int main(int ac, char **av, char **envi)
 				make_some_space(&copy);
 				split = ft_split (copy, ' ');
 				expand (&split, env);
+				split_and_join(&split);
 			}
 			check = last_check(split);
 			if (check == -2)
@@ -1406,7 +1447,7 @@ int main(int ac, char **av, char **envi)
 				if (check  + 1 < ft_strcount(split))
 					ft_printf ("bash: syntax error near unexpected token `%s'\n", split[check + 1]);
 				else
-				error_print ("bash: syntax error near unexpected token `newline'", NULL);
+					error_print ("bash: syntax error near unexpected token `newline'", NULL);
 				free_double_array(split);
 				split = NULL;
 			}
