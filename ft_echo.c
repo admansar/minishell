@@ -24,11 +24,11 @@ int ft_check_valid(char *str)
 
 void ft_echo(t_input *list)
 {
-    (void)list;
     int i;
     int count;
     int option;
     int skip;
+	int j;
 
     count = ft_strcount(list->arg);
     if (!count)
@@ -50,12 +50,18 @@ void ft_echo(t_input *list)
         i = skip;
         while (list->arg[i])
         {
-			if (!ft_strncmp(list->arg[i], "$?", 3))
+			j = 0;
+           	while (list->arg[i][j])	
 			{
-				printf ("%d", g_vars.g_exit_status);
+				if (list->arg[i][j] == '$' && list->arg[i][j+1] == '?')
+				{
+					printf ("%d", g_vars.g_exit_status);
+					j++;
+				}
+				else
+					printf("%c", list->arg[i][j]);
+				j++;
 			}
-			else
-            	printf("%s", list->arg[i]);
             if (i < count - 1)
                 printf(" ");
             i++;
@@ -66,12 +72,18 @@ void ft_echo(t_input *list)
         i = skip;
         while (list->arg[i])
         {
-           	if (!ft_strncmp(list->arg[i], "$?", 3))
+			j = 0;
+           	while (list->arg[i][j])	
 			{
-				printf ("%d", g_vars.g_exit_status);
+				if (list->arg[i][j] == '$' && list->arg[i][j+1] == '?')
+				{
+					printf ("%d", g_vars.g_exit_status);
+					j++;
+				}
+				else
+					printf("%c", list->arg[i][j]);
+				j++;
 			}
-			else
-            	 printf("%s", list->arg[i]);
             if (i < count - 1)
                 printf(" ");
             if (i == count - 1)

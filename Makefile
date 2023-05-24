@@ -7,7 +7,7 @@ SRC = ft_redirections.c execution.c ft_export.c ft_unset.c  ft_utils.c  main.c f
 
 CC = cc
 
-CFLAGS =-Wall -Wextra -Werror -fsanitize=address -g#-I/goinfre/${USER_NAME}/homebrew/opt/readline/include -L/goinfre/${USER_NAME}/homebrew/opt/readline/lib -g -fsanitize=address
+CFLAGS =-Wall -Wextra -Werror #-fsanitize=address -g#-I/goinfre/${USER_NAME}/homebrew/opt/readline/include -L/goinfre/${USER_NAME}/homebrew/opt/readline/lib -g -fsanitize=address
 
 all : $(NAME)
 

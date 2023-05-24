@@ -28,6 +28,7 @@ void ft_file_creation(t_input *list, t_redir *data)
 			{
 				data->input_error = 1;
 				printf("bash: %s: %s\n", list->redirect->file_name[i], strerror(errno));
+				g_vars.g_exit_status = 1;
 				break;
 			}
 			data->input = i;

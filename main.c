@@ -22,6 +22,26 @@ int ft_simularity_len(char *str, char c)
 	return (i);
 }
 
+void delete_them(char **input, int start, int end)
+{
+	int i;
+	int j;
+	char *re;
+
+	re = malloc (sizeof (char) * ft_strlen((*input)) + 1);
+	i = 0;
+	j = 0;
+	while ((*input)[i])
+	{
+		if (i == start && i + 1 == end)
+			i += 2;
+		re[j++] = ((*input))[i++];
+	}
+	re[j] = '\0';
+	ft_strlcpy((*input), re, i);
+	free (re);
+}
+
 //that function delete start and end if they are to close... i use it to delete the ussless quotes
 void delete_both(char **input, int start, int end, char c)
 {
@@ -959,6 +979,8 @@ void expand(char ***str_pro_max, char **env)
 		end = 0;
 		while ((*str_pro_max)[i][j])
 		{
+			if ((*str_pro_max)[i][j] == '$' && ((*str_pro_max)[i][j+1] == '@' || ft_isdigit((*str_pro_max)[i][j+1])))
+			delete_them(&(*str_pro_max)[i], j, j + 1);
 			if ((*str_pro_max)[i][j] == '$' && (ft_isalpha((*str_pro_max)[i][j + 1]) || (*str_pro_max)[i][j + 1] == '_' || ft_isdigit((*str_pro_max)[i][j + 1])))
 			{
 				start = j;
@@ -997,6 +1019,8 @@ void expand(char ***str_pro_max, char **env)
 		m = 0;
 		while ((*str_pro_max)[i][j])
 		{
+		//	if ((*str_pro_max)[i][j] == '$' && ((*str_pro_max)[i][j + 1] == '@' || ft_isdigit((*str_pro_max)[i][j + 1])))
+		//	delete_them(&(*str_pro_max)[i], j, j + 1);
 			if ((*str_pro_max)[i][j] == '$' && ( ft_isalpha((*str_pro_max)[i][j + 1]) 
 						|| (*str_pro_max)[i][j + 1] == '_' 
 						|| ft_isdigit((*str_pro_max)[i][j + 1])))
@@ -1379,6 +1403,7 @@ void split_and_join(char ***split)
 	int k;
 	char **ptr;
 	char **tmp;
+
 	if (!(*split))
 		return ;
 	tmp = ft_calloc (sizeof (char *) ,ft_strcount((*split)) + mega_counter(*split, ' ') + 2);
@@ -1393,6 +1418,8 @@ void split_and_join(char ***split)
 			while (ptr[k])
 				tmp[j++] = ptr[k++];
 			free (ptr);
+			if (j > 0)
+				j--;
 		}
 		else
 			tmp[j] = (*split)[i];
@@ -1450,7 +1477,6 @@ int main(int ac, char **av, char **envi)
 				expand (&split, env);
 				split_and_join(&split);
 			}
-				// printer(split);
 			check = last_check(split);
 			if (check == -2)
 				split = NULL;

@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 17:17:33 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/05/23 22:38:00 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/05/24 02:07:59 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,7 +129,8 @@ void basic_execution (t_input *list, char ***envi)
 			{
 				list->arg = ft_join_double_ptr_to_ptr(acces[i], list->arg);
 				execve(acces[i], list->arg, *envi);
-				ft_printf ("bash : %s:%s \n", list->cmd, strerror(errno));
+				ft_printf ("bash: command not found\n");
+				exit (127);
 			}
 			waitpid(g_vars.pid[g_vars.index++], &status, 0);
 			if (WEXITSTATUS(status))
@@ -152,7 +153,7 @@ void basic_execution (t_input *list, char ***envi)
 	else
 	{
 		ft_printf ("bash: %s\n", strerror(errno));
-		status = 0;
+		status = 127;
 		g_vars.g_exit_status = status;
 	}
 }
