@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 17:17:33 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/05/24 02:07:59 by admansar         ###   ########.fr       */
+/*   Updated: 2023/05/24 18:56:48 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void ft_execution(t_input *list, char ***env, char ***export)
 	t_input *tmp;
 	tmp  = list;
 	ft_execute_here_docs(list, &data, env, export);
-	
+
 	if (!list->pipe)
 	{
 		if (list->redirect->position)
@@ -164,7 +164,7 @@ int have_just_digits (char *c)
 
 	i = 0;
 	if (c[i] == '-')
-	i++;
+		i++;
 	while (c[i])
 	{
 		if (ft_isdigit(c[i]))
@@ -259,7 +259,7 @@ void ft_pipe(t_input *list, t_redir *data, char ***envi, char ***export)
 		pipe_fd[i] = malloc (sizeof (int) * 2);
 		i++;
 	}
-//	pid = malloc (sizeof (int) * (pipe_num + 1));
+	//	pid = malloc (sizeof (int) * (pipe_num + 1));
 	i = 0;
 	tmp = list;
 	if (pipe_num > PIPE_BUF)
@@ -358,6 +358,6 @@ void ft_pipe(t_input *list, t_redir *data, char ***envi, char ***export)
 	// }
 	ft_bzero (g_vars.pid, i + 1);
 	g_vars.index = 0;
-//	free (pipe_fd);
-//	free (g_vars.pid);
+	//	free (pipe_fd);
+	//	free (g_vars.pid);
 }

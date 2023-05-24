@@ -177,7 +177,6 @@ void	ft_execute_here_docs(t_input *list, t_redir *data, char ***env, char ***exp
 			ft_here_doc(tmp, data->pos_herdoc, data, *env);
 			free(data->pos_output);
 			free(data->pos_herdoc);
-			//g_vars.g_exit_status = 0;
 		}
 		tmp = tmp->next;
 	}
