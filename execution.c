@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 17:17:33 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/05/24 18:56:48 by admansar         ###   ########.fr       */
+/*   Updated: 2023/05/25 16:19:53 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,6 @@
 // execution
 void ft_execution(t_input *list, char ***env, char ***export)
 {
-	// (void)env;
-	// (void)export;
 	t_redir	data;
 	t_input *tmp;
 	tmp  = list;
@@ -182,12 +180,10 @@ void ft_exit(t_input *list)
 	{
 		if (have_just_digits(list->arg[0]) && !list->arg[1])
 		{
-			// ft_printf ("exit\n");
 			exit (ft_atoi(list->arg[0]));
 		}
 		else if (!have_just_digits(list->arg[0]))
 		{
-			// ft_printf ("exit\n");
 			ft_printf ("bash: exit: %s: numeric argument required\n", list->arg[0]);
 			exit (255);
 		}
@@ -201,7 +197,6 @@ void ft_exit(t_input *list)
 	}
 	else
 	{
-		// ft_printf ("exit\n");
 		exit (g_vars.g_exit_status);
 	}
 }
@@ -245,33 +240,26 @@ int ft_list_size(t_input *list)
 void ft_pipe(t_input *list, t_redir *data, char ***envi, char ***export)
 {
 	int **pipe_fd;
-	// int *pid;
 	int pipe_num;
 	int i;
-	t_input *tmp;
+	int j;
 	int status;
 
 	pipe_num = ft_list_size(list) - 1;
-	pipe_fd = malloc (sizeof (int *) * (pipe_num));
+	if (pipe_num > PIPE_BUF)
+	{
+		ft_printf ("bash: %s\n", strerror(errno));
+		return ;
+	}
+	pipe_fd = ft_calloc (sizeof (int *), (pipe_num + 1));
 	i = 0;
 	while (i < pipe_num)
 	{
 		pipe_fd[i] = malloc (sizeof (int) * 2);
-		i++;
-	}
-	//	pid = malloc (sizeof (int) * (pipe_num + 1));
-	i = 0;
-	tmp = list;
-	if (pipe_num > PIPE_BUF)
-		ft_printf ("bash: %s\n", strerror(errno));
-	while (i < pipe_num)
-	{
 		pipe(pipe_fd[i]);
 		i++;
 	}
 	i = 0;
-	list = tmp;
-	int j = 0;
 	while (list)
 	{
 		g_vars.pid[g_vars.index] = fork();
@@ -287,27 +275,10 @@ void ft_pipe(t_input *list, t_redir *data, char ***envi, char ***export)
 		}
 		if (g_vars.pid[g_vars.index] == 0)
 		{
-			if (i == 0)
-			{
-				close (pipe_fd[i][0]);
+			if (i < pipe_num)
 				dup2 (pipe_fd[i][1], STDOUT_FILENO);
-				close (pipe_fd[i][1]);
-			}
-			else if (i == pipe_num)
-			{	
-				close (pipe_fd[i-1][1]);
+			if (i > 0)
 				dup2 (pipe_fd[i-1][0], STDIN_FILENO);
-				close (pipe_fd[i-1][0]);
-			}
-			else
-			{
-				close (pipe_fd[i-1][1]);
-				close (pipe_fd[i][0]);
-				dup2 (pipe_fd[i-1][0],STDIN_FILENO);
-				close (pipe_fd[i-1][0]);
-				dup2(pipe_fd[i][1], STDOUT_FILENO);
-				close (pipe_fd[i][1]);
-			}
 			j = 0;
 			while (j < pipe_num)
 			{
@@ -325,7 +296,6 @@ void ft_pipe(t_input *list, t_redir *data, char ***envi, char ***export)
 		g_vars.index++;
 		list = list->next;
 	}
-	list = tmp;
 	j = 0;
 	while (j < pipe_num)
 	{
@@ -348,16 +318,12 @@ void ft_pipe(t_input *list, t_redir *data, char ***envi, char ***export)
 		g_vars.g_exit_status = status;
 		i++;
 	}
-	// i = 0;
-	// while (i <= pipe_num)
-	// {
-	// 	if (g_vars.pid[g_vars.index++])
-	// 		kill (g_vars.pid[g_vars.index++], SIGKILL);
-	// 	//		free (pipe_fd[i]);
-	// 	i++;
-	// }
+	i = 0;
+	while (i < pipe_num)
+	{
+		free (pipe_fd[i++]);
+	}
 	ft_bzero (g_vars.pid, i + 1);
 	g_vars.index = 0;
-	//	free (pipe_fd);
-	//	free (g_vars.pid);
+	free (pipe_fd);
 }

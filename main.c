@@ -1231,7 +1231,7 @@ void phil_list(t_input **list, char **split)
 				//	  printf ("file name : %s taked the pos num : %d and type is %s\n", (*list)->redirect->file_name[(*list)->redirect->position], (*list)->redirect->position + 1 , (*list)->redirect->type[(*list)->redirect->position]);
 				(*list)->redirect->position++;
 			}
-			else if (one_time == 1)
+			else if (one_time == 1 && ft_strncmp(split [i], "|", 1))
 			{
 				no_surounded_anymore(&split[i]);
 				(*list)->cmd = ft_strdup (split[i]);

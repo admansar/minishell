@@ -51,8 +51,11 @@ void	ft_get_input(t_input *list, t_redir *data)
 			data->input_count = i;
 	}
 	if (data->herdoc_count > data->input_count)
+	{
 			data->in_fd = open(list->redirect->herdoc_file_name
 				, O_RDONLY , 0644);
+			unlink (list->redirect->herdoc_file_name);
+	}
 	else
 			data->in_fd = open(list->redirect->file_name[i]
 				, O_RDONLY , 0644);
