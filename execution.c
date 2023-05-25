@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 17:17:33 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/05/25 16:19:53 by admansar         ###   ########.fr       */
+/*   Updated: 2023/05/25 20:26:48 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -244,8 +244,24 @@ void ft_pipe(t_input *list, t_redir *data, char ***envi, char ***export)
 	int i;
 	int j;
 	int status;
+	t_input *tmp;
 
+	tmp = list;
+	while (list->next)
+	{
+		if (!ft_strcmp(list->cmd, list->next->cmd) && !list->redirect->position && !list->arg[0])
+		{
+			tmp = list->next;
+		}
+		list = list->next;
+	}
+	list = tmp;
 	pipe_num = ft_list_size(list) - 1;
+	if (pipe_num == 0)
+	{
+		ft_exec(list, envi, export);
+		return ;
+	}
 	if (pipe_num > PIPE_BUF)
 	{
 		ft_printf ("bash: %s\n", strerror(errno));
