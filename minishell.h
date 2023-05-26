@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/06 11:52:20 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/05/26 18:35:26 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/05/26 18:47:12 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ typedef struct s_redir
 	int			output;
 	int			out_fd;
 	int			in_fd;
-	int			input_error;
+	int			error;
 	int			expand;
 }				t_redir;
 

@@ -4,29 +4,78 @@
 void ft_file_creation(t_input *list, t_redir *data)
 {
 	int		i;
+	int		ret;
 
 	i = -1;
+	ret = 0;
 	while (list->redirect->type[++i])
 	{
+		if (list->redirect->file_name == '\0')
+		{
+			ft_printf("minishell: No such file or directory\n");
+			data->error = 1;
+			g_vars.g_exit_status = 0;
+			break;
+		}
 		if (!ft_strcmp(list->redirect->type[i], OUTPUT))
 		{
-			data->out_fd = open(list->redirect->file_name[i]
-			, O_RDWR | O_CREAT | O_TRUNC , 0644);
-			if (data->output <= i)
-				data->output = i;
+			if (!access(list->redirect->file_name[i], F_OK))
+			{
+				ret = access(list->redirect->file_name[i], R_OK);
+				if (!ret)
+				{
+					data->out_fd = open(list->redirect->file_name[i]
+						, O_RDWR | O_CREAT | O_TRUNC , 0644);
+					if (data->output <= i)
+						data->output = i;
+				}else if (ret == -1)
+				{
+					ft_printf("bash: %s: %s\n", list->redirect->file_name[i], strerror(errno));
+					data->error = 1;
+					g_vars.g_exit_status = 1;
+					break;
+				}
+			}else
+			{
+				data->out_fd = open(list->redirect->file_name[i]
+						, O_RDWR | O_CREAT | O_TRUNC , 0644);
+					if (data->output <= i)
+						data->output = i;
+			}
 		}
 		else if (!ft_strcmp(list->redirect->type[i], APPEND))
 		{
-			data->out_fd = open(list->redirect->file_name[i]
-				, O_RDWR | O_CREAT | O_APPEND , 0666);
-			if (data->output <= i)
-				data->output = i;
+			if (!access(list->redirect->file_name[i], F_OK))
+			{
+				ret = access(list->redirect->file_name[i], R_OK);
+				if (!ret)
+				{
+					data->out_fd = open(list->redirect->file_name[i]
+						, O_RDWR | O_CREAT | O_APPEND , 0666);
+					if (data->output <= i)
+						data->output = i;
+				}
+				else if (ret == -1)
+				{
+					ft_printf("bash: %s: %s\n", list->redirect->file_name[i], strerror(errno));
+					data->error = 1;
+					g_vars.g_exit_status = 1;
+					break;
+				}
+			}else
+			{
+					data->out_fd = open(list->redirect->file_name[i]
+						, O_RDWR | O_CREAT | O_APPEND , 0666);
+					if (data->output <= i)
+						data->output = i;
+			}
+
 		}
 		else if (!ft_strcmp(list->redirect->type[i], INPUT))
 		{
 			if (access(list->redirect->file_name[i], F_OK | R_OK) == -1)
 			{
-				data->input_error = 1;
+				data->error = 1;
 				printf("bash: %s: %s\n", list->redirect->file_name[i], strerror(errno));
 				g_vars.g_exit_status = 1;
 				break;
@@ -66,10 +115,10 @@ void	ft_get_input(t_input *list, t_redir *data)
 
 void ft_redirections(t_input *list, t_redir *data, char ***env, char ***export)
 {
-	data->input_error = 0;
+	data->error = 0;
 	data->output = 0;
 	ft_file_creation(list, data);
-	if (data->input_error)
+	if (data->error)
 		return;
 	ft_get_input(list, data);
 	int pid = fork();
