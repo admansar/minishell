@@ -15,6 +15,7 @@ $(NAME) : $(SRC)
 	@make -C libft
 	$(emo)
 	$(CC) $(SRC) ${CFLAGS} libft/libft.a -lreadline -o $(NAME)
+	@rm -rf ${NAME}.dSYM
 
 clean :
 	make -C libft clean

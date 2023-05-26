@@ -31,7 +31,6 @@ void ft_file_creation(t_input *list, t_redir *data)
 				g_vars.g_exit_status = 1;
 				break;
 			}
-			// data->input = i;
 		}
 	}
 }
@@ -44,41 +43,31 @@ void	ft_get_input(t_input *list, t_redir *data)
 	tmp = list;
 	data->herdoc_count = -1;
 	data->input_count = -1;
-	data->heredoc_exist = 0;
-	data->input_exist = 0;
 	i = -1;
 	while (list->redirect->type[++i])
 	{
 		if (!strcmp(list->redirect->type[i], HERDOC))
-		{
 			data->herdoc_count = i;
-			data->heredoc_exist = 1;
-		}
 		else if  (!ft_strcmp(list->redirect->type[i], INPUT))
 		{
 			data->input_count = i;
-			data->input_exist = 1;
 		}
 	}
-	if (data->herdoc_count > data->input_count && data->heredoc_exist)
+	if (data->herdoc_count > data->input_count)
 	{
 		data->in_fd = open(list->redirect->herdoc_file_name,
 			O_RDONLY , 0644);
 		unlink (list->redirect->herdoc_file_name);
 	}
-	else if (data->input_exist)
-	{
-
+	else if (data->herdoc_count < data->input_count)
 		data->in_fd = open(list->redirect->file_name[data->input_count],
 			O_RDONLY , 0644);
-	}
 }
 
 void ft_redirections(t_input *list, t_redir *data, char ***env, char ***export)
 {
 	data->input_error = 0;
 	data->output = 0;
-	// data->input = 0;
 	ft_file_creation(list, data);
 	if (data->input_error)
 		return;
@@ -92,7 +81,6 @@ void ft_redirections(t_input *list, t_redir *data, char ***env, char ***export)
 		close(data->out_fd);
 		if (list->cmd)
 			ft_exec(list, env, export);
-		//no idea what should in the exit status and I dont even know if it is important here
 		exit(EXIT_SUCCESS);
 	}
 	wait(NULL);

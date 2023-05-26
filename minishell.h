@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/06 11:52:20 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/05/23 19:01:59 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/05/26 18:35:26 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,17 +46,16 @@ typedef struct s_redir
 {
 	char		***env;
 	char		***export;
+	int			*pos_herdoc;
+	int			*pos_output;
 	int			herdoc_count;
 	int 		input_count;
 	int			output_count;
 	int			append_count;
-	int			*pos_herdoc;
-	int			*pos_output;
+	int			her_doc;
 	int			output;
-	int			input;
 	int			out_fd;
 	int			in_fd;
-	int			her_doc;
 	int			input_error;
 	int			expand;
 }				t_redir;
