@@ -18,7 +18,7 @@ void ft_file_creation(t_input *list, t_redir *data)
 		else if (!ft_strcmp(list->redirect->type[i], APPEND))
 		{
 			data->out_fd = open(list->redirect->file_name[i]
-				, O_RDWR | O_CREAT | O_APPEND , 0644);
+				, O_RDWR | O_CREAT | O_APPEND , 0666);
 			if (data->output <= i)
 				data->output = i;
 		}

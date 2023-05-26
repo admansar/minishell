@@ -810,14 +810,15 @@ void make_some_space(char **str)
 			}
 			else 
 			{
-				if ((*str)[i] == '\1')
-				{
-					while ((*str)[i] && (*str[i] != '\1'))
-						tmp[j++] = (*str)[i++];
-					if ((*str)[i] != '\0')
-						i++;
-				}
-				else
+		//		if ((*str)[i] == '\1')
+		//		{
+		//			i++;
+		//			while ((*str)[i] != 0 && (*str[i] != '\1'))
+		//				tmp[j++] = (*str)[i++];
+		//			if ((*str)[i] != '\0')
+		//				i++;
+		//		}
+		//		else
 					tmp[j++] = (*str)[i++];
 			}
 		}
@@ -1049,11 +1050,11 @@ void expand(char ***str_pro_max, char **env)
 					if (!ft_strncmp(tmp, env[k], h) && env[k][h] == '=')
 					{
 						tmp2 = take_copy(env[k], h + 1, ft_strlen(env[k]));
-						free (tmp);
-						tmp = ft_strjoin ("\1", tmp2);
-						free (tmp2);
-						tmp2 = ft_str_join (tmp, "\1");
-						tmp = NULL;
+				//		free (tmp);
+				//		tmp = ft_strjoin ("\1", tmp2);
+				//		free (tmp2);
+				//		tmp2 = ft_str_join (tmp, "\1");
+				//		tmp = NULL;
 						k = 0;
 						while (tmp2[k])
 							str[i][m++] = tmp2[k++];
@@ -1204,7 +1205,7 @@ void phil_list(t_input **list, char **split)
 	int one_time;
 	int count;
 	t_input *tmp;
-	int j;
+	//int j;
 
 	i = 0;
 	m = 0;
@@ -1212,22 +1213,22 @@ void phil_list(t_input **list, char **split)
 	tmp = *list;
 	count = ft_strcount(split);
 
-	while (split[i])
-	{
-		if (char_counter (split[i], '\1') == 2 && ft_strlen (split[i]) == 2)
-		{
-			j = i;
-			while (split [j+1])
-			{
-				free (split[j]);
-				split [j] = ft_strdup (split[j + 1]);
-				j++;
-			}
-			free (split [j]);
-			split [j] = NULL;
-		}
-		i++;
-	}
+//	while (split[i])
+//	{
+//		if (char_counter (split[i], '\1') == 2 && ft_strlen (split[i]) == 2)
+//		{
+//			j = i;
+//			while (split [j+1])
+//			{
+//				free (split[j]);
+//				split [j] = ft_strdup (split[j + 1]);
+//				j++;
+//			}
+//			free (split [j]);
+//			split [j] = NULL;
+//		}
+//		i++;
+//	}
 	i = 0;
 	while (split[i])
 	{
@@ -1238,6 +1239,7 @@ void phil_list(t_input **list, char **split)
 			{
 				no_surounded_anymore(&split[i + 1]);
 				(*list)->redirect->type[(*list)->redirect->position] = "2";
+				if (split[i+1])
 				(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
 				//	  printf ("file name : %s taked the pos num : %d and type is %s\n", (*list)->redirect->file_name[(*list)->redirect->position], (*list)->redirect->position + 1 , (*list)->redirect->type[(*list)->redirect->position]);
 				(*list)->redirect->position++;
@@ -1245,6 +1247,7 @@ void phil_list(t_input **list, char **split)
 			else if (!ft_strncmp(split[i], "<<" , 2))
 			{
 				(*list)->redirect->type[(*list)->redirect->position] = "4";
+				if (split[i+1])
 				(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
 				//	  printf ("file name : %s taked the pos num : %d and type is %s\n", (*list)->redirect->file_name[(*list)->redirect->position], (*list)->redirect->position + 1 , (*list)->redirect->type[(*list)->redirect->position]);
 				(*list)->redirect->position++;
@@ -1253,6 +1256,7 @@ void phil_list(t_input **list, char **split)
 			{
 				no_surounded_anymore(&split[i + 1]);
 				(*list)->redirect->type[(*list)->redirect->position] = "1";
+				if (split[i+1])
 				(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
 				//	  printf ("file name : %s taked the pos num : %d and type is %s\n", (*list)->redirect->file_name[(*list)->redirect->position], (*list)->redirect->position + 1 , (*list)->redirect->type[(*list)->redirect->position]);
 				(*list)->redirect->position++;
@@ -1261,15 +1265,16 @@ void phil_list(t_input **list, char **split)
 			{
 				no_surounded_anymore(&split[i + 1]);
 				(*list)->redirect->type[(*list)->redirect->position] = "3";
-				(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
+				if (split[i+1])
+					(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
 				//	  printf ("file name : %s taked the pos num : %d and type is %s\n", (*list)->redirect->file_name[(*list)->redirect->position], (*list)->redirect->position + 1 , (*list)->redirect->type[(*list)->redirect->position]);
 				(*list)->redirect->position++;
 			}
 			else if (one_time == 1 && ft_strncmp(split [i], "|", 2))
 			{
 				no_surounded_anymore(&split[i]);
-				if (char_counter(split[i], '\1'))
-					disable (&split[i], '\1');
+		//		if (char_counter(split[i], '\1'))
+		//			disable (&split[i], '\1');
 				(*list)->cmd = ft_strdup (split[i]);
 				//	  printf ("cmd : %s\n", (*list)->cmd);
 				one_time = 0;
@@ -1279,8 +1284,8 @@ void phil_list(t_input **list, char **split)
 			else
 			{
 				no_surounded_anymore(&split[i]);
-				if (char_counter(split[i], '\1'))
-					disable (&split[i], '\1');
+		//		if (char_counter(split[i], '\1'))
+		//			disable (&split[i], '\1');
 				(*list)->arg[m] = ft_strdup(split[i]);
 				// printf ("arg : %s\n", (*list)->arg[m]);
 				m++;
@@ -1511,6 +1516,7 @@ int main(int ac, char **av, char **envi)
 				make_some_space(&copy);
 				split = ft_split (copy, ' ');
 				expand (&split, env);
+				check = 0;
 				split_and_join(&split);
 			}
 				// printer(split);

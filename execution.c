@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 17:17:33 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/05/25 20:26:48 by admansar         ###   ########.fr       */
+/*   Updated: 2023/05/26 16:04:55 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -249,10 +249,12 @@ void ft_pipe(t_input *list, t_redir *data, char ***envi, char ***export)
 	tmp = list;
 	while (list->next)
 	{
-		if (!ft_strcmp(list->cmd, list->next->cmd) && !list->redirect->position && !list->arg[0])
+		if (!ft_strcmp(list->cmd, list->next->cmd) && !list->redirect->position && !list->arg[0] && !list->next->arg[0])
 		{
 			tmp = list->next;
 		}
+		else
+			break;
 		list = list->next;
 	}
 	list = tmp;
