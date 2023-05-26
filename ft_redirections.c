@@ -24,48 +24,61 @@ void ft_file_creation(t_input *list, t_redir *data)
 		}
 		else if (!ft_strcmp(list->redirect->type[i], INPUT))
 		{
-			if (access(list->redirect->file_name[i], F_OK | R_OK | W_OK | X_OK) == -1)
+			if (access(list->redirect->file_name[i], F_OK | R_OK) == -1)
 			{
 				data->input_error = 1;
 				printf("bash: %s: %s\n", list->redirect->file_name[i], strerror(errno));
 				g_vars.g_exit_status = 1;
 				break;
 			}
-			data->input = i;
+			// data->input = i;
 		}
 	}
 }
 
 void	ft_get_input(t_input *list, t_redir *data)
 {
+	t_input	*tmp;
 	int		i;
 
+	tmp = list;
 	data->herdoc_count = -1;
 	data->input_count = -1;
+	data->heredoc_exist = 0;
+	data->input_exist = 0;
 	i = -1;
 	while (list->redirect->type[++i])
 	{
 		if (!strcmp(list->redirect->type[i], HERDOC))
+		{
 			data->herdoc_count = i;
+			data->heredoc_exist = 1;
+		}
 		else if  (!ft_strcmp(list->redirect->type[i], INPUT))
+		{
 			data->input_count = i;
+			data->input_exist = 1;
+		}
 	}
-	if (data->herdoc_count > data->input_count)
+	if (data->herdoc_count > data->input_count && data->heredoc_exist)
 	{
-			data->in_fd = open(list->redirect->herdoc_file_name
-				, O_RDONLY , 0644);
-			unlink (list->redirect->herdoc_file_name);
+		data->in_fd = open(list->redirect->herdoc_file_name,
+			O_RDONLY , 0644);
+		unlink (list->redirect->herdoc_file_name);
 	}
-	else
-			data->in_fd = open(list->redirect->file_name[i]
-				, O_RDONLY , 0644);
+	else if (data->input_exist)
+	{
+
+		data->in_fd = open(list->redirect->file_name[data->input_count],
+			O_RDONLY , 0644);
+	}
 }
 
 void ft_redirections(t_input *list, t_redir *data, char ***env, char ***export)
 {
 	data->input_error = 0;
 	data->output = 0;
-	data->input = 0;
+	// data->input = 0;
 	ft_file_creation(list, data);
 	if (data->input_error)
 		return;
