@@ -1,44 +1,46 @@
 
 #include "minishell.h"
 
-unsigned int ft_random(void)
+unsigned int	ft_random(void)
 {
-    static unsigned int rand = 0;
-	char *p;
-	int i;
+	static unsigned int	rand;
+	char				*p;
+	int					i;
 
-	p = malloc (sizeof (char) * 2);
+	rand = 0;
+	p = malloc(sizeof(char) * 2);
 	i = (unsigned char)&p[0];
-    rand = ((rand + i) * 1103515245 + 12345) & 0xFFFFFFFF;
-	free (p);
-    return (rand);
+	rand = ((rand + i) * 1103515245 + 12345) & 0xFFFFFFFF;
+	free(p);
+	return (rand);
 }
 
 char	*ft_generate_rand_str(int len)
 {
-    const char	src[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    char		*random_str;
-    int			src_len;
-    int			i;
+	char	src[63];
+	char		*random_str;
+	int			src_len;
+	int			i;
 	int			random_i;
 
+	ft_strlcpy(src ,"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 63);
 	random_str = (char *)malloc(sizeof(char) * (len + 1));
 	i = 0;
 	src_len = sizeof(src) - 1;
 	while (i < len)
 	{
-        random_i = ft_random() % src_len;
-        random_str[i++] = src[random_i];
+		random_i = ft_random() % src_len;
+		random_str[i++] = src[random_i];
 	}
-    random_str[i] = 0;
-    return random_str;
+	random_str[i] = 0;
+	return (random_str);
 }
 
-int *ft_get_operators_pos(t_input *list, char *str, int *count)
+int	*ft_get_operators_pos(t_input *list, char *str, int *count)
 {
-	int *pos;
-	int i;
-	int j;
+	int	*pos;
+	int	i;
+	int	j;
 
 	*count = 0;
 	j = 0;
@@ -58,13 +60,13 @@ int *ft_get_operators_pos(t_input *list, char *str, int *count)
 
 void	ft_join_str_to_double_array(char ***arg, char **to_join)
 {
-	int len;
-	int i;
+	int		len;
+	int		i;
 	char	**joined;
 
 	len = ft_strcount((*arg));
 	joined = (char **)ft_calloc(sizeof(char *), len + 2);
-	i = -1; 
+	i = -1;
 	while ((*arg)[++i])
 		joined[i] = ft_strdup((*arg)[i]);
 	joined[i] = ft_strdup(*to_join);
@@ -85,6 +87,7 @@ void	ft_here_doc(t_input *list, int *pos, t_redir *data, char **env)
 	int		j;
 	int		rand;
 	int		in_fd;
+	int		pos_env;
 
 	data->expand = 1;
 	i = 0;
@@ -101,8 +104,8 @@ void	ft_here_doc(t_input *list, int *pos, t_redir *data, char **env)
 	//unlink (tmp);
 	while (i < data->herdoc_count)
 	{
-		if (surounded_by(list->redirect->file_name[pos[i]] , '\"')
-			|| surounded_by(list->redirect->file_name[pos[i]], '\''))
+		if (surounded_by(list->redirect->file_name[pos[i]], '\"')
+				|| surounded_by(list->redirect->file_name[pos[i]], '\''))
 		{
 			no_surounded_anymore(&(list->redirect->file_name[pos[i]]));
 			data->expand = 0;
@@ -111,13 +114,13 @@ void	ft_here_doc(t_input *list, int *pos, t_redir *data, char **env)
 		{
 			input = readline("> ");
 			if (!input)
-				break;
+				break ;
 			if (!ft_strcmp(input, list->redirect->file_name[pos[i]]))
 			{
 				free(input);
 				input = NULL;
 				close(in_fd);
-				break;
+				break ;
 			}
 			else if (i == data->herdoc_count - 1)
 			{
@@ -130,12 +133,12 @@ void	ft_here_doc(t_input *list, int *pos, t_redir *data, char **env)
 						if (input[j] == '$')
 							j++;
 						else
-							break;
+							break ;
 					}
-					dollar_str = take_copy(input, 0 , j - 2);
+					dollar_str = take_copy(input, 0, j - 2);
 					write(in_fd, dollar_str, ft_strlen(dollar_str));
 					to_expand = take_copy(input, j, ft_strlen(input));
-					int pos_env = ft_in_env(to_expand, env);
+					pos_env = ft_in_env(to_expand, env);
 					if (pos_env >= 0)
 					{
 						ft_get_var_value(env[pos_env], to_expand, &expanded);
@@ -159,7 +162,8 @@ void	ft_here_doc(t_input *list, int *pos, t_redir *data, char **env)
 	free(tmp);
 }
 
-void	ft_execute_here_docs(t_input *list, t_redir *data, char ***env, char ***export)
+void	ft_execute_here_docs(t_input *list, t_redir *data, char ***env,
+		char ***export)
 {
 	t_input	*tmp;
 
@@ -172,8 +176,10 @@ void	ft_execute_here_docs(t_input *list, t_redir *data, char ***env, char ***exp
 	{
 		if (tmp->redirect->position)
 		{
-			data->pos_herdoc = ft_get_operators_pos(tmp, HERDOC, &(data->herdoc_count));
-			data->pos_output = ft_get_operators_pos(tmp, OUTPUT, &(data->output_count));
+			data->pos_herdoc = ft_get_operators_pos(tmp, HERDOC,
+					&(data->herdoc_count));
+			data->pos_output = ft_get_operators_pos(tmp, OUTPUT,
+					&(data->output_count));
 			ft_here_doc(tmp, data->pos_herdoc, data, *env);
 			free(data->pos_output);
 			free(data->pos_herdoc);

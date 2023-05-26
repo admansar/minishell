@@ -1,171 +1,113 @@
 #include "minishell.h"
 
-void    ft_change_dir(t_input *list, char ***env, char ***export)
+// error if the the path name is too long
+int	ft_long_path_name(t_cd *data)
 {
-    char    *old_pwd;
-	char	*pwd;
-	char	*leaks;
-	char	*home_path;
-    char    old_name[]="OLDPWD=";
-    char    pwd_name[]="PWD=";
-	char	path[10000];
-	int		index_pwd;
-	int		index_old_pwd;
-	int		home_index;
-
-
-    if (ft_strcount(list->arg) > 1)
+	if (!getcwd(data->path, sizeof(data->path)))
 	{
-       ft_printf("bash: cd: too many arguments\n");
-	   g_vars.g_exit_status = 1;
-	   return;
-	}
-	else if (!ft_strcount(list->arg))
-	{
-		home_index = ft_in_env("HOME", *env);
-		if (home_index > 0)
-		{
-			ft_get_var_value((*env)[home_index], "HOME", &home_path);
-			chdir(home_path);
-			if (!getcwd(path, sizeof(path)))
-		{
-			ft_printf("ERROR : path_name too long\n");
-			g_vars.g_exit_status = 1;
-			return;
-		}
-		index_pwd = ft_in_env("PWD", *env);
-		index_old_pwd = ft_in_env("OLDPWD", *env);
-		if (index_pwd > 0)
-		{
-			if(index_old_pwd > 0)
-			{
-				ft_get_var_value((*env)[index_pwd], pwd_name, &old_pwd);
-				leaks = ft_strjoin(old_name, old_pwd);
-				free (old_pwd);
-				old_pwd = leaks;
-				pwd = ft_strjoin(pwd_name, path);
-				ft_update_value_env(old_pwd, env, index_old_pwd);
-				ft_update_value_env(pwd, env, index_pwd);
-			}
-			else
-			{
-				ft_get_var_value((*env)[index_pwd], pwd_name, &old_pwd);
-				leaks = ft_strjoin(old_name, old_pwd);
-				free (old_pwd);
-				old_pwd = leaks;
-				pwd = ft_strjoin(pwd_name, path);
-				ft_update_value_env(pwd, env, index_pwd);
-				*env = ft_join_ptr_to_double_ptr(*env, old_pwd);
-			}
-			free(old_pwd);
-			free(pwd);
-		}
-		in_env(NULL, *env, 1);
-		index_pwd = ft_in_env("PWD", *export);
-		index_old_pwd = ft_in_env("OLDPWD", *export);
-		if (index_pwd > 0)
-		{
-			if(index_old_pwd > 0)
-			{
-				ft_get_var_value((*export)[index_pwd], pwd_name, &old_pwd);
-				leaks = ft_strjoin(old_name, old_pwd);
-				free (old_pwd);
-				old_pwd = leaks;
-				pwd = ft_strjoin(pwd_name, path);
-				ft_update_value_env(old_pwd, export, index_old_pwd);
-				ft_update_value_env(pwd, export, index_pwd);
-			}
-			else
-			{
-				ft_get_var_value((*export)[index_pwd], pwd_name, &old_pwd);
-				leaks = ft_strjoin(old_name, old_pwd);
-				free (old_pwd);
-				old_pwd = leaks;
-				pwd = ft_strjoin(pwd_name, path);
-				ft_update_value_env(pwd, export, index_pwd);
-				*export = ft_join_ptr_to_double_ptr(*export, old_pwd);
-			}
-			free(old_pwd);
-			free(pwd);
-		}
-		}
-		else
-		{
-			ft_printf("bash: cd: HOME not set\n");
-			g_vars.g_exit_status = 1;
-			return;
-		}
-	}
-    else if (access(list->arg[0], F_OK | R_OK) == -1)
-	{
-        ft_printf("bash: cd: %s: No such file or directory\n", list->arg[0]);
+		ft_printf("ERROR : path_name too long\n");
 		g_vars.g_exit_status = 1;
-		return;
+		return (0);
 	}
-    else
-    {
-        chdir(list->arg[0]);
-		if (!getcwd(path, sizeof(path)))
-		{
-			ft_printf("ERROR : path_name too long\n");
-			g_vars.g_exit_status = 1;
-			return;
-		}
-		index_pwd = ft_in_env("PWD", *env);
-		index_old_pwd = ft_in_env("OLDPWD", *env);
-		if (index_pwd > 0)
-		{
-			if(index_old_pwd > 0)
-			{
-				ft_get_var_value((*env)[index_pwd], pwd_name, &old_pwd);
-				leaks = ft_strjoin(old_name, old_pwd);
-				free (old_pwd);
-				old_pwd = leaks;
-				pwd = ft_strjoin(pwd_name, path);
-				ft_update_value_env(old_pwd, env, index_old_pwd);
-				ft_update_value_env(pwd, env, index_pwd);
-			}
-			else
-			{
-				ft_get_var_value((*env)[index_pwd], pwd_name, &old_pwd);
-				leaks = ft_strjoin(old_name, old_pwd);
-				free (old_pwd);
-				old_pwd = leaks;
-				pwd = ft_strjoin(pwd_name, path);
-				ft_update_value_env(pwd, env, index_pwd);
-				*env = ft_join_ptr_to_double_ptr(*env, old_pwd);
-			}
-			free(old_pwd);
-			free(pwd);
-		}
+	return (1);
+}
+
+// update the value of $PWD and $OLDPWD in the given ptr
+void	ft_update_pwd(t_cd *data, char ***ptr)
+{
+	if (data->index_old_pwd > 0)
+	{
+		ft_get_var_value((*ptr)[data->index_pwd],
+			data->pwd_name, &data->old_pwd);
+		data->joined = ft_strjoin(data->old_name, data->old_pwd);
+		free(data->old_pwd);
+		data->old_pwd = data->joined;
+		data->pwd = ft_strjoin(data->pwd_name, data->path);
+		ft_update_value_env(data->old_pwd, ptr, data->index_old_pwd);
+		ft_update_value_env(data->pwd, ptr, data->index_pwd);
+	}
+	else
+	{
+		ft_get_var_value((*ptr)[data->index_pwd],
+			data->pwd_name, &data->old_pwd);
+		data->joined = ft_strjoin(data->old_name, data->old_pwd);
+		free(data->old_pwd);
+		data->old_pwd = data->joined;
+		data->pwd = ft_strjoin(data->pwd_name, data->path);
+		ft_update_value_env(data->pwd, ptr, data->index_pwd);
+		*ptr = ft_join_ptr_to_double_ptr(*ptr, data->old_pwd);
+	}
+	free(data->old_pwd);
+	free(data->pwd);
+}
+
+// handle the cd with no option or if we use the the $HOME variable
+int	ft_home_dir(t_cd *data, char ***env, char ***export)
+{
+	data->home_index = ft_in_env("HOME", *env);
+	if (data->home_index > 0)
+	{
+		ft_get_var_value((*env)[data->home_index], "HOME", &data->home_path);
+		chdir(data->home_path);
+		if (!ft_long_path_name(data))
+			return (-1);
+		data->index_pwd = ft_in_env("PWD", *env);
+		data->index_old_pwd = ft_in_env("OLDPWD", *env);
+		if (data->index_pwd > 0)
+			ft_update_pwd(data, env);
 		in_env(NULL, *env, 1);
-		index_pwd = ft_in_env("PWD", *export);
-		index_old_pwd = ft_in_env("OLDPWD", *export);
-		if (index_pwd > 0)
-		{
-			if(index_old_pwd > 0)
-			{
-				ft_get_var_value((*export)[index_pwd], pwd_name, &old_pwd);
-				leaks = ft_strjoin(old_name, old_pwd);
-				free (old_pwd);
-				old_pwd = leaks;
-				pwd = ft_strjoin(pwd_name, path);
-				ft_update_value_env(old_pwd, export, index_old_pwd);
-				ft_update_value_env(pwd, export, index_pwd);
-			}
-			else
-			{
-				ft_get_var_value((*export)[index_pwd], pwd_name, &old_pwd);
-				leaks = ft_strjoin(old_name, old_pwd);
-				free (old_pwd);
-				old_pwd = leaks;
-				pwd = ft_strjoin(pwd_name, path);
-				ft_update_value_env(pwd, export, index_pwd);
-				*export = ft_join_ptr_to_double_ptr(*export, old_pwd);
-			}
-			free(old_pwd);
-			free(pwd);
-		}
-    }
+		data->index_pwd = ft_in_env("PWD", *export);
+		data->index_old_pwd = ft_in_env("OLDPWD", *export);
+		if (data->index_pwd > 0)
+			ft_update_pwd(data, export);
+	}
+	else
+	{
+		ft_printf("bash: cd: HOME not set\n");
+		g_vars.g_exit_status = 1;
+		return (-1);
+	}
+	return (0);
+}
+
+void	ft_ch_dir(t_cd *data, char ***env, char ***export)
+{
+	data->index_pwd = ft_in_env("PWD", *env);
+	data->index_old_pwd = ft_in_env("OLDPWD", *env);
+	if (data->index_pwd > 0)
+	{
+		ft_update_pwd(data, env);
+	}
+	in_env(NULL, *env, 1);
+	data->index_pwd = ft_in_env("PWD", *export);
+	data->index_old_pwd = ft_in_env("OLDPWD", *export);
+	if (data->index_pwd > 0)
+		ft_update_pwd(data, export);
+}
+
+void	ft_change_directory(t_input *list, char ***env, char ***export)
+{
+	t_cd	data;
+
+	ft_strlcpy(data.old_name, "OLDPWD=", 8);
+	ft_strlcpy(data.pwd_name, "PWD=", 5);
+	if (!ft_strcount(list->arg))
+	{
+		if (ft_home_dir(&data, env, export) == -1)
+			return ;
+	}
+	else if (access(list->arg[0], F_OK | R_OK) == -1)
+	{
+		ft_printf("bash: cd: %s: No such file or directory\n", list->arg[0]);
+		g_vars.g_exit_status = 1;
+		return ;
+	}
+	else
+	{
+		chdir(list->arg[0]);
+		if (!ft_long_path_name(&data))
+			return ;
+		ft_ch_dir(&data, env, export);
+	}
 	g_vars.g_exit_status = 0;
 }
