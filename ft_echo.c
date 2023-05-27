@@ -22,7 +22,7 @@ int	ft_check_valid_option(char *str)
 	return (i);
 }
 
-void	ft_echo_no_option(t_echo *data, t_input *list)
+void	ft_echo_option(t_echo *data, t_input *list, int flag)
 {
 	data->i = data->skip;
 	while (list->arg[data->i])
@@ -33,41 +33,17 @@ void	ft_echo_no_option(t_echo *data, t_input *list)
 			if (list->arg[data->i][data->j] == '$'
 				&& list->arg[data->i][data->j + 1] == '?')
 			{
-				printf("%d", g_vars.g_exit_status);
+				ft_putnbr_fd( g_vars.g_exit_status, 1);
 				data->j++;
 			}
 			else
-				printf("%c", list->arg[data->i][data->j]);
+				ft_putchar_fd(list->arg[data->i][data->j], 1);
 			data->j++;
 		}
 		if (data->i < data->count - 1)
-			printf(" ");
-		if (data->i == data->count - 1)
-			printf("\n");
-		data->i++;
-	}
-}
-
-void	ft_echo_with_option(t_echo *data, t_input *list)
-{
-	data->i = data->skip;
-	while (list->arg[data->i])
-	{
-		data->j = 0;
-		while (list->arg[data->i][data->j])
-		{
-			if (list->arg[data->i][data->j] == '$'
-			&& list->arg[data->i][data->j + 1] == '?')
-			{
-				printf("%d", g_vars.g_exit_status);
-				data->j++;
-			}
-			else
-				printf("%c", list->arg[data->i][data->j]);
-			data->j++;
-		}
-		if (data->i < data->count - 1)
-			printf(" ");
+			write(1, " ", 1);
+		if (data->i == data->count - 1 && flag == 1)
+			write(1, "\n", 1);
 		data->i++;
 	}
 }
@@ -92,9 +68,9 @@ void	ft_echo(t_input *list)
 	if (data.skip > 0)
 		data.option = 1;
 	if (data.option)
-		ft_echo_with_option(&data, list);
+		ft_echo_option(&data, list, 0);
 	else
-		ft_echo_no_option(&data, list);
+		ft_echo_option(&data, list, 1);
 	g_vars.g_exit_status = 0;
 	return ;
 }

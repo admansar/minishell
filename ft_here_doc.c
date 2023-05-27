@@ -127,6 +127,11 @@ void	ft_here_doc(t_input *list, int *pos, t_redir *data, char **env)
 				in_fd = open(tmp, O_RDWR | O_CREAT | O_APPEND, 0644);
 				if (input[0] == '$' && data->expand)
 				{
+					if (ft_strlen(input) == 2 && input[0] == '$' && input[1] == '?')
+					{
+						ft_putnbr_fd(g_vars.g_exit_status, in_fd);
+						write(in_fd, "\n", 1);
+					}
 					j = 0;
 					while (input[j])
 					{

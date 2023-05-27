@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 17:17:33 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/05/27 19:31:42 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/05/27 20:08:58 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,8 @@ void	basic_execution(t_input *list, char ***envi)
 	// 	{
 	// 		tmp1 = ft_strjoin(tmp, ".");	
 	// 	}
-	// 			free (tmp);
+		
+	// 	free (tmp);
 	// }
 	if (access(list->cmd, F_OK | X_OK) + 1 && !ft_strncmp(list->cmd, "./", 3))
 	{
