@@ -289,12 +289,18 @@ void	ft_redirections(t_input *list, t_redir *data, char ***env,
 	pid = fork();
 	if (!pid)
 	{
-		dup2(data->out_fd, STDOUT_FILENO);
-		close(data->out_fd);
-		dup2(data->in_fd, STDIN_FILENO);
-		if (data->herdoc_count >= 0)
-			unlink(list->redirect->herdoc_file_name);
-		close(data->in_fd);
+		if (data->count > 0)
+		{
+			dup2(data->out_fd, STDOUT_FILENO);
+			close(data->out_fd);
+		}
+		if (data->herdoc_count >= 0 || data->input_count >= 0)
+		{
+			dup2(data->in_fd, STDIN_FILENO);
+			if (data->herdoc_count >= 0)
+				unlink(list->redirect->herdoc_file_name);
+			close(data->in_fd);
+		}
 		if (list->cmd)
 			ft_exec(list, env, export);
 		exit(EXIT_SUCCESS);

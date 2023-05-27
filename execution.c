@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 17:17:33 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/05/27 10:20:07 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/05/27 19:31:42 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ void	ft_execution(t_input *list, char ***env, char ***export)
 	t_input	*tmp;
 
 	tmp = list;
+	// printer(list->redirect->file_name);
 	ft_execute_here_docs(list, &data, env, export);
 	if (!list->pipe)
 	{
@@ -44,6 +45,7 @@ void	basic_execution(t_input *list, char ***envi)
 {
 	int		inside;
 	char	*tmp;
+	char	*tmp1;
 	char	**env;
 	char	**acces;
 	char	**arg;
@@ -51,7 +53,23 @@ void	basic_execution(t_input *list, char ***envi)
 	int		i;
 	int		status;
 
+	tmp1 = NULL;
 	inside = ft_in_env("PATH", *envi);
+	// if (inside + 1)
+	// {
+	// 	tmp = take_copy((*envi)[inside], ft_simularity_len((*envi)[inside], '=')
+	// 		+ 1, ft_strlen((*envi)[inside]));
+	// 	found = ft_strlen (tmp) - 1;
+	// 	if (tmp[0] == ':')
+	// 	{
+	// 		tmp1 = ft_strjoin(".", tmp); 
+	// 	}
+	// 	if (tmp[found] == ':')
+	// 	{
+	// 		tmp1 = ft_strjoin(tmp, ".");	
+	// 	}
+	// 			free (tmp);
+	// }
 	if (access(list->cmd, F_OK | X_OK) + 1 && !ft_strncmp(list->cmd, "./", 3))
 	{
 		g_vars.pid[g_vars.index] = fork();

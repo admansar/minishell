@@ -101,7 +101,6 @@ void	ft_here_doc(t_input *list, int *pos, t_redir *data, char **env)
 		in_fd = open(tmp, O_RDWR | O_CREAT | O_TRUNC, 0644);
 		close(in_fd);
 	}
-	//unlink (tmp);
 	while (i < data->herdoc_count)
 	{
 		if (surounded_by(list->redirect->file_name[pos[i]], '\"')
@@ -124,6 +123,7 @@ void	ft_here_doc(t_input *list, int *pos, t_redir *data, char **env)
 			}
 			else if (i == data->herdoc_count - 1)
 			{
+				g_vars.g_exit_status = 0;
 				in_fd = open(tmp, O_RDWR | O_CREAT | O_APPEND, 0644);
 				if (input[0] == '$' && data->expand)
 				{

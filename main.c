@@ -894,7 +894,7 @@ int	checking_direction(char *str, char *behind_str, char **env) //this function 
 	end = 1;
 	if (behind_str)
 	{
-		if (!surounded_by(str, '\'') && !char_counter(str, ' ') && (!ft_strncmp(behind_str + ft_simularity_len(behind_str, '<'), "<<", 2)))
+		if (!surounded_by(str, '\'') && /* !char_counter(str, ' ') && */ (!ft_strncmp(behind_str + ft_simularity_len(behind_str, '<'), "<<", 2)))
 			return (2);
 		else if (!surounded_by(str, '\'') && !surounded_by(str, '\"') && !char_counter(str, ' ') && (!ft_strncmp(behind_str, ">>", 2) || !ft_strncmp(behind_str, "<", 1) || !ft_strncmp(behind_str, ">", 1)))
 		{
@@ -1670,9 +1670,9 @@ int main(int ac, char **av, char **envi)
 	while (1)
 	{
 		if (!g_vars.g_exit_status)
-			input = readline("😄\033[0;32mbash-4.2\033[34m$▶️ \033[0m");
+			input = readline("😄\033[0;32mbash-4.2\033[34m$▶️  \033[0m");
 		else
-			input = readline("😡\033[31mbash-4.2\033[34m$❌ \033[0m");
+			input = readline("😡\033[31mbash-4.2\033[34m$❌  \033[0m");
 		if (input == NULL)
 		{
 			// ft_printf ("exit\n");

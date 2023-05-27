@@ -43,45 +43,45 @@ t_global			g_vars;
 
 typedef struct s_export
 {
-	char	**valid_export_vars;
-	char	**valid_env_vars;
-	char	**env_vars;
-	char	*tmp_name;
-	char	*tmp_value;
-	char	*tmp1;
-	char	*tmp2;
-	int		*arr;
-	int		var_nbr;
-	int		j;
-	int		i;
-	int		count;
-	int		ret;
-	int		exist;
-	int		len;
-}				t_export;
+	char			**valid_export_vars;
+	char			**valid_env_vars;
+	char			**env_vars;
+	char			*tmp_name;
+	char			*tmp_value;
+	char			*tmp1;
+	char			*tmp2;
+	int				*arr;
+	int				var_nbr;
+	int				j;
+	int				i;
+	int				count;
+	int				ret;
+	int				exist;
+	int				len;
+}					t_export;
 
-typedef	struct s_echo
+typedef struct s_echo
 {
-	int	i;
-	int	count;
-	int	option;
-	int	skip;
-	int	j;
-}				t_echo;
+	int				i;
+	int				count;
+	int				option;
+	int				skip;
+	int				j;
+}					t_echo;
 
 typedef struct s_cd
 {
-	char	*old_pwd;
-	char	*pwd;
-	char	*joined;
-	char	*home_path;
-	char	old_name[7];
-	char	pwd_name[5];
-	char	path[PATH_MAX];
-	int		index_pwd;
-	int		index_old_pwd;
-	int		home_index;
-}				t_cd;
+	char			*old_pwd;
+	char			*pwd;
+	char			*joined;
+	char			*home_path;
+	char			old_name[7];
+	char			pwd_name[5];
+	char			path[PATH_MAX];
+	int				index_pwd;
+	int				index_old_pwd;
+	int				home_index;
+}					t_cd;
 
 typedef struct s_redir
 {
@@ -150,7 +150,8 @@ char				**ft_join_double_ptr_to_ptr(char *str, char **arr1);
 int					ft_in_env(char *ptr, char **env);
 char				*ft_create_var(char *name, char *value);
 char				**fill(char **str);
-void				ft_change_directory(t_input *list, char ***env, char ***export);
+void				ft_change_directory(t_input *list, char ***env,
+						char ***export);
 void				ft_pwd(void);
 void				ft_echo(t_input *list);
 
@@ -168,19 +169,19 @@ void				ft_execute_here_docs(t_input *list, t_redir *data,
 						char ***env, char ***export);
 int					surounded_by(char *str, char c);
 void				no_surounded_anymore(char **str);
-int	ft_in_env(char *str, char **env);
-int	ft_char_checker(char *str, char c);
-void	ft_get_var_name(char *var, char **var_name);
-void	ft_get_var_value(char *var, char *var_name, char **var_value);
-int	ft_unset_name_checker(char *str);
-int	ft_export_name_checker(char *str);
-void	ft_export_printer(char **export);
-void	ft_clean_up_name(char **str);
-char	**ft_join_double_ptr_to_ptr(char *str, char **arr1);
-char	**ft_join_ptr_to_double_ptr(char **arr1, char *str);
-char	**ft_double_array_joiner(char **arr1, char **arr2);
-void exchange(char **ptr, char c, char b);
-void disable(char **str, char c);
-
+int					ft_in_env(char *str, char **env);
+int					ft_char_checker(char *str, char c);
+void				ft_get_var_name(char *var, char **var_name);
+void				ft_get_var_value(char *var, char *var_name,
+						char **var_value);
+int					ft_unset_name_checker(char *str);
+int					ft_export_name_checker(char *str);
+void				ft_export_printer(char **export);
+void				ft_clean_up_name(char **str);
+char				**ft_join_double_ptr_to_ptr(char *str, char **arr1);
+char				**ft_join_ptr_to_double_ptr(char **arr1, char *str);
+char				**ft_double_array_joiner(char **arr1, char **arr2);
+void				exchange(char **ptr, char c, char b);
+void				disable(char **str, char c);
 
 #endif
