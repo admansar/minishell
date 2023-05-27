@@ -1282,28 +1282,29 @@ void phil_list(t_input **list, char **split)
 	one_time = 0;
 	tmp = *list;
 
-	while (split[i])
+	// printer (split);
+while (split[i])
+{
+	count = char_counter(split[i], '\2');
+	if ((count == 1 && ft_strlen (split[i]) <= 1) || (count == 1 && split[i][0] == '\1' && split[i][1] == '\2' && ft_strlen (split[i]) == 2))
 	{
-		count = char_counter(split[i], '\2'); // kikon lase9 fih '\2' ida t expanda
-		if ((count == 1 && ft_strlen (split[i]) <= 1) || (count == 1 && split[i][0] == '\1' && split[i][1] == '\2' && ft_strlen (split[i]) == 2))
+		j = i;
+		while (split[j + 1])
 		{
-			j = i;
-			while (split [j+1])
-			{
-				free (split[j]);
-				split [j] = ft_strdup (split[j + 1]);
-				j++;
-			}
-			free (split [j]);
-			split [j] = NULL;
-			i = -1;
+			free (split[j]);
+			split[j] = ft_strdup (split[j + 1]);
+			j++;
 		}
-
-		i++;
+		free (split[j]);
+		split[j] = NULL;
+		i = -1;
 	}
+	i++;
+}
+	// printer (split);
 	i = 0;
-	while (split[i])
-	{
+	// while (split[i])
+	// {
 	//	if (char_counter(split[i], '\1')) // '\1' ida kan space only f lwl ola f lakher ida kan mexpandi 
 	//	{
 	//		j = 0;
@@ -1325,8 +1326,8 @@ void phil_list(t_input **list, char **split)
 	//			j++;
 	//		}
 	//	}
-		i++;
-	}
+	// 	i++;
+	// }
 	count = ft_strcount(split);
 	i = 0;
 	while (split[i])
@@ -1363,8 +1364,8 @@ void phil_list(t_input **list, char **split)
 			{
 				if (char_counter(split[i], '\2'))
 					disable (&split[i], '\2');
-				if (char_counter(split[i+1], '\2'))
-					disable (&split[i+1], '\2');
+				// if (char_counter(split[i+1], '\2'))
+					// disable (&split[i+1], '\2');
 				no_surounded_anymore(&split[i + 1]);
 				(*list)->redirect->type[(*list)->redirect->position] = "1";
 				if (split[i+1])
@@ -1376,8 +1377,8 @@ void phil_list(t_input **list, char **split)
 			{
 				if (char_counter(split[i], '\2'))
 					disable (&split[i], '\2');
-					if (char_counter(split[i+1], '\2'))
-					disable (&split[i+1], '\2');
+					// if (char_counter(split[i+1], '\2'))
+					// disable (&split[i+1], '\2');
 				no_surounded_anymore(&split[i + 1]);
 				(*list)->redirect->type[(*list)->redirect->position] = "3";
 				if (split[i+1])
@@ -1454,6 +1455,7 @@ void phil_list(t_input **list, char **split)
 		}
 		i++;
 	}
+	// printer ((*list)->arg);
 	(*list) = tmp;
 }
 

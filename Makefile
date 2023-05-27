@@ -7,7 +7,7 @@ SRC = execution.c ft_change_dir.c ft_echo.c ft_export.c ft_here_doc.c ft_pwd.c f
 
 CC = cc
 
-CFLAGS =-Wall -Wextra -Werror #-fsanitize=address -g#-I/goinfre/${USER_NAME}/homebrew/opt/readline/include -L/goinfre/${USER_NAME}/homebrew/opt/readline/lib -g -fsanitize=address
+CFLAGS = -Wall -Wextra -Werror -g -fsanitize=address#-I/goinfre/${USER_NAME}/homebrew/opt/readline/include -L/goinfre/${USER_NAME}/homebrew/opt/readline/lib -g -fsanitize=address
 
 all : $(NAME)
 
@@ -15,7 +15,6 @@ $(NAME) : $(SRC)
 	@make -C libft
 	$(emo)
 	$(CC) $(SRC) ${CFLAGS} libft/libft.a -lreadline -o $(NAME)
-	@rm -rf ${NAME}.dSYM
 
 clean :
 	make -C libft clean
