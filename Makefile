@@ -3,7 +3,7 @@ NAME = minishell
 USER_NAME := $(USER)
 
 
-SRC = execution.c ft_change_dir.c ft_echo.c ft_export.c ft_here_doc.c ft_pwd.c ft_redirections.c ft_unset.c ft_utils_1.c ft_utils_2.c ft_utils_3.c main.c test.c
+SRC = execution.c ft_change_dir.c ft_echo.c ft_export.c ft_here_doc.c ft_pwd.c ft_redirections.c ft_unset.c ft_utils_1.c ft_utils_2.c ft_utils_3.c main.c
 
 CC = cc
 

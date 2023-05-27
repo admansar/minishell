@@ -912,11 +912,11 @@ int	checking_direction(char *str, char *behind_str, char **env) //this function 
 					free (tmp);
 					return (1);
 				}
-				else
-				{
-					free (tmp);
-					return (0);
-				}
+				// else
+				// {
+					// free (tmp);
+					// return (0);
+				// }
 			}
 			else
 			{
@@ -1138,7 +1138,7 @@ void expand(char ***str_pro_max, char **env)
 				to_expand = checking_direction((*str_pro_max)[i], NULL, env);
 			if (to_expand == 0)
 			{
-				(*str_pro_max)[i] = ft_str_join((*str_pro_max)[i]  ,"\a"); // if you see a '\a' it means only and one thing that this is a error "ambiguous redirect in this case", you also hear a 'ding' sound on it 
+				// (*str_pro_max)[i] = ft_str_join((*str_pro_max)[i]  ,"\a"); // if you see a '\a' it means only and one thing that this is a error "ambiguous redirect in this case", you also hear a 'ding' sound on it 
 			}
 			if (surounded_by((*str_pro_max)[i], '\"') && to_expand == 2)
 			{
@@ -1338,6 +1338,8 @@ void phil_list(t_input **list, char **split)
 			{
 				if (char_counter(split[i], '\2'))
 					disable (&split[i], '\2');
+				if (char_counter(split[i+1], '\2'))
+					disable (&split[i+1], '\2');
 				no_surounded_anymore(&split[i + 1]);
 				(*list)->redirect->type[(*list)->redirect->position] = "2";
 				if (split[i+1])
@@ -1349,6 +1351,8 @@ void phil_list(t_input **list, char **split)
 			{
 				if (char_counter(split[i], '\2'))
 					disable (&split[i], '\2');
+				if (char_counter(split[i+1], '\2'))
+					disable (&split[i+1], '\2');
 				(*list)->redirect->type[(*list)->redirect->position] = "4";
 				if (split[i+1])
 				(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
@@ -1359,6 +1363,8 @@ void phil_list(t_input **list, char **split)
 			{
 				if (char_counter(split[i], '\2'))
 					disable (&split[i], '\2');
+				if (char_counter(split[i+1], '\2'))
+					disable (&split[i+1], '\2');
 				no_surounded_anymore(&split[i + 1]);
 				(*list)->redirect->type[(*list)->redirect->position] = "1";
 				if (split[i+1])
@@ -1370,6 +1376,8 @@ void phil_list(t_input **list, char **split)
 			{
 				if (char_counter(split[i], '\2'))
 					disable (&split[i], '\2');
+					if (char_counter(split[i+1], '\2'))
+					disable (&split[i+1], '\2');
 				no_surounded_anymore(&split[i + 1]);
 				(*list)->redirect->type[(*list)->redirect->position] = "3";
 				if (split[i+1])

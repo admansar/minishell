@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/06 11:52:20 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/05/26 22:43:23 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/05/27 13:26:52 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,7 @@ typedef struct s_redir
 	int				in_fd;
 	int				error;
 	int				expand;
+	int				count;
 }					t_redir;
 
 typedef struct s_redirection
@@ -178,6 +179,7 @@ void	ft_clean_up_name(char **str);
 char	**ft_join_double_ptr_to_ptr(char *str, char **arr1);
 char	**ft_join_ptr_to_double_ptr(char **arr1, char *str);
 char	**ft_double_array_joiner(char **arr1, char **arr2);
+void exchange(char **ptr, char c, char b);
 
 
 
