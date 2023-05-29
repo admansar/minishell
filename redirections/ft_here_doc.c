@@ -62,16 +62,18 @@ void	ft_here_doc(t_input *list, int *pos, t_redir *data, char **env)
 {
 	char	*input;
 	char	*tmp;
-	char	*to_expand;
-	char	*expanded;
-	char	*dollar_str;
+	// char	*to_expand;
+	// char	*expanded;
+	// char	*dollar_str;
 	char	*ruin_name;
 	int		i;
-	int		j;
+	// int		j;
 	int		rand;
 	int		in_fd;
-	int		pos_env;
+	// int		pos_env;
+	char	**copy_exp;
 
+	copy_exp = (char **)ft_calloc(sizeof(char *), 2);
 	data->expand = 1;
 	i = 0;
 	rand = ft_random() % 63;
@@ -108,30 +110,35 @@ void	ft_here_doc(t_input *list, int *pos, t_redir *data, char **env)
 			{
 				g_vars.g_exit_status = 0;
 				in_fd = open(tmp, O_RDWR | O_CREAT | O_APPEND, 0644);
-
-				if (input[0] == '$' && data->expand)
+				if (data->expand)
 				{
-					j = 0;
-					while (input[j])
-					{
-						if (input[j] == '$')
-							j++;
-						else
-							break ;
-					}
-					dollar_str = take_copy(input, 0, j - 2);
-					write(in_fd, dollar_str, ft_strlen(dollar_str));
-					to_expand = take_copy(input, j, ft_strlen(input));
-					pos_env = ft_in_env(to_expand, env);
-					if (pos_env >= 0)
-					{
-						ft_get_var_value(env[pos_env], to_expand, &expanded);
-						write(in_fd, expanded, ft_strlen(expanded));
-						write(in_fd, "\n", 1);
-						free(expanded);
-					}
-					free(dollar_str);
-					free(to_expand);
+					copy_exp[0] = ft_strdup(input);
+					expand(&copy_exp, env);
+					// printf("$%s$\n", copy_exp[0]);
+					ft_putstr_fd(copy_exp[0], in_fd);
+					ft_putchar_fd('\n', in_fd);
+					free(copy_exp[0]);
+					// j = 0;
+					// while (input[j])
+					// {
+					// 	if (input[j] == '$')
+					// 		j++;
+					// 	else
+					// 		break ;
+					// }
+					// dollar_str = take_copy(input, 0, j - 2);
+					// write(in_fd, dollar_str, ft_strlen(dollar_str));
+					// to_expand = take_copy(input, j, ft_strlen(input));
+					// pos_env = ft_in_env(to_expand, env);
+					// if (pos_env >= 0)
+					// {
+					// 	ft_get_var_value(env[pos_env], to_expand, &expanded);
+					// 	write(in_fd, expanded, ft_strlen(expanded));
+					// 	write(in_fd, "\n", 1);
+					// 	free(expanded);
+					// }
+					// free(dollar_str);
+					// free(to_expand);
 				}
 				else
 				{
