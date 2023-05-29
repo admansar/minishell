@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/06 11:52:20 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/05/29 14:56:06 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/05/29 23:39:52 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -186,5 +186,6 @@ void				exchange(char **ptr, char c, char b);
 void				disable(char **str, char c);
 void				ft_update_last_command(char ***env, t_input *list);
 void				ft_update_exit_status(char ***env);
+void				array_expander(char **ptr, char **env);
 
 #endif

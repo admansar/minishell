@@ -30,13 +30,13 @@ void	ft_echo_option(t_echo *data, t_input *list, int flag)
 		data->j = 0;
 		while (list->arg[data->i][data->j])
 		{
-			if (list->arg[data->i][data->j] == '$'
-				&& list->arg[data->i][data->j + 1] == '?')
-			{
-				ft_putnbr_fd( g_vars.g_exit_status, 1);
-				data->j++;
-			}
-			else
+		//	if (list->arg[data->i][data->j] == '$'
+		//		&& list->arg[data->i][data->j + 1] == '?')
+		//	{
+		//		ft_putnbr_fd( g_vars.g_exit_status, 1);
+		//		data->j++;
+		//	}
+		//	else
 				ft_putchar_fd(list->arg[data->i][data->j], 1);
 			data->j++;
 		}

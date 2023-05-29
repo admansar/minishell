@@ -1022,6 +1022,124 @@ void no_extra_space(char **ptr)
 	free (re);
 }
 
+void array_expander(char **ptr, char **env)
+{
+	int i;
+	int h;
+	int j;
+	int k;
+	int start;
+	int end;
+	char *str;
+	char *tmp;
+	char *tmp2;
+	char *re;
+
+	i = 0;
+	str = *ptr;
+	while (str[i])
+	{
+		if (str[i] == '$' && (ft_isalpha(str[i+1]) || ft_isdigit(str[i+1]) || str[i+1] == '_'))
+		{
+			start = i;
+			while (str[i] && (ft_isalpha(str[i+1]) || ft_isdigit(str[i+1]) || str[i+1] == '_'))
+				i++;
+			end = i;
+			tmp = take_copy(str, start + 1, end);
+			k = 0;
+			while (env[k])
+			{
+				h = ft_strlen(env[k]);
+				if (!ft_strncmp(env[k], tmp, h) && env[k][h] == '=')
+				{
+					k = ft_strlen (env[k]);
+					break;
+				}
+					k++;
+			}
+			free (tmp);
+		}
+		else if (str[i] == '$' && str[i+1] == '?')
+		{
+				tmp = ft_strdup ("?");
+				i++;
+				k = 0;
+				h = ft_strlen(tmp);
+				while (env[k])
+				{
+					if (!ft_strncmp(tmp, env[k], h) && env[k][h] == '=')
+					{
+						k = ft_strlen (env[k]);
+						break;
+					}
+					k++;
+				}
+				free (tmp);
+			}
+		i++;
+	}
+	re = malloc (sizeof (char) * (ft_strlen (str) + k + 1) * (char_counter(str, '$')  + 1));
+	i = 0;
+	j = 0;
+	while (str[i])
+	{
+		if (str[i] == '$' && (ft_isalpha(str[i+1]) || ft_isdigit(str[i+1]) || str[i+1] == '_'))
+		{
+			start = i;
+			while (str[i] && (ft_isalpha(str[i+1]) || ft_isdigit(str[i+1]) || str[i+1] == '_'))
+				i++;
+			end = i;
+			tmp = take_copy(str, start + 1, end);
+			k = 0;
+			while (env[k])
+			{
+				h = ft_strlen(env[k]);
+				if (!ft_strncmp(env[k], tmp, h) && env[k][h] == '=')
+				{
+					tmp2 = take_copy(env[k], h + 1, ft_strlen(env[k]));
+					k = 0;
+				   while (tmp2[k])
+					   re[j++] = tmp2[k++];
+				   free (tmp2);
+					break;
+				}
+					k++;
+			}
+			j--;
+			free (tmp);
+		}
+		else if (str[i] == '$' && str[i + 1] == '?')
+		{
+				tmp = ft_strdup ("?");
+				i++;
+				k = 0;
+				h = ft_strlen(tmp);
+				while (env[k])
+				{
+					if (!ft_strncmp(tmp, env[k], h) && env[k][h] == '=')
+					{
+						tmp2 = take_copy(env[k], h + 1, ft_strlen(env[k]));
+						k = 0;
+						while (tmp2[k])
+							re[j++] = tmp2[k++];
+						free (tmp2);
+						break;
+					}
+					k++;
+				}
+				j--;
+				free (tmp);
+		}
+		else
+			re[j] = str[i];
+		j++;
+		i++;
+	}
+	re[j] = '\0';
+	free (*ptr);
+	*ptr = ft_strdup (re);
+}
+
 void expand(char ***str_pro_max, char **env)
 {
 	int i;
@@ -1051,7 +1169,9 @@ void expand(char ***str_pro_max, char **env)
 		while ((*str_pro_max)[i][j])
 		{
 			if ((*str_pro_max)[i][j] == '$' && ((*str_pro_max)[i][j+1] == '@' || ft_isdigit((*str_pro_max)[i][j+1])))
-			delete_them(&(*str_pro_max)[i], j, j + 1);
+			{
+				delete_them(&(*str_pro_max)[i], j, j + 1);
+			}
 			if ((*str_pro_max)[i][j] == '$' && (ft_isalpha((*str_pro_max)[i][j + 1]) || (*str_pro_max)[i][j + 1] == '_' || ft_isdigit((*str_pro_max)[i][j + 1])))
 			{
 				start = j;
@@ -1074,7 +1194,26 @@ void expand(char ***str_pro_max, char **env)
 				if (j >= (int)ft_strlen((*str_pro_max)[i]))
 					break;
 			}
-			else 
+			else if ((*str_pro_max)[i][j] == '$' && ((*str_pro_max)[i][j+1] == '?'))
+			{
+				tmp = ft_strdup ("?");
+				j++;
+				k = 0;
+				h = ft_strlen(tmp);
+				while (env[k])
+				{
+					if (!ft_strncmp(tmp, env[k], h) && env[k][h] == '=')
+					{
+						k = ft_strlen (env[k]);
+						break;
+					}
+					k++;
+				}
+				if (j >= (int)ft_strlen((*str_pro_max)[i]))
+					break;
+				free (tmp);
+			}
+			else
 				j++;
 		}
 		str[i] = ft_calloc (sizeof (char) ,(ft_strlen ((*str_pro_max)[i]) + k + 1) * (char_counter((*str_pro_max)[i], '$') + 3));
@@ -1111,11 +1250,11 @@ void expand(char ***str_pro_max, char **env)
 						no_extra_space(&tmp2);
 						replace_spaces(&tmp2);
 						tmp2 = ft_str_join(tmp2, "\2");
-				//		free (tmp);
-				//		tmp = ft_strjoin ("\1", tmp2);
-				//		free (tmp2);
-				//		tmp2 = ft_str_join (tmp, "\1");
-				//		tmp = NULL;
+						//		free (tmp);
+						//		tmp = ft_strjoin ("\1", tmp2);
+						//		free (tmp2);
+						//		tmp2 = ft_str_join (tmp, "\1");
+						//		tmp = NULL;
 						k = 0;
 						while (tmp2[k])
 							str[i][m++] = tmp2[k++];
@@ -1126,6 +1265,28 @@ void expand(char ***str_pro_max, char **env)
 				}
 				m--;
 				free(tmp);
+			}
+			else if ((*str_pro_max)[i][j] == '$' && ((*str_pro_max)[i][j+1] == '?'))
+			{
+				tmp = ft_strdup ("?");
+				j++;
+				k = 0;
+				h = ft_strlen(tmp);
+				while (env[k])
+				{
+					if (!ft_strncmp(tmp, env[k], h) && env[k][h] == '=')
+					{
+						tmp2 = take_copy(env[k], h + 1, ft_strlen(env[k]));
+						k = 0;
+						while (tmp2[k])
+							str[i][m++] = tmp2[k++];
+						free (tmp2);
+						break;
+					}
+					k++;
+				}
+				m--;
+				free (tmp);
 			}
 			else 
 				str[i][m] = (*str_pro_max)[i][j];
