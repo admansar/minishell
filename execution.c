@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 17:17:33 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/05/27 20:08:58 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/05/29 15:15:19 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,6 +117,12 @@ void	basic_execution(t_input *list, char ***envi)
 	}
 	else if (inside + 1 && !char_counter(list->cmd, '/'))
 	{
+		if (list->arg[0])
+			if (list->arg[0][0] == '\0')
+			{
+				free (list->arg[0]);
+				list->arg[0] = NULL;
+			}
 		tmp = take_copy((*envi)[inside], ft_simularity_len((*envi)[inside], '=')
 				+ 1, ft_strlen((*envi)[inside]));
 		env = ft_split(tmp, ':');

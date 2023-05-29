@@ -590,6 +590,8 @@ void the_joiner(char ***str_pro_max)
 			k = 0;
 			if ((*str_pro_max)[i][h] != ' ' && !k && (*str_pro_max)[i + 1][0] != '>' && (*str_pro_max)[i + 1][0] != '<' && (*str_pro_max)[i + 1][0] != '|')
 			{
+				if (char_counter((*str_pro_max)[i + 1], '$') && surounded_by((*str_pro_max)[i + 1], '\''))
+					exchange (&(*str_pro_max)[i + 1], '\'', '\"');
 				(*str_pro_max)[i] = ft_str_join((*str_pro_max)[i], (*str_pro_max)[i + 1]);
 				j = i + 1;
 				while ((*str_pro_max)[j + 1])
@@ -1132,7 +1134,17 @@ void expand(char ***str_pro_max, char **env)
 	{
 		if (char_counter((*str_pro_max)[i], '$'))
 		{
-			if (i > 0)
+			j = i;
+			while (j > 0)
+			{
+				h = ft_strlen ((*str_pro_max)[j]) - 1;
+				if (h >= 0 && (*str_pro_max)[j][h] == ' ')
+					break;
+				j--;
+			}
+			if (j >= 0 && j != i)
+				to_expand = checking_direction((*str_pro_max)[i], (*str_pro_max)[j], env);
+			else if (i > 0)
 				to_expand = checking_direction((*str_pro_max)[i], (*str_pro_max)[i - 1], env);
 			else
 				to_expand = checking_direction((*str_pro_max)[i], NULL, env);
