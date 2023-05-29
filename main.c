@@ -615,7 +615,12 @@ void printer(char **ptr)
 
 	i = 0;
 	while (ptr[i])
-		printf ("%s\n", ptr[i++]);
+	{
+		if (ptr[i][0] == '?' && ptr[i][1] == '=')
+			i++;
+		else
+			printf ("%s\n", ptr[i++]);
+	}
 	g_vars.g_exit_status = 0;
 	//	printf ("-------%d\n", ft_strcount(ptr));
 }
@@ -1671,6 +1676,7 @@ int main(int ac, char **av, char **envi)
 	(void)ac;
 	(void)av;
 	env = fill(envi);
+	env = ft_join_ptr_to_double_ptr(env, "?=0");
 	shlvl(&env, 1);
 	in_env(NULL, env, 1);
 	export = fill(env);
@@ -1718,14 +1724,19 @@ int main(int ac, char **av, char **envi)
 				free_double_array(split);
 				split = NULL;
 			}
+			ft_update_exit_status(&env);
 			if (split)
 			{
 				list = work_time(split);
 				free_double_array(split);
 				ft_execution(list, &env, &export);
+				ft_update_exit_status(&env);
+				ft_update_last_command(&env, list);
+				// printer(env);
 				free_list(list);
 			}
 		}
+				// while (1);
 		free (copy);
 		add_history(input);
 		free(input);

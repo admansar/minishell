@@ -3,11 +3,11 @@ NAME = minishell
 USER_NAME := $(USER)
 
 
-SRC = execution.c ft_change_dir.c ft_echo.c ft_export.c ft_here_doc.c ft_pwd.c ft_redirections.c ft_unset.c ft_utils_1.c ft_utils_2.c ft_utils_3.c main.c
+SRC = execution.c ft_change_dir.c ft_echo.c ft_export.c ft_here_doc.c ft_pwd.c ft_redirections.c ft_unset.c ft_utils_1.c ft_utils_2.c ft_utils_3.c ft_utils_4.c main.c
 
 CC = cc
 
-CFLAGS = -Wall -Wextra -Werror -g -fsanitize=address#-I/goinfre/${USER_NAME}/homebrew/opt/readline/include -L/goinfre/${USER_NAME}/homebrew/opt/readline/lib -g -fsanitize=address
+CFLAGS = -Wall -Wextra -Werror #-g -fsanitize=address #-I/goinfre/${USER_NAME}/homebrew/opt/readline/include -L/goinfre/${USER_NAME}/homebrew/opt/readline/lib -g -fsanitize=address
 
 all : $(NAME)
 

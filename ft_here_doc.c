@@ -3,16 +3,15 @@
 
 unsigned int	ft_random(void)
 {
-	static unsigned int	rand;
+	static long int	rand;
 	char				*p;
 	int					i;
 
-	rand = 0;
 	p = malloc(sizeof(char) * 2);
 	i = (unsigned char)&p[0];
-	rand = ((rand + i) * 1103515245 + 12345) & 0xFFFFFFFF;
+	rand += ((rand + i) * 1103515245 + 12345) & 0xFFFFFFFF;
 	free(p);
-	return (rand);
+	return ((unsigned int)rand);
 }
 
 char	*ft_generate_rand_str(int len)
@@ -56,22 +55,6 @@ int	*ft_get_operators_pos(t_input *list, char *str, int *count)
 		if (!ft_strcmp(list->redirect->type[i], str))
 			pos[j++] = i;
 	return (pos);
-}
-
-void	ft_join_str_to_double_array(char ***arg, char **to_join)
-{
-	int		len;
-	int		i;
-	char	**joined;
-
-	len = ft_strcount((*arg));
-	joined = (char **)ft_calloc(sizeof(char *), len + 2);
-	i = -1;
-	while ((*arg)[++i])
-		joined[i] = ft_strdup((*arg)[i]);
-	joined[i] = ft_strdup(*to_join);
-	free_double_array((*arg));
-	(*arg) = joined;
 }
 
 // launch here-doc as many times as it appear in the input
@@ -125,13 +108,9 @@ void	ft_here_doc(t_input *list, int *pos, t_redir *data, char **env)
 			{
 				g_vars.g_exit_status = 0;
 				in_fd = open(tmp, O_RDWR | O_CREAT | O_APPEND, 0644);
+
 				if (input[0] == '$' && data->expand)
 				{
-					if (ft_strlen(input) == 2 && input[0] == '$' && input[1] == '?')
-					{
-						ft_putnbr_fd(g_vars.g_exit_status, in_fd);
-						write(in_fd, "\n", 1);
-					}
 					j = 0;
 					while (input[j])
 					{

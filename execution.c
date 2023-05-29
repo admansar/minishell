@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 17:17:33 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/05/29 15:15:19 by admansar         ###   ########.fr       */
+/*   Updated: 2023/05/29 16:27:15 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,20 +25,67 @@ void	ft_execution(t_input *list, char ***env, char ***export)
 	if (!list->pipe)
 	{
 		if (list->redirect->position)
+		{
 			ft_redirections(list, &data, env, export);
+		}
 		else
 			ft_exec(list, env, export);
-		return ;
+		// return ;
 	}
 	else
 		ft_pipe(list, &data, env, export);
-	tmp = list;
-	while (tmp)
+	// tmp = list;
+	// while (tmp)
+	// {
+	// 	if (tmp->redirect->position){
+	// 		// printf("I am in\n");
+	// 		free(tmp->redirect->herdoc_file_name);
+	// 	}
+	// 	tmp = tmp->next;
+	// }
+}
+
+int found_in_middle(char *str)
+{
+	int i;
+	int count;
+
+	count = 0;
+	i = 0;
+	while (str[i])
 	{
-		if (tmp->redirect->position)
-			free(tmp->redirect->herdoc_file_name);
-		tmp = tmp->next;
+		if (str[i] == ':' && str[i + 1] == ':')
+			count++;
+		i++;
 	}
+	return (count);
+}
+
+char	*ft_fix_path(char *str, int in_mid)
+{
+	char *fixed;
+	int i;
+	int j;
+
+	i = 0;
+	j = 0;
+	fixed = (char *) ft_calloc(sizeof(char) , ft_strlen(str) + in_mid + 1);
+	while (str[i])
+	{
+		if (str[i] == ':' && str[i + 1] == ':')
+		{
+			fixed[j++] = ':';
+			fixed[j++] = '.';
+			fixed[j]= ':';
+			i+=2;
+		}
+		else
+			fixed[j] = str[i];
+		j++;
+		i++;
+	}
+	free(str);
+	return (fixed);
 }
 
 void	basic_execution(t_input *list, char ***envi)
@@ -49,28 +96,34 @@ void	basic_execution(t_input *list, char ***envi)
 	char	**env;
 	char	**acces;
 	char	**arg;
+	int		in_mid;
 	int		found;
 	int		i;
 	int		status;
-
+	
 	tmp1 = NULL;
 	inside = ft_in_env("PATH", *envi);
-	// if (inside + 1)
-	// {
-	// 	tmp = take_copy((*envi)[inside], ft_simularity_len((*envi)[inside], '=')
-	// 		+ 1, ft_strlen((*envi)[inside]));
-	// 	found = ft_strlen (tmp) - 1;
-	// 	if (tmp[0] == ':')
-	// 	{
-	// 		tmp1 = ft_strjoin(".", tmp); 
-	// 	}
-	// 	if (tmp[found] == ':')
-	// 	{
-	// 		tmp1 = ft_strjoin(tmp, ".");	
-	// 	}
-		
-	// 	free (tmp);
-	// }
+	if (inside + 1)
+	{
+		tmp = take_copy((*envi)[inside], ft_simularity_len((*envi)[inside], '=')
+			+ 1, ft_strlen((*envi)[inside]));
+		found = ft_strlen (tmp) - 1;
+		if (tmp[0] == ':')
+		{
+			tmp1 = ft_strjoin(".", tmp);
+			if (tmp1 && tmp[found] == ':')
+				tmp1 = ft_str_join(tmp1, ".");
+			else if (tmp[found] == ':')
+				tmp1 = ft_strjoin(tmp, ".");	
+		}
+		in_mid = found_in_middle(tmp);
+		if (in_mid)
+		{
+			tmp1 = ft_fix_path(tmp1, in_mid);
+		}
+		free(tmp1);
+		free (tmp);
+	}
 	if (access(list->cmd, F_OK | X_OK) + 1 && !ft_strncmp(list->cmd, "./", 3))
 	{
 		g_vars.pid[g_vars.index] = fork();
@@ -116,7 +169,7 @@ void	basic_execution(t_input *list, char ***envi)
 		g_vars.g_exit_status = status;
 	}
 	else if (inside + 1 && !char_counter(list->cmd, '/'))
-	{
+	{		
 		if (list->arg[0])
 			if (list->arg[0][0] == '\0')
 			{
@@ -236,7 +289,10 @@ void	ft_exec(t_input *list, char ***envi, char ***export)
 	else if (!ft_strcmp(list->cmd, "unset"))
 		ft_unset(envi, list, export);
 	else if (!ft_strcmp(list->cmd, "env"))
+	{
+		ft_update_last_command(envi, list);
 		printer(*envi);
+	}
 	else if (!ft_strcmp(list->cmd, "cd"))
 		ft_change_directory(list, envi, export);
 	else if (!ft_strcmp(list->cmd, "pwd"))

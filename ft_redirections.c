@@ -169,7 +169,8 @@ void	ft_get_input(t_input *list, t_redir *data)
 	{
 		data->in_fd = open(list->redirect->herdoc_file_name,
 			O_RDONLY, 0644);
-			// unlink(list->redirect->herdoc_file_name);
+		unlink(list->redirect->herdoc_file_name);
+		free(list->redirect->herdoc_file_name);
     }
 	else if (data->herdoc_count < data->input_count)
 		data->in_fd = open(list->redirect->file_name[data->input_count],
@@ -297,8 +298,6 @@ void	ft_redirections(t_input *list, t_redir *data, char ***env,
 		if (data->herdoc_count >= 0 || data->input_count >= 0)
 		{
 			dup2(data->in_fd, STDIN_FILENO);
-			if (data->herdoc_count >= 0)
-				unlink(list->redirect->herdoc_file_name);
 			close(data->in_fd);
 		}
 		if (list->cmd)

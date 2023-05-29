@@ -44,14 +44,19 @@ void	ft_export_printer(char **export)
 {
 	t_export	data;
 
-	data.i = -1;
-	while (export[++data.i])
+	data.i = 0;
+	while (export[data.i])
 	{
 		data.len = ft_simularity_len(export[data.i], '=');
 		data.tmp1 = take_copy(export[data.i], 0, data.len - 1);
 		data.tmp2 = take_copy(export[data.i], data.len + 1, ft_strlen(export[data.i]));
-		if (ft_char_checker(export[data.i], '=') == -1)
+		if (export[data.i][0] == '?' && export[data.i][1] == '=')
+			data.i++;
+		else if (ft_char_checker(export[data.i], '=') == -1)
+		{
 			printf("declare -x %s\n", data.tmp1);
+			data.i++;
+		}
 		else
 		{
 			printf("declare -x %s=\"", data.tmp1);
@@ -63,6 +68,7 @@ void	ft_export_printer(char **export)
 				printf("%c", data.tmp2[data.j]);
 			}
 			printf("\"\n");
+			data.i++;
 		}
 		free(data.tmp1);
 		free(data.tmp2);
