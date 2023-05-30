@@ -30,6 +30,15 @@ void	ft_file_creation(t_input *list, t_redir *data)
 			g_vars.g_exit_status = 1;
 			break ;	
 		}
+
+		if (list->redirect->file_name[i] && char_counter(list->redirect->file_name[i], '\a'))
+		{
+			ft_printf("minishell: ambiguous redirect\n");
+			// printf("file name : %s$\n", list->redirect->file_name[i]);
+			data->error = 1;
+			g_vars.g_exit_status = 1;
+			break ;
+		}
 		if (list->redirect->file_name[i] && list->redirect->file_name[i][0] == '\0')
 		{
 			ft_printf("minishell: No such file or directory\n");
@@ -133,7 +142,14 @@ void	ft_file_creation(t_input *list, t_redir *data)
 					data->error = 1;
 					break;
 				}
-				printf("bash: %s: %s\n", list->redirect->file_name[i],
+				if (list->redirect->file_name[i][0] == '$')
+				{
+					ft_printf("minishell: ambiguous redirect\n");
+					g_vars.g_exit_status = 1;
+					data->error = 1;
+					break;
+				}
+				ft_printf("bash: %s: %s\n", list->redirect->file_name[i],
 						strerror(errno));
 				g_vars.g_exit_status = 1;
 				break ;
@@ -258,7 +274,7 @@ void	ft_redirections(t_input *list, t_redir *data, char ***env,
 		tmp = clean_from (list->redirect->file_name[i], '\2');
 		if (ft_char_checker(list->redirect->file_name[i], '\4') >= 0)
 		{
-			exchange (&list->redirect->file_name[i], '\4', '4');
+		//	exchange (&list->redirect->file_name[i], '\4', '4');
 			// printf("file name : %s$\n", list->redirect->file_name[i]);
 			ft_printf("minishell: ambiguous redirect\n");
 			g_vars.g_exit_status = 1;

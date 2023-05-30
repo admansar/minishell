@@ -2,7 +2,7 @@ NAME = minishell
 
 USER_NAME := $(USER)
 
-SRC = main.c ft_wildcard.c
+SRC = main.c
 
 BUILTIN_PATH = builtins
 
@@ -20,9 +20,9 @@ REDIRECTIONS_SRC = $(addprefix $(REDIRECTIONS_PATH)/, ft_redirections.c ft_here_
 
 EXECUTION_SRC = $(addprefix $(EXECUTION_PATH)/, execution.c)
 
-OBJ = $(OBJ_DIR)/$(SRC:.c=.o) $(OBJ_DIR)/$(BUILTIN_SRC:.c=.o)  $(OBJ_DIR)/$(UTILS_SRC:.c=.o) $(OBJ_DIR)/$(REDIRECTIONS_SRC:.c=.o) $(OBJ_DIR)/$(EXECUTION_SRC:.c=.o)
-
 OBJ_DIR := ./objects
+
+OBJ = $(OBJ_DIR)/$(SRC:.c=.o) $(OBJ_DIR)/$(BUILTIN_SRC:.c=.o)  $(OBJ_DIR)/$(UTILS_SRC:.c=.o) $(OBJ_DIR)/$(REDIRECTIONS_SRC:.c=.o) $(OBJ_DIR)/$(EXECUTION_SRC:.c=.o)
 
 SRC_DIR := .
 
@@ -60,7 +60,7 @@ $(OBJ_DIR)/%.o: $(EXECUTION_PATH)/%.c
 clean :
 	make -C libft clean
 	rm -rf objects
-	@rm */*.o
+	@rm -f */*.o
 
 fclean : clean
 	@rm -rf ${NAME}.dSYM

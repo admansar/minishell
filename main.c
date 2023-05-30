@@ -622,6 +622,7 @@ void printer(char **ptr)
 			printf ("%s\n", ptr[i++]);
 	}
 	g_vars.g_exit_status = 0;
+	//	printf ("-------%d\n", ft_strcount(ptr));
 }
 
 //the dual of qoutes and double qoutes 
@@ -1048,7 +1049,7 @@ void array_expander(char **ptr, char **env)
 			k = 0;
 			while (env[k])
 			{
-				h = ft_strlen(env[k]);
+				h = ft_strlen(tmp);
 				if (!ft_strncmp(env[k], tmp, h) && env[k][h] == '=')
 				{
 					k = ft_strlen (env[k]);
@@ -1090,9 +1091,9 @@ void array_expander(char **ptr, char **env)
 			end = i;
 			tmp = take_copy(str, start + 1, end);
 			k = 0;
+			h = ft_strlen(tmp);
 			while (env[k])
 			{
-				h = ft_strlen(env[k]);
 				if (!ft_strncmp(env[k], tmp, h) && env[k][h] == '=')
 				{
 					tmp2 = take_copy(env[k], h + 1, ft_strlen(env[k]));
@@ -1137,6 +1138,7 @@ void array_expander(char **ptr, char **env)
 	re[j] = '\0';
 	free (*ptr);
 	*ptr = ft_strdup (re);
+	free (re);
 }
 
 void expand(char ***str_pro_max, char **env)
@@ -1300,13 +1302,14 @@ void expand(char ***str_pro_max, char **env)
 		if (char_counter((*str_pro_max)[i], '$'))
 		{
 			j = i;
-			while (j > 0)
-			{
-				h = ft_strlen ((*str_pro_max)[j]) - 1;
-				if (h >= 0 && (*str_pro_max)[j][h] == ' ')
-					break;
-				j--;
-			}
+			if (mega_counter((*str_pro_max), '\'') || mega_counter((*str_pro_max), '\"'))
+				while (j > 0)
+				{
+					h = ft_strlen ((*str_pro_max)[j]) - 1;
+					if (h >= 0 && (*str_pro_max)[j][h-1] == ' ')
+						break;
+					j--;
+				}
 			if (j >= 0 && j != i)
 				to_expand = checking_direction((*str_pro_max)[i], (*str_pro_max)[j], env);
 			else if (i > 0)
@@ -1315,7 +1318,8 @@ void expand(char ***str_pro_max, char **env)
 				to_expand = checking_direction((*str_pro_max)[i], NULL, env);
 			if (to_expand == 0)
 			{
-				// (*str_pro_max)[i] = ft_str_join((*str_pro_max)[i]  ,"\a"); // if you see a '\a' it means only and one thing that this is a error "ambiguous redirect in this case", you also hear a 'ding' sound on it 
+			//	printf ("%s\n", (*str_pro_max)[i]);
+				(*str_pro_max)[i] = ft_str_join((*str_pro_max)[i]  ,"\a"); // if you see a '\a' it means only and one thing that this is a error "ambiguous redirect in this case", you also hear a 'ding' sound on it 
 			}
 			if (surounded_by((*str_pro_max)[i], '\"') && to_expand == 2)
 			{
@@ -1448,6 +1452,7 @@ void phil_list(t_input **list, char **split)
 	int i;
 	int m;
 	int n;
+	int k;
 	int one_time;
 	int count;
 	t_input *tmp;
@@ -1459,26 +1464,26 @@ void phil_list(t_input **list, char **split)
 	one_time = 0;
 	tmp = *list;
 
-	// printer (split);
-while (split[i])
-{
-	count = char_counter(split[i], '\2');
-	if ((count == 1 && ft_strlen (split[i]) <= 1) || (count == 1 && split[i][0] == '\1' && split[i][1] == '\2' && ft_strlen (split[i]) == 2))
+	while (split[i])
 	{
-		j = i;
-		while (split[j + 1])
-		{
-			free (split[j]);
-			split[j] = ft_strdup (split[j + 1]);
-			j++;
-		}
-		free (split[j]);
-		split[j] = NULL;
-		i = -1;
+		count = char_counter(split[i], '\2');
+		/*if ((count == 1 && ft_strlen (split[i]) <= 1) || (count == 1 && split[i][0] == '\1' && split[i][1] == '\2' && ft_strlen (split[i]) == 2))
+		  {
+		  j = i;
+		  while (split[j + 1])
+		  {
+		  free (split[j]);
+		  split[j] = ft_strdup (split[j + 1]);
+		  j++;
+		  }
+		  free (split[j]);
+		  split[j] = NULL;
+		  i = -1;
+		  }*/
+		if ((count == 1 && split[i][0] == '\1' && split[i][1] == '\2' && ft_strlen (split[i]) == 2))
+			disable (&split[i], '\1');
+		i++;
 	}
-	i++;
-}
-	// printer (split);
 	i = 0;
 	// while (split[i])
 	// {
@@ -1492,7 +1497,7 @@ while (split[i])
 	//			j++;
 	//		}
 	//	}
-		//	disable (&split[i], '\1');
+	//	disable (&split[i], '\1');
 	//	if (char_counter(split[i], '\4')) // '\4' katkon f west ida kan mexpandi
 	//	{
 	//		j = 0;
@@ -1521,7 +1526,7 @@ while (split[i])
 				no_surounded_anymore(&split[i + 1]);
 				(*list)->redirect->type[(*list)->redirect->position] = "2";
 				if (split[i+1])
-				(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
+					(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
 				//	  printf ("file name : %s taked the pos num : %d and type is %s\n", (*list)->redirect->file_name[(*list)->redirect->position], (*list)->redirect->position + 1 , (*list)->redirect->type[(*list)->redirect->position]);
 				(*list)->redirect->position++;
 			}
@@ -1533,7 +1538,7 @@ while (split[i])
 					disable (&split[i+1], '\2');
 				(*list)->redirect->type[(*list)->redirect->position] = "4";
 				if (split[i+1])
-				(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
+					(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
 				//	  printf ("file name : %s taked the pos num : %d and type is %s\n", (*list)->redirect->file_name[(*list)->redirect->position], (*list)->redirect->position + 1 , (*list)->redirect->type[(*list)->redirect->position]);
 				(*list)->redirect->position++;
 			}
@@ -1542,11 +1547,11 @@ while (split[i])
 				if (char_counter(split[i], '\2'))
 					disable (&split[i], '\2');
 				// if (char_counter(split[i+1], '\2'))
-					// disable (&split[i+1], '\2');
+				// disable (&split[i+1], '\2');
 				no_surounded_anymore(&split[i + 1]);
 				(*list)->redirect->type[(*list)->redirect->position] = "1";
 				if (split[i+1])
-				(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
+					(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
 				//	  printf ("file name : %s taked the pos num : %d and type is %s\n", (*list)->redirect->file_name[(*list)->redirect->position], (*list)->redirect->position + 1 , (*list)->redirect->type[(*list)->redirect->position]);
 				(*list)->redirect->position++;
 			}
@@ -1554,8 +1559,8 @@ while (split[i])
 			{
 				if (char_counter(split[i], '\2'))
 					disable (&split[i], '\2');
-					// if (char_counter(split[i+1], '\2'))
-					// disable (&split[i+1], '\2');
+				// if (char_counter(split[i+1], '\2'))
+				// disable (&split[i+1], '\2');
 				no_surounded_anymore(&split[i + 1]);
 				(*list)->redirect->type[(*list)->redirect->position] = "3";
 				if (split[i+1])
@@ -1563,14 +1568,14 @@ while (split[i])
 				//	  printf ("file name : %s taked the pos num : %d and type is %s\n", (*list)->redirect->file_name[(*list)->redirect->position], (*list)->redirect->position + 1 , (*list)->redirect->type[(*list)->redirect->position]);
 				(*list)->redirect->position++;
 			}
-			else if (one_time == 1 && ft_strncmp(split [i], "|", 2))
+			else if (one_time == 1 && ft_strncmp(split [i], "|", 2))/////// cmd list
 			{
 				if (char_counter(split[i], '\2'))
 					disable (&split[i], '\2');
 				if (char_counter(split[i], '\1'))
 					exchange(&split[i], '\1' , ' ');
 				no_surounded_anymore(&split[i]);
-		//			disable (&split[i], '\1');
+				//			disable (&split[i], '\1');
 				if (char_counter(split[i], '\4'))
 				{
 					last_split = ft_split(split[i], '\4');
@@ -1581,25 +1586,14 @@ while (split[i])
 					free_double_array(last_split);
 				}
 				else
-				(*list)->cmd = ft_strdup (split[i]);
+					(*list)->cmd = ft_strdup (split[i]);
 				//	  printf ("cmd : %s\n", (*list)->cmd);
 				one_time = 0;
 			}
 			else if (!ft_strncmp(split [i], "|", 1))
 				break;
-			else
+			else ////arg list
 			{
-				if (char_counter(split[i], '\2'))
-					disable (&split[i], '\2');
-				if (char_counter(split[i], '\1'))
-				{
-					if (split[i][0] == '\1')
-						disable(&split[i], '\1');
-					else if (split[i][ft_strlen (split[i]) - 1] == '\1')
-						disable (&split[i], '\1');
-					else
-						exchange(&split[i], '\1' , ' ');
-				}
 				no_surounded_anymore(&split[i]);
 				//		if (char_counter(split[i], '\1'))
 				//			disable (&split[i], '\1');
@@ -1634,6 +1628,42 @@ while (split[i])
 	}
 	// printer ((*list)->arg);
 	(*list) = tmp;
+
+	k = 0;
+	while ((*list)->arg[k])
+	{
+		count = char_counter((*list)->arg[k], '\2');
+		if ((count == 1 && ft_strlen ((*list)->arg[k]) <= 1) || (count == 1 && (*list)->arg[k][0] == '\1' && (*list)->arg[k][1] == '\2' && ft_strlen ((*list)->arg[k]) == 2))
+		{
+			j = k;
+			while ((*list)->arg[j + 1])
+			{
+				free ((*list)->arg[j]);
+				(*list)->arg[j] = ft_strdup ((*list)->arg[j + 1]);
+				j++;
+			}
+			free ((*list)->arg[j]);
+			(*list)->arg[j] = NULL;
+			k = -1;
+		}
+		k++;
+	}
+	k = 0;
+	while ((*list)->arg[k])
+	{
+		if (char_counter((*list)->arg[k], '\2'))
+			disable (&(*list)->arg[k], '\2');
+		if (char_counter((*list)->arg[k], '\1'))
+		{
+			if ((*list)->arg[k][0] == '\1')
+				disable(&(*list)->arg[k], '\1');
+			else if ((*list)->arg[k][ft_strlen ((*list)->arg[k]) - 1] == '\1')
+				disable (&(*list)->arg[k], '\1');
+			else
+				exchange(&(*list)->arg[k], '\1' , ' ');
+		}
+		k++;
+	}
 }
 
 int ft_strmegacount(char **c)
@@ -1736,14 +1766,11 @@ char **parsing(char **input, char **env)
 		return (NULL);
 	}
 	expand(&new_str, env);
-	// printer(new_str);
+	//printer (new_str);
 	str_pro_max = ultra_split(new_str, input);
 	free_double_array(new_str);
 	the_joiner(&str_pro_max);
 	no_etxra_qoutes(&str_pro_max);
-	// ft_wildcard(&str_pro_max);
-	// printer(str_pro_max);
-	// printf("\n------------------\n");
 	return (str_pro_max);
 }
 
@@ -1851,9 +1878,9 @@ int main(int ac, char **av, char **envi)
 	while (1)
 	{
 		if (!g_vars.g_exit_status)
-			input = readline("\033[0;32mbash-4.2\033[34m$ \033[0m");
+			input = readline("😄\033[0;32mbash-4.2\033[34m$▶️  \033[0m");
 		else
-			input = readline("\033[31mbash-4.2\033[34m$ \033[0m");
+			input = readline("😡\033[31mbash-4.2\033[34m$❌  \033[0m");
 		if (input == NULL)
 		{
 			// ft_printf ("exit\n");
@@ -1864,19 +1891,12 @@ int main(int ac, char **av, char **envi)
 		if (fast_check(copy))
 		{
 			if (char_counter(copy, '\"') || char_counter(copy, '\''))
-			{
 				split = parsing(&copy, env);
-				ft_wildcard(&split);
-				printer(split);
-				printf("\n------------------\n");
-			}
 			else
 			{
 				make_some_space(&copy);
 				split = ft_split (copy, ' ');
 				expand (&split, env);
-				printer(split);
-				printf("\n------------------\n");
 				check = 0;
 				split_and_join(&split);
 			}
