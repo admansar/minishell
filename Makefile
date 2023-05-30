@@ -2,7 +2,7 @@ NAME = minishell
 
 USER_NAME := $(USER)
 
-SRC = main.c
+SRC = main.c ft_wildcard.c
 
 BUILTIN_PATH = builtins
 

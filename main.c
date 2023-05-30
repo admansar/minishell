@@ -622,7 +622,6 @@ void printer(char **ptr)
 			printf ("%s\n", ptr[i++]);
 	}
 	g_vars.g_exit_status = 0;
-	//	printf ("-------%d\n", ft_strcount(ptr));
 }
 
 //the dual of qoutes and double qoutes 
@@ -1737,11 +1736,14 @@ char **parsing(char **input, char **env)
 		return (NULL);
 	}
 	expand(&new_str, env);
-	//printer (new_str);
+	// printer(new_str);
 	str_pro_max = ultra_split(new_str, input);
 	free_double_array(new_str);
 	the_joiner(&str_pro_max);
 	no_etxra_qoutes(&str_pro_max);
+	// ft_wildcard(&str_pro_max);
+	// printer(str_pro_max);
+	// printf("\n------------------\n");
 	return (str_pro_max);
 }
 
@@ -1849,9 +1851,9 @@ int main(int ac, char **av, char **envi)
 	while (1)
 	{
 		if (!g_vars.g_exit_status)
-			input = readline("😄\033[0;32mbash-4.2\033[34m$▶️  \033[0m");
+			input = readline("\033[0;32mbash-4.2\033[34m$ \033[0m");
 		else
-			input = readline("😡\033[31mbash-4.2\033[34m$❌  \033[0m");
+			input = readline("\033[31mbash-4.2\033[34m$ \033[0m");
 		if (input == NULL)
 		{
 			// ft_printf ("exit\n");
@@ -1862,12 +1864,19 @@ int main(int ac, char **av, char **envi)
 		if (fast_check(copy))
 		{
 			if (char_counter(copy, '\"') || char_counter(copy, '\''))
+			{
 				split = parsing(&copy, env);
+				ft_wildcard(&split);
+				printer(split);
+				printf("\n------------------\n");
+			}
 			else
 			{
 				make_some_space(&copy);
 				split = ft_split (copy, ' ');
 				expand (&split, env);
+				printer(split);
+				printf("\n------------------\n");
 				check = 0;
 				split_and_join(&split);
 			}

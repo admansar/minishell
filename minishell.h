@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/06 11:52:20 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/05/29 23:39:52 by admansar         ###   ########.fr       */
+/*   Updated: 2023/05/30 10:53:25 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 # include <sys/stat.h>
 # include <sys/wait.h>
 # include <unistd.h>
+#include <dirent.h>
 
 # define OUTPUT "1"
 # define APPEND "2"
@@ -187,5 +188,9 @@ void				disable(char **str, char c);
 void				ft_update_last_command(char ***env, t_input *list);
 void				ft_update_exit_status(char ***env);
 void				array_expander(char **ptr, char **env);
+
+
+/********************WILDCARD********************/
+void	ft_wildcard(char ***str);
 
 #endif
