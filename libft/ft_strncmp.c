@@ -6,11 +6,36 @@
 /*   By: admansar <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/09 20:05:59 by admansar          #+#    #+#             */
-/*   Updated: 2022/10/09 22:11:40 by admansar         ###   ########.fr       */
+/*   Updated: 2023/06/01 15:10:25 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
+
+
+int ft_strncmp_dual(const char *s1, const char *s2, size_t n)
+{
+	int	len1;
+	int	len2;
+
+	if ((!s1 && !s2) || !n)
+		return (0);
+	len1 = ft_strlen ((char *)s1);
+	len2 = ft_strlen ((char *)s2);
+	if (!len1 || !len2)
+		return (0);
+	while (len1-- && len2-- && n--)
+	{
+		if (((unsigned char *)s1)[len1] > ((unsigned char *)s2)[len2])
+			return (1);
+		if (((unsigned char *)s1)[len1] < ((unsigned char *)s2)[len2])
+			return (-1);
+		if (len1 == 0 || len2 == 0 || n == 0)
+			return (0);
+	}
+	return (0);
+}
+
 
 int	ft_strncmp(const char *s1, const char *s2, size_t n)
 {

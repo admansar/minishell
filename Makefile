@@ -2,7 +2,7 @@ NAME = minishell
 
 USER_NAME := $(USER)
 
-SRC = main.c
+SRC = main.c wildcard.c
 
 BUILTIN_PATH = builtins
 
@@ -32,7 +32,7 @@ CFLAGS = -Wall -Wextra -Werror -g -fsanitize=address #-I/goinfre/${USER_NAME}/ho
 
 all : $(NAME)
 
-$(NAME) : $(OBJ) 
+$(NAME) : $(OBJ)
 	@make -C libft
 	$(emo)
 	$(CC) $(OBJ) $(CFLAGS) libft/libft.a -lreadline -o $(NAME)
@@ -60,7 +60,7 @@ $(OBJ_DIR)/%.o: $(EXECUTION_PATH)/%.c
 clean :
 	make -C libft clean
 	rm -rf objects
-	@rm -f */*.o
+	@rm -f */*.o *.o
 
 fclean : clean
 	@rm -rf ${NAME}.dSYM

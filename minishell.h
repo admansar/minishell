@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/06 11:52:20 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/05/29 23:39:52 by admansar         ###   ########.fr       */
+/*   Updated: 2023/06/02 19:05:06 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,6 +123,7 @@ void				ft_execution(t_input *list, char ***env, char ***export);
 char				*take_copy(char *s1, int start, int end);
 int					in_env(char *ptr, char **env, int flag);
 int					ft_simularity_len(char *str, char c);
+int					ft_simularity_len_dual(char *str, char c);
 void				free_double_array(char **c);
 void				ft_pipe(t_input *list, t_redir *data, char ***env,
 						char ***export);
@@ -187,5 +188,9 @@ void				disable(char **str, char c);
 void				ft_update_last_command(char ***env, t_input *list);
 void				ft_update_exit_status(char ***env);
 void				array_expander(char **ptr, char **env);
+void				no_extra_(char **ptr, char c);
+int					consecutive(char *str, char c);
+void				wildcard(char ***split);
+char				*clean_from(char *c, char l);
 
 #endif

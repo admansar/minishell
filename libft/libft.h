@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/29 12:11:46 by admansar          #+#    #+#             */
-/*   Updated: 2023/05/16 00:08:09 by admansar         ###   ########.fr       */
+/*   Updated: 2023/06/01 15:10:52 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,4 +70,5 @@ void			ft_lstiter(t_list *lst, void (*f)(void *));
 char			*ft_str_join(char *s1, char *s2);
 int				ft_strcount(char **c);
 char			**my_spliter(char *s, int i, int j, int k);
+int				ft_strncmp_dual(const char *s1, const char *s2, size_t n);
 #endif

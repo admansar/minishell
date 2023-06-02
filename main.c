@@ -22,6 +22,18 @@ int ft_simularity_len(char *str, char c)
 	return (i);
 }
 
+int ft_simularity_len_dual(char *str, char c)
+{
+	int	i;
+
+	if (!str)
+		return (0);
+	i = ft_strlen (str);
+	while (str && i > -1 && str[i] != c)
+		i--;
+	return (i);
+}
+
 void delete_them(char **input, int start, int end)
 {
 	int i;
@@ -993,7 +1005,7 @@ void replace_spaces(char **ptr)
 	}
 }
 
-void no_extra_space(char **ptr)
+void no_extra_(char **ptr, char c)
 {
 	int i;
 	int j;
@@ -1001,25 +1013,28 @@ void no_extra_space(char **ptr)
 	char *re;
 	int len;
 
-	len = ft_strlen (*ptr) + 1;
-	re = ft_calloc (sizeof (char), len);
-	i = 0;
-	j = 0;
-	while ((*ptr)[i])
+	if (consecutive(*ptr, c))
 	{
-		k = 0;
-		while ((*ptr)[i] == ' ' && (*ptr)[i])
+		len = ft_strlen (*ptr) + 1;
+		re = ft_calloc (sizeof (char), len);
+		i = 0;
+		j = 0;
+		while ((*ptr)[i])
 		{
-			k = 1;
-			i++;
+			k = 0;
+			while ((*ptr)[i] == c && (*ptr)[i])
+			{
+				k = 1;
+				i++;
+			}
+			if (i > 0 && k == 1)
+				i--;
+			re[j++] = (*ptr)[i++];
 		}
-		if (i > 0 && k == 1)
-			i--;
-		re[j++] = (*ptr)[i++];
+		free (*ptr);
+		*ptr = ft_strdup (re);
+		free (re);
 	}
-	free (*ptr);
-	*ptr = ft_strdup (re);
-	free (re);
 }
 
 void array_expander(char **ptr, char **env)
@@ -1248,14 +1263,12 @@ void expand(char ***str_pro_max, char **env)
 					if (!ft_strncmp(tmp, env[k], h) && env[k][h] == '=')
 					{
 						tmp2 = take_copy(env[k], h + 1, ft_strlen(env[k]));
-						no_extra_space(&tmp2);
+						if (surounded_by((*str_pro_max)[i], '\"'))
+							exchange(&tmp2, ' ', '\5');
+						no_extra_(&tmp2, ' ');
 						replace_spaces(&tmp2);
 						tmp2 = ft_str_join(tmp2, "\2");
-						//		free (tmp);
-						//		tmp = ft_strjoin ("\1", tmp2);
-						//		free (tmp2);
-						//		tmp2 = ft_str_join (tmp, "\1");
-						//		tmp = NULL;
+
 						k = 0;
 						while (tmp2[k])
 							str[i][m++] = tmp2[k++];
@@ -1467,49 +1480,13 @@ void phil_list(t_input **list, char **split)
 	while (split[i])
 	{
 		count = char_counter(split[i], '\2');
-		/*if ((count == 1 && ft_strlen (split[i]) <= 1) || (count == 1 && split[i][0] == '\1' && split[i][1] == '\2' && ft_strlen (split[i]) == 2))
-		  {
-		  j = i;
-		  while (split[j + 1])
-		  {
-		  free (split[j]);
-		  split[j] = ft_strdup (split[j + 1]);
-		  j++;
-		  }
-		  free (split[j]);
-		  split[j] = NULL;
-		  i = -1;
-		  }*/
 		if ((count == 1 && split[i][0] == '\1' && split[i][1] == '\2' && ft_strlen (split[i]) == 2))
 			disable (&split[i], '\1');
+		if (char_counter(split[i], '\5'))
+			exchange (&split[i], '\5', ' ');
 		i++;
 	}
 	i = 0;
-	// while (split[i])
-	// {
-	//	if (char_counter(split[i], '\1')) // '\1' ida kan space only f lwl ola f lakher ida kan mexpandi 
-	//	{
-	//		j = 0;
-	//		while (split[i][j])
-	//		{
-	//			if (split[i][j] == '\1')
-	//				split[i][j] = ' ';
-	//			j++;
-	//		}
-	//	}
-	//	disable (&split[i], '\1');
-	//	if (char_counter(split[i], '\4')) // '\4' katkon f west ida kan mexpandi
-	//	{
-	//		j = 0;
-	//		while (split[i][j])
-	//		{
-	//			if (split[i][j] == '\4')
-	//				split[i][j] = ' ';
-	//			j++;
-	//		}
-	//	}
-	// 	i++;
-	// }
 	count = ft_strcount(split);
 	i = 0;
 	while (split[i])
@@ -1852,7 +1829,6 @@ void split_and_join(char ***split)
 }
 
 
-
 int main(int ac, char **av, char **envi)
 {
 	char *input;
@@ -1880,7 +1856,7 @@ int main(int ac, char **av, char **envi)
 		if (!g_vars.g_exit_status)
 			input = readline("😄\033[0;32mbash-4.2\033[34m$▶️  \033[0m");
 		else
-			input = readline("😡\033[31mbash-4.2\033[34m$❌  \033[0m");
+			input = readline("😡\033[31mbash-4.2\033[34m$❌ \033[0m");
 		if (input == NULL)
 		{
 			// ft_printf ("exit\n");
@@ -1900,7 +1876,6 @@ int main(int ac, char **av, char **envi)
 				check = 0;
 				split_and_join(&split);
 			}
-				// printer(split);
 			check = last_check(split);
 			if (check == -2)
 				split = NULL;
@@ -1917,18 +1892,20 @@ int main(int ac, char **av, char **envi)
 			ft_update_exit_status(&env);
 			if (split)
 			{
+				if (mega_counter(split, '*'))
+					wildcard(&split);
 				list = work_time(split);
 				free_double_array(split);
 				ft_execution(list, &env, &export);
 				ft_update_exit_status(&env);
 				ft_update_last_command(&env, list);
-				// printer(env);
 				free_list(list);
 			}
 		}
-				// while (1);
 		free (copy);
 		add_history(input);
+		if (input && input[0] == 0)
+				g_vars.g_exit_status = 0;
 		free(input);
 		ft_bzero (g_vars.pid, PIPE_BUF);
 		g_vars.index = 0;
