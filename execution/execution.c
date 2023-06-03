@@ -6,21 +6,17 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 17:17:33 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/01 21:21:42 by admansar         ###   ########.fr       */
+/*   Updated: 2023/06/03 18:17:25 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../libft/libft.h"
 #include "../minishell.h"
 
 // execution
 void	ft_execution(t_input *list, char ***env, char ***export)
 {
 	t_redir	data;
-	t_input	*tmp;
 
-	tmp = list;
-	// printer(list->redirect->file_name);
 	ft_execute_here_docs(list, &data, env, export);
 	if (!list->pipe)
 	{
@@ -30,19 +26,9 @@ void	ft_execution(t_input *list, char ***env, char ***export)
 		}
 		else
 			ft_exec(list, env, export);
-		// return ;
 	}
 	else
 		ft_pipe(list, &data, env, export);
-	// tmp = list;
-	// while (tmp)
-	// {
-	// 	if (tmp->redirect->position){
-	// 		// printf("I am in\n");
-	// 		free(tmp->redirect->herdoc_file_name);
-	// 	}
-	// 	tmp = tmp->next;
-	// }
 }
 
 int found_in_middle(char *str)

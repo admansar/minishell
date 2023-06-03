@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/06 11:52:20 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/03 17:40:57 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/03 18:10:14 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include "libft/ft_printf.h"
 # include "libft/libft.h"
+# include <dirent.h>
 # include <fcntl.h>
 # include <limits.h>
 # include <readline/history.h>
@@ -251,5 +252,38 @@ int					file_found(t_input *list, t_files *f_data);
 void				ft_create_file(t_input *list, t_redir *data,
 						t_files *f_data, int flag);
 void				get_out_fd(t_files *f_data, t_redir *data);
+
+/*******************************************************************/
+/*                         WILDCARD_UTILS                          */
+/*******************************************************************/
+
+void				the_start_of_the_beg_dual(char *copy, char **ls, int j,
+						char ***holder);
+void				the_start_of_the_beg(char *copy, char **ls, char ***holder);
+void				find_and_collect_no_p(char **ls, char ***holder, int *j,
+						char *split);
+void				find_and_collect(char **ls, char ***holder, int *j,
+						char *split);
+char				**the_commun(char **str, char **ls);
+char				**the_inner(char *str, char **ls);
+char				**the_end(char *str, char **ls);
+char				**the_popular_choice(char *str, char **ls);
+void				check_for_hidden(char *str, char ***re);
+char				**the_beg(char *str, char **ls);
+void				free_triple_array(char ***c);
+char				**the_repeated(char **tmp1, char **tmp2, char *str,
+						int count);
+char				***all_the_reapeated(char **holder, char *str, int h);
+char				**collect_repeated(char *str, char **holder, char **split,
+						int h);
+char				**get_the_needed_array(char **holder, char **split,
+						char *str);
+int					hidden(char *s1, char *s2);
+int					re_full_(char ***div, char ***re, int *j);
+char				**make_sure(char **str, char **ls);
+void				remake(char ***split, int *i, char **div);
+int					count_for_ls(DIR *dir);
+char				**list_current_directory_content(void);
+void				wildcard(char ***split);
 
 #endif
