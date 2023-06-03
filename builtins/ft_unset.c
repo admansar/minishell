@@ -26,57 +26,52 @@ char	**ft_remove(char **ptr, int pos)
 	return (new_ptr);
 }
 
-void	ft_unset(char ***env, t_input *list, char ***export)
+void	ft_fill_unset_vars(t_input *list, t_export *data)
 {
-	char	**valid_export_vars;
-	int		exist;
-	char	*tmp_name;
-	char	*tmp_value;
-	int		var_nbr;
-	int		j;
-	int		i;
-	int		ret;
-
-	(void)export;
-	(void)env;
-	var_nbr = ft_strcount(list->arg);
-	valid_export_vars = ft_calloc(sizeof(char *), var_nbr + 1);
-	i = 0;
-	j = 0;
-	while (list->arg[i])
+	data->var_nbr = ft_strcount(list->arg);
+	data->valid_export_vars = ft_calloc(sizeof(char *), data->var_nbr + 1);
+	data->i = 0;
+	data->j = 0;
+	while (list->arg[data->i])
 	{
-		ret = ft_get_var(list->arg[i], &tmp_name, &tmp_value);
-		if (ft_unset_name_checker(tmp_name) == -1 || ret == -13)
-		{
+		data->ret = ft_get_var(list->arg[data->i], &data->tmp_name, &data->tmp_value);
+		if (ft_unset_name_checker(data->tmp_name) == -1 || data->ret == -13)
 			ft_printf("bash: unset: `%s': not a valid identifier\n",
-					list->arg[i]);
-		}
+					list->arg[data->i]);
 		else
 		{
-			valid_export_vars[j] = ft_strdup(list->arg[i]);
-			ft_clean_up_name(&(valid_export_vars[j]));
-			j++;
+			data->valid_export_vars[data->j] = ft_strdup(list->arg[data->i]);
+			ft_clean_up_name(&(data->valid_export_vars[data->j++]));
 		}
-		free(tmp_name);
-		free(tmp_value);
-		i++;
+		free(data->tmp_name);
+		free(data->tmp_value);
+		data->i++;
 	}
+}
+
+void	ft_unset_vars(t_export *data, char ***ptr)
+{
+	int	i;
+
 	i = 0;
-	while (valid_export_vars[i])
+	while (data->valid_export_vars[i])
 	{
-		exist = ft_in_env(valid_export_vars[i], *export);
-		if (exist >= 0)
-			*export = ft_remove(*export, exist);
+		data->exist = ft_in_env(data->valid_export_vars[i], *ptr);
+		if (data->exist >= 0)
+			*ptr = ft_remove(*ptr, data->exist);
 		i++;
 	}
-	i = 0;
-	while (valid_export_vars[i])
-	{
-		exist = ft_in_env(valid_export_vars[i], *env);
-		if (exist >= 0)
-			*env = ft_remove(*env, exist);
-		i++;
-	}
-	free_double_array(valid_export_vars);
+}
+
+void	ft_unset(char ***env, t_input *list, char ***export)
+{
+	t_export	data;
+	
+	ft_init_export_data(&data);
+	ft_fill_unset_vars(list, &data);
+	ft_unset_vars(&data, export);
+	ft_unset_vars(&data, env);
+	in_env(NULL, *env, 1);
+	free_double_array(data.valid_export_vars);
 	g_vars.g_exit_status = 0;
 }

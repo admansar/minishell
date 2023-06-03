@@ -1,40 +1,6 @@
 
 #include "../minishell.h"
 
-unsigned int	ft_random(void)
-{
-	static long int	rand;
-	char				*p;
-	int					i;
-
-	p = malloc(sizeof(char) * 2);
-	i = (unsigned char)&p[0];
-	rand += ((rand + i) * 1103515245 + 12345) & 0xFFFFFFFF;
-	free(p);
-	return ((unsigned int)rand);
-}
-
-char	*ft_generate_rand_str(int len)
-{
-	char	src[63];
-	char		*random_str;
-	int			src_len;
-	int			i;
-	int			random_i;
-
-	ft_strlcpy(src ,"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 63);
-	random_str = (char *)malloc(sizeof(char) * (len + 1));
-	i = 0;
-	src_len = sizeof(src) - 1;
-	while (i < len)
-	{
-		random_i = ft_random() % src_len;
-		random_str[i++] = src[random_i];
-	}
-	random_str[i] = 0;
-	return (random_str);
-}
-
 int	*ft_get_operators_pos(t_input *list, char *str, int *count)
 {
 	int	*pos;
@@ -57,96 +23,42 @@ int	*ft_get_operators_pos(t_input *list, char *str, int *count)
 	return (pos);
 }
 
+void	ft_write_in_file(t_input *list, t_redir *data, char **env)
+{
+	g_vars.g_exit_status = 0;
+	data->in_fd = open(list->redirect->herdoc_file_name ,
+		O_RDWR | O_CREAT | O_APPEND, 0644);
+	if (data->expand)
+		array_expander(&data->input , env);
+	ft_putstr_fd(data->input, data->in_fd);
+	write (data->in_fd, "\n", 1);
+	free(data->input);
+
+}
+
 // launch here-doc as many times as it appear in the input
 void	ft_here_doc(t_input *list, int *pos, t_redir *data, char **env)
 {
-	char	*input;
-	char	*tmp;
-	//char	*to_expand;
-	//char	*expanded;
-	//char	*dollar_str;
-	char	*ruin_name;
-	int		i;
-	//int		j;
-	int		rand;
-	int		in_fd;
-	//int		pos_env;
+	t_rand_str	d;
 
-	data->expand = 1;
-	i = 0;
-	rand = ft_random() % 63;
-	ruin_name = ft_generate_rand_str(data->herdoc_count + rand);
-	tmp = ft_strjoin("/tmp/", ruin_name);
-	free(ruin_name);
-	list->redirect->herdoc_file_name = ft_strdup(tmp);
-	if (data->herdoc_count)
+	ft_get_rand_str(&d, data, list);
+	while (++d.i < data->herdoc_count)
 	{
-		in_fd = open(tmp, O_RDWR | O_CREAT | O_TRUNC, 0644);
-		close(in_fd);
-	}
-	while (i < data->herdoc_count)
-	{
-		if (surounded_by(list->redirect->file_name[pos[i]], '\"')
-				|| surounded_by(list->redirect->file_name[pos[i]], '\''))
-		{
-			no_surounded_anymore(&(list->redirect->file_name[pos[i]]));
-			data->expand = 0;
-		}
+		ft_check_expand(list, data, pos, d.i);
 		while (1)
 		{
-			input = readline("> ");
-			if (!input)
+			data->input = readline("> ");
+			if (!data->input)
 				break ;
-			if (!ft_strcmp(input, list->redirect->file_name[pos[i]]))
+			if (!ft_strcmp(data->input, list->redirect->file_name[pos[d.i]]))
 			{
-				free(input);
-				input = NULL;
-				close(in_fd);
+				ft_leave_current_heredoc(data, d.i);
 				break ;
 			}
-			else if (i == data->herdoc_count - 1)
-			{
-				g_vars.g_exit_status = 0;
-				in_fd = open(tmp, O_RDWR | O_CREAT | O_APPEND, 0644);
-
-				if (/*input[0] == '$' && */data->expand)
-				{
-					array_expander(&input , env);
-					ft_putstr_fd(input, in_fd);
-					write (in_fd, "\n", 1);
-			//		j = 0;
-			//		while (input[j])
-			//		{
-			//			if (input[j] == '$')
-			//				j++;
-			//			else
-			//				break ;
-			//		}
-			//		dollar_str = take_copy(input, 0, j - 2);
-			//		write(in_fd, dollar_str, ft_strlen(dollar_str));
-			//		to_expand = take_copy(input, j, ft_strlen(input));
-			//		pos_env = ft_in_env(to_expand, env);
-			//		if (pos_env >= 0)
-			//		{
-			//			ft_get_var_value(env[pos_env], to_expand, &expanded);
-			//			write(in_fd, expanded, ft_strlen(expanded));
-			//			write(in_fd, "\n", 1);
-			//			free(expanded);
-			//		}
-			//		free(dollar_str);
-			//		free(to_expand);
-				}
-				else
-				{
-					write(in_fd, input, ft_strlen(input));
-					write(in_fd, "\n", 1);
-				}
-			}
-			free(input);
+			else if (d.i == data->herdoc_count - 1)
+				ft_write_in_file(list, data, env);
 		}
-		i++;
 	}
-	free(tmp);
 }
 
 void	ft_execute_here_docs(t_input *list, t_redir *data, char ***env,

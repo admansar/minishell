@@ -1,168 +1,68 @@
-
 #include "../minishell.h"
+
+int	check_in_file_permissions(t_input *list, t_redir *data, int i)
+{
+	if (list->redirect->file_name[i] == NULL)
+	{
+		ft_error(data, AMBIGUOUS_ERR);
+		return (0);
+	}
+	if (list->redirect->file_name[i][0] == '$')
+	{
+		ft_error(data, AMBIGUOUS_ERR);
+		return (0);
+	}
+	data->error = 1;
+	g_vars.g_exit_status = 1;
+	ft_printf("bash: %s: %s\n", list->redirect->file_name[i],
+			strerror(errno));
+	return (0) ;
+}
+
+int	redirections_error(t_input *list, t_redir *data, t_files *f_data)
+{
+	if (!ft_strcmp(list->redirect->type[f_data->i], OUTPUT))
+	{
+		if (file_found(list, f_data)
+			&& !ft_check_permissions(list, data, f_data, O_TRUNC))
+			return (1);
+		else
+			ft_create_file(list, data, f_data, O_TRUNC);
+	}
+	else if (!ft_strcmp(list->redirect->type[f_data->i], APPEND))
+	{
+		if (file_found(list, f_data)
+			&& !ft_check_permissions(list, data, f_data, O_APPEND))
+			return (1);
+		else
+			ft_create_file(list, data, f_data, O_APPEND);
+	}
+	else if (!ft_strcmp(list->redirect->type[f_data->i], INPUT))
+	{
+		if (access(list->redirect->file_name[f_data->i], F_OK | R_OK) == -1)
+			if (!check_in_file_permissions(list, data, f_data->i))
+				return (1);
+	}
+	return (0);
+}
 
 void	ft_file_creation(t_input *list, t_redir *data)
 {
-	int	i;
-	int	ret;
+	t_files	f_data;
 
 	data->output = -1;
 	data->count = 0;
-	ret = 0;
-	i = -1;
-	while (list->redirect->type[++i])
+	ft_get_all_fds(&f_data, list, data);
+	while (list->redirect->type[++f_data.i])
 	{
-		if (!strcmp(list->redirect->type[i], OUTPUT))
-			data->count++;
-		else if (!ft_strcmp(list->redirect->type[i], APPEND))
-			data->count++;
+		if (ft_ambiguous(list, data, f_data.i))
+			break;
+		if (char_counter(list->redirect->file_name[f_data.i], '\2'))
+			disable (&list->redirect->file_name[f_data.i], '\2');
+		if (redirections_error(list, data, &f_data))
+			break;
 	}
-	int *arr = ft_calloc(sizeof(int) , (data->count + 1));
-	i = -1;
-	int j = 0;
-	while (list->redirect->type[++i])
-	{
-		if (!list->redirect->file_name[i])
-		{
-			ft_printf("minishell: ambiguous redirect\n");
-			// printf("file name : %s$\n", list->redirect->herdoc_file_name);
-			data->error = 1;
-			g_vars.g_exit_status = 1;
-			break ;	
-		}
-
-		if (list->redirect->file_name[i] && char_counter(list->redirect->file_name[i], '\a'))
-		{
-			ft_printf("minishell: ambiguous redirect\n");
-			// printf("file name : %s$\n", list->redirect->file_name[i]);
-			data->error = 1;
-			g_vars.g_exit_status = 1;
-			break ;
-		}
-		if (list->redirect->file_name[i] && list->redirect->file_name[i][0] == '\0')
-		{
-			ft_printf("minishell: No such file or directory\n");
-			// printf("file name : %s$\n", list->redirect->file_name[i]);
-			data->error = 1;
-			g_vars.g_exit_status = 1;
-			break ;
-		}
-		if (list->redirect->file_name[i] && list->redirect->file_name[i][0] == '\2')
-		{
-			ft_printf("minishell: ambiguous redirect\n");
-			// printf("file name : %s$\n", list->redirect->file_name[i]);
-			data->error = 1;
-			g_vars.g_exit_status = 1;
-			break ;
-		}
-		if (char_counter(list->redirect->file_name[i], '\2'))
-		{
-			disable (&list->redirect->file_name[i], '\2');
-		}
-		// if (list->redirect->file_name[i])
-		// {
-		// 	printf("file name : $%s$\n", list->redirect->file_name[i]);
-
-		// }
-		// pause(); 
-		if (!ft_strcmp(list->redirect->type[i], OUTPUT))
-		{
-			if (!access(list->redirect->file_name[i], F_OK))
-			{
-				ret = access(list->redirect->file_name[i], R_OK | W_OK);
-				if (!ret)
-				{
-					arr[j++] = open(list->redirect->file_name[i],
-							O_RDWR | O_TRUNC, 0644);
-					if (data->output <= i)
-						data->output = i;
-				}
-				else if (ret == -1)
-				{
-					ft_printf("minishell: %s: %s\n", list->redirect->file_name[i],
-							strerror(errno));
-					data->error = 1;
-					g_vars.g_exit_status = 1;
-					break ;
-				}
-			}
-			// else if(list->redirect->file_name[i] == NULL)
-			// {
-			// 	ft_printf("minishell: No such file or directory\n");
-			// 	g_vars.g_exit_status = 1;
-			// 	data->error = 1;
-			// 	break;
-			// }
-			else
-			{
-				arr[j++] = open(list->redirect->file_name[i],
-						O_RDWR | O_CREAT | O_TRUNC, 0644);
-				if (data->output <= i)
-					data->output = i;
-			}
-		}
-		else if (!ft_strcmp(list->redirect->type[i], APPEND))
-		{
-			if (!access(list->redirect->file_name[i], F_OK))
-			{
-				ret = access(list->redirect->file_name[i], R_OK | W_OK);
-				if (!ret)
-				{
-					arr[j++] = open(list->redirect->file_name[i],
-							O_RDWR | O_APPEND, 0666);
-					if (data->output <= i)
-						data->output = i;
-				}
-				else if (ret == -1)
-				{
-					ft_printf("minishell: %s: %s\n", list->redirect->file_name[i],
-							strerror(errno));
-					data->error = 1;
-					g_vars.g_exit_status = 1;
-					break ;
-				}
-			}
-			else
-			{
-				arr[j++] = open(list->redirect->file_name[i],
-						O_RDWR | O_CREAT | O_APPEND, 0666);
-				if (data->output <= i)
-					data->output = i;
-			}
-		}
-		else if (!ft_strcmp(list->redirect->type[i], INPUT))
-		{
-			if (access(list->redirect->file_name[i], F_OK | R_OK) == -1)
-			{
-				data->error = 1;
-				if (list->redirect->file_name[i] == NULL)
-				{
-					ft_printf("minishell: ambiguous redirect\n");
-					g_vars.g_exit_status = 1;
-					data->error = 1;
-					break;
-				}
-				if (list->redirect->file_name[i][0] == '$')
-				{
-					ft_printf("minishell: ambiguous redirect\n");
-					g_vars.g_exit_status = 1;
-					data->error = 1;
-					break;
-				}
-				ft_printf("bash: %s: %s\n", list->redirect->file_name[i],
-						strerror(errno));
-				g_vars.g_exit_status = 1;
-				break ;
-			}
-		}
-	}
-	if(j > 0)
-		data->out_fd = arr[j - 1];
-	j = 0;
-
-	while (j < data->count - 1)
-		close(arr[j++]);
-	free(arr);
+	get_out_fd(&f_data, data);
 }
 
 void	ft_get_input(t_input *list, t_redir *data)
@@ -193,118 +93,18 @@ void	ft_get_input(t_input *list, t_redir *data)
 			O_RDONLY, 0644);
 }
 
-int inside_of(char *str, char c)
-{
-	int len;
-	int i;
-
-	i = 1;
-	len = ft_strlen (str) - 1;
-	if (len > 0)
-		if (str[len] == c)
-			len--;
-	while (i < len && str[i])
-	{
-		if (str[i] == c)
-			return (1);
-		i++;
-	}
-	return (0);
-}
-int	consecutive(char *str, char c)
-{
-	int i;
-	int len;
-
-	len = ft_strlen(str) - 1;
-	i = 0;
-	while (str[i+1])
-	{
-		if (str[i] == c && str[i+1] == c && i + 1 != len)
-			return (1);
-			i++;
-	}
-	return (0);	
-}
-char *clean_from (char *c, char l)
-{
-	int i;
-	int j;
-	char *re;
-
-	i = 0;
-	j = 0;
-	re = malloc (sizeof (char) * (ft_strlen (c) + 1));
-	while (c && c[i])
-	{
-		if (c[i] != l)
-			re[j++] = c[i++];
-			else 
-			i++;
-	}
-	re[j] = '\0';
-	return (re);
-}
-
 void	ft_redirections(t_input *list, t_redir *data, char ***env,
 		char ***export)
 {
-	int	pid;
-	char *tmp;
-
-	data->error = 0;
-	data->in_fd = 0;
-	data->out_fd = 0 ;
-	int i;
-	i = -1;
-	while (list->redirect->file_name[++i])
-	{
-		if (((ft_strlen (list->redirect->file_name[i]) == 2) && list->redirect->file_name[i][0] == '\2'))
-		{
-			// exchange (&list->redirect->file_name[i], '\4', '4');
-			// printf("file name : %s$\n", list->redirect->file_name[i]);
-			ft_printf("minishell: ambiguous redirect\n");
-			g_vars.g_exit_status = 1;
-			return;
-		}
-		// else 
-		// {
-		// 	disable (&list->redirect->file_name[i], '\2');
-		// }
-		tmp = clean_from (list->redirect->file_name[i], '\2');
-		if (ft_char_checker(list->redirect->file_name[i], '\4') >= 0)
-		{
-		//	exchange (&list->redirect->file_name[i], '\4', '4');
-			// printf("file name : %s$\n", list->redirect->file_name[i]);
-			ft_printf("minishell: ambiguous redirect\n");
-			g_vars.g_exit_status = 1;
-			free (tmp);
-			return;
-		}
-		else if (char_counter(list->redirect->file_name[i], '\1') 
-			&& (inside_of(tmp, '\1') 
-			|| consecutive (tmp, '\1') 
-			|| ft_strlen (tmp) == 1))
-		{
-			ft_printf("minishell: ambiguous redirect\n");
-			g_vars.g_exit_status = 1;
-			free (tmp);
-			return;
-		}
-		else if (ft_char_checker(tmp , '\1') >= 0)
-		{
-			disable(&list->redirect->file_name[i], '\1');
-			disable(&list->redirect->file_name[i], '\2');
-		}
-		free (tmp);
-	}
-	
+	init_vars(data);
+	if (ft_early_ambiguous_check(list, data))
+		return ;
 	ft_file_creation(list, data);
 	if (data->error)
 		return ;
 	ft_get_input(list, data);
-	pid = fork();
-	if (!pid)
+	data->pid = fork();
+	if (!data->pid)
 	{
 		if (data->count > 0)
 		{

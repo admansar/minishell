@@ -18,13 +18,15 @@ PARSE_PATH = parsing/
 
 BUILTIN_SRC = $(addprefix $(BUILTIN_PATH)/, ft_change_dir.c ft_echo.c ft_export.c ft_pwd.c ft_unset.c)
 
-UTILS_SRC = $(addprefix $(UTILS_PATH)/, ft_utils_1.c ft_utils_2.c ft_utils_3.c ft_utils_4.c)
+UTILS_SRC = $(addprefix $(UTILS_PATH)/, env_update_utils.c general_utils_1.c general_utils_2.c\
+				here_doc_utils.c redirections_utils_1.c redirections_utils_2.c redirections_utils_3.c\
+				utils_export_unset_1.c	utils_export_unset_2.c)
 
 REDIRECTIONS_SRC = $(addprefix $(REDIRECTIONS_PATH)/, ft_redirections.c ft_here_doc.c)
 
 EXECUTION_SRC = $(addprefix $(EXECUTION_PATH)/, execution.c)
 
-WILDCARD_SRC = $(addprefix $(WILDCARD_PATH)/, wildcard_cases.c wildcard_utils1.c  the_most_nedded_utils.c wildcard_utils2.c  wildcard.c)
+WILDCARD_SRC = $(addprefix $(WILDCARD_PATH)/, wildcard_cases.c wildcard_utils1.c the_most_nedded_utils.c wildcard_utils2.c  wildcard.c)
 
 OBJ_DIR := ./objects
 
