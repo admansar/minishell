@@ -1,26 +1,40 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   execution_utils_2.c                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/06/03 20:17:54 by jlaazouz          #+#    #+#             */
+/*   Updated: 2023/06/03 20:17:55 by jlaazouz         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 void	ft_path_fixing(t_execution *data, char ***envi)
 {
-	data->tmp = take_copy((*envi)[data->inside], ft_simularity_len((*envi)[data->inside], '=')
-		+ 1, ft_strlen((*envi)[data->inside]));
-	data->found = ft_strlen (data->tmp) - 1;
+	data->tmp = take_copy((*envi)[data->inside],
+			ft_simularity_len((*envi)[data->inside], '=') + 1,
+			ft_strlen((*envi)[data->inside]));
+	data->found = ft_strlen(data->tmp) - 1;
 	if (data->tmp[0] == ':')
 	{
 		data->tmp1 = ft_strjoin("->", data->tmp);
 		if (data->tmp1 && data->tmp[data->found] == ':')
 			data->tmp1 = ft_str_join(data->tmp1, "->");
 		else if (data->tmp[data->found] == ':')
-			data->tmp1 = ft_strjoin(data->tmp, "->");	
+			data->tmp1 = ft_strjoin(data->tmp, "->");
 	}
 	data->in_mid = found_in_middle(data->tmp);
 	if (data->in_mid)
 		data->tmp1 = ft_fix_path(data->tmp1, data->in_mid);
 	free(data->tmp1);
-	free (data->tmp);	
+	free(data->tmp);
 }
 
-void	ft_current_dir_executables(t_input *list, t_execution *data, char ***envi)
+void	ft_current_dir_executables(t_input *list, t_execution *data,
+		char ***envi)
 {
 	g_vars.pid[g_vars.index] = fork();
 	if (g_vars.pid[g_vars.index] == 0)
@@ -36,7 +50,7 @@ void	ft_current_dir_executables(t_input *list, t_execution *data, char ***envi)
 	{
 		data->status = WTERMSIG(data->status) + 128;
 	}
-	g_vars.g_exit_status = data->status;	
+	g_vars.g_exit_status = data->status;
 }
 
 void	ft_cmd_with_path(t_input *list, t_execution *data, char ***envi)
@@ -63,23 +77,23 @@ void	ft_cmd_with_path(t_input *list, t_execution *data, char ***envi)
 
 void	ft_execute(t_input *list, t_execution *data, char ***envi)
 {
-		g_vars.pid[g_vars.index] = fork();
-		if (g_vars.pid[g_vars.index] == 0)
-		{
-			list->arg = ft_join_double_ptr_to_ptr(data->acces[data->i], list->arg);
-			execve(data->acces[data->i], list->arg, *envi);
-			ft_printf("bash: command not found\n");
-			exit(127);
-		}
-		waitpid(g_vars.pid[g_vars.index++], &data->status, 0);
-		if (WEXITSTATUS(data->status))
-			data->status = WEXITSTATUS(data->status);
-		else if (WIFSIGNALED(data->status))
-		{
-			data->status = WTERMSIG(data->status) + 128;
-		}
-		g_vars.g_exit_status = data->status;
-}	
+	g_vars.pid[g_vars.index] = fork();
+	if (g_vars.pid[g_vars.index] == 0)
+	{
+		list->arg = ft_join_double_ptr_to_ptr(data->acces[data->i], list->arg);
+		execve(data->acces[data->i], list->arg, *envi);
+		ft_printf("bash: command not found\n");
+		exit(127);
+	}
+	waitpid(g_vars.pid[g_vars.index++], &data->status, 0);
+	if (WEXITSTATUS(data->status))
+		data->status = WEXITSTATUS(data->status);
+	else if (WIFSIGNALED(data->status))
+	{
+		data->status = WTERMSIG(data->status) + 128;
+	}
+	g_vars.g_exit_status = data->status;
+}
 
 void	ft_execute_cmd(t_input *list, t_execution *data, char ***envi)
 {

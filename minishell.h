@@ -278,27 +278,33 @@ int					file_found(t_input *list, t_files *f_data);
 void				ft_create_file(t_input *list, t_redir *data,
 						t_files *f_data, int flag);
 void				get_out_fd(t_files *f_data, t_redir *data);
-int 				found_in_middle(char *str);
+int					found_in_middle(char *str);
 char				*ft_fix_path(char *str, int in_mid);
 int					have_just_digits(char *c);
 int					ft_list_size(t_input *list);
-void				ft_current_dir_executables(t_input *list, t_execution *data, char ***envi);
+void				ft_current_dir_executables(t_input *list, t_execution *data,
+						char ***envi);
 void				ft_path_fixing(t_execution *data, char ***envi);
-void				ft_cmd_with_path(t_input *list, t_execution *data, char ***envi);
+void				ft_cmd_with_path(t_input *list, t_execution *data,
+						char ***envi);
 void				ft_execute(t_input *list, t_execution *data, char ***envi);
-void				ft_execute_cmd(t_input *list, t_execution *data, char ***envi);
-void				ft_pipe(t_input *list, t_redir *data, char ***envi, char ***export);
+void				ft_execute_cmd(t_input *list, t_execution *data,
+						char ***envi);
+void				ft_pipe(t_input *list, t_redir *data, char ***envi,
+						char ***export);
 void				basic_execution(t_input *list, char ***envi);
 void				ft_exec(t_input *list, char ***envi, char ***export);
-void				ft_join_path_and_cmd(t_input *list, t_execution *data, char ***envi);
+void				ft_join_path_and_cmd(t_input *list, t_execution *data,
+						char ***envi);
 void				ft_check_access(t_execution *data);
-int					ft_check_pipe_errors(t_input *list, t_pipe *pipe_data, char ***envi, char ***export);
+int					ft_check_pipe_errors(t_input *list, t_pipe *pipe_data,
+						char ***envi, char ***export);
 t_input				*ft_skip_same_cmd(t_input *list);
-void				ft_allocate_pipe_fds(t_pipe	*pipe_data);
+void				ft_allocate_pipe_fds(t_pipe *pipe_data);
 int					fork_error(t_pipe *pipe_data);
 void				ft_close(t_pipe *pipe_data);
 void				ft_get_exit_status(t_pipe *pipe_data);
-			
+
 /*******************************************************************/
 /*                         WILDCARD_UTILS                          */
 /*******************************************************************/
@@ -331,6 +337,5 @@ void				remake(char ***split, int *i, char **div);
 int					count_for_ls(DIR *dir);
 char				**list_current_directory_content(void);
 void				wildcard(char ***split);
-
 
 #endif

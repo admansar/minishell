@@ -1,9 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   execution_utils_1.c                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/06/03 20:17:52 by jlaazouz          #+#    #+#             */
+/*   Updated: 2023/06/03 20:17:53 by jlaazouz         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
-int found_in_middle(char *str)
+int	found_in_middle(char *str)
 {
-	int i;
-	int count;
+	int	i;
+	int	count;
 
 	count = 0;
 	i = 0;
@@ -18,21 +30,21 @@ int found_in_middle(char *str)
 
 char	*ft_fix_path(char *str, int in_mid)
 {
-	char *fixed;
-	int i;
-	int j;
+	char	*fixed;
+	int		i;
+	int		j;
 
 	i = 0;
 	j = 0;
-	fixed = (char *) ft_calloc(sizeof(char) , ft_strlen(str) + in_mid + 1);
+	fixed = (char *) ft_calloc(sizeof(char), ft_strlen(str) + in_mid + 1);
 	while (str[i])
 	{
 		if (str[i] == ':' && str[i + 1] == ':')
 		{
 			fixed[j++] = ':';
 			fixed[j++] = '.';
-			fixed[j]= ':';
-			i+=2;
+			fixed[j] = ':';
+			i += 2;
 		}
 		else
 			fixed[j] = str[i];

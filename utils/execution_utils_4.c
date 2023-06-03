@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   execution_utils_4.c                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/06/03 20:18:00 by jlaazouz          #+#    #+#             */
+/*   Updated: 2023/06/03 20:18:01 by jlaazouz         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 int	fork_error(t_pipe *pipe_data)
@@ -10,7 +22,7 @@ int	fork_error(t_pipe *pipe_data)
 			free(pipe_data->pipe_fd[pipe_data->i]);
 		}
 		perror("fork");
-		return  (1);
+		return (1);
 	}
 	return (0);
 }

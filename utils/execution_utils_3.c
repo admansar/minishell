@@ -1,15 +1,30 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   execution_utils_3.c                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/06/03 20:17:57 by jlaazouz          #+#    #+#             */
+/*   Updated: 2023/06/03 20:17:58 by jlaazouz         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 void	ft_join_path_and_cmd(t_input *list, t_execution *data, char ***envi)
 {
 	if (list->arg[0])
-	if (list->arg[0][0] == '\0')
 	{
-		free (list->arg[0]);
-		list->arg[0] = NULL;
+		if (list->arg[0][0] == '\0')
+		{
+			free(list->arg[0]);
+			list->arg[0] = NULL;
+		}
 	}
-	data->tmp = take_copy((*envi)[data->inside], ft_simularity_len((*envi)[data->inside], '=')
-			+ 1, ft_strlen((*envi)[data->inside]));
+	data->tmp = take_copy((*envi)[data->inside],
+			ft_simularity_len((*envi)[data->inside], '=') + 1,
+			ft_strlen((*envi)[data->inside]));
 	data->env = ft_split(data->tmp, ':');
 	free(data->tmp);
 	data->acces = ft_calloc(sizeof(char *), ft_strcount(data->env) + 1);
@@ -35,12 +50,12 @@ void	ft_check_access(t_execution *data)
 			break ;
 		}
 		data->i++;
-	}	
+	}
 }
 
 t_input	*ft_skip_same_cmd(t_input *list)
 {
-	t_input *tmp;
+	t_input	*tmp;
 
 	tmp = list;
 	while (list->next)
@@ -57,7 +72,8 @@ t_input	*ft_skip_same_cmd(t_input *list)
 	return (tmp);
 }
 
-int	ft_check_pipe_errors(t_input *list, t_pipe *pipe_data, char ***envi, char ***export)
+int	ft_check_pipe_errors(t_input *list, t_pipe *pipe_data, char ***envi,
+		char ***export)
 {
 	if (pipe_data->pipe_num == 0)
 	{
@@ -72,7 +88,7 @@ int	ft_check_pipe_errors(t_input *list, t_pipe *pipe_data, char ***envi, char **
 	return (0);
 }
 
-void	ft_allocate_pipe_fds(t_pipe	*pipe_data)
+void	ft_allocate_pipe_fds(t_pipe *pipe_data)
 {
 	pipe_data->pipe_fd = ft_calloc(sizeof(int *), (pipe_data->pipe_num + 1));
 	pipe_data->i = 0;

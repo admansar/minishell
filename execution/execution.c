@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 17:17:33 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/03 20:03:40 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/03 20:17:41 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 void	basic_execution(t_input *list, char ***envi)
 {
-	t_execution data;
-	
+	t_execution	data;
+
 	data.tmp1 = NULL;
 	data.inside = ft_in_env("PATH", *envi);
 	if (data.inside + 1)
@@ -30,7 +30,7 @@ void	basic_execution(t_input *list, char ***envi)
 	else if (char_counter(list->cmd, '/') && access(list->cmd, F_OK | X_OK) + 1)
 		ft_cmd_with_path(list, &data, envi);
 	else if (data.inside + 1 && !char_counter(list->cmd, '/'))
-		ft_execute_cmd(list, &data, envi);	
+		ft_execute_cmd(list, &data, envi);
 	else
 	{
 		ft_printf("bash: %s\n", strerror(errno));
@@ -108,7 +108,7 @@ void	ft_n_pipe(t_input *list, t_pipe *pipe_data, t_redir *data)
 void	ft_pipe(t_input *list, t_redir *data, char ***envi, char ***export)
 {
 	t_pipe	pipe_data;
-	
+
 	pipe_data.env = envi;
 	pipe_data.export = export;
 	list = ft_skip_same_cmd(list);
