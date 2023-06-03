@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/06 11:52:20 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/02 19:05:06 by admansar         ###   ########.fr       */
+/*   Updated: 2023/06/03 09:34:55 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 # include <sys/stat.h>
 # include <sys/wait.h>
 # include <unistd.h>
+#include <dirent.h>
 
 # define OUTPUT "1"
 # define APPEND "2"
@@ -193,4 +194,27 @@ int					consecutive(char *str, char c);
 void				wildcard(char ***split);
 char				*clean_from(char *c, char l);
 
+/********************Wildcard********************/
+
+void	the_start_of_the_beg_dual(char *copy, char **ls, int j, char ***holder);
+void	wildcard(char ***split);
+char	**list_current_directory_content(void);
+int	count_for_ls(DIR *dir);
+void	remake(char ***split, int *i, char **div);
+int	re_full_(char ***div, char ***re, int *j);
+char	**make_sure(char **str, char **ls);
+char	**the_commun(char **str, char **ls);
+void	check_for_hidden(char *str, char ***re);
+char	**the_beg(char *str, char **ls);
+void	find_and_collect(char **ls, char ***holder, int *j, char *split);
+void	find_and_collect_no_p(char **ls, char ***holder, int *j, char *split);
+char	**the_popular_choice(char *str, char **ls);
+char	**the_inner(char *str, char **ls);
+char	**the_end(char *str, char **ls);
+char	**get_the_needed_array(char **holder, char **split, char *str);
+char	**collect_repeated(char *str, char **holder, char **split, int h);
+char	***all_the_reapeated(char **holder, char *str, int h);
+char	**the_repeated(char **tmp1, char **tmp2, char *str, int count);
+void	free_triple_array(char ***c);
+void	the_start_of_the_beg(char *copy, char **ls, char ***holder);
 #endif

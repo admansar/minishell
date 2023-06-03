@@ -1052,6 +1052,7 @@ void array_expander(char **ptr, char **env)
 
 	i = 0;
 	str = *ptr;
+	k = 0;
 	while (str[i])
 	{
 		if (str[i] == '$' && (ft_isalpha(str[i+1]) || ft_isdigit(str[i+1]) || str[i+1] == '_'))
@@ -1156,6 +1157,77 @@ void array_expander(char **ptr, char **env)
 	free (re);
 }
 
+int len_from_env(char ***str_pro_max, char **env, int i, int *j)
+{
+	int start;
+	int k;
+	int h;
+	int end;
+	char *tmp;
+
+	start = (*j);
+	while ((*str_pro_max)[i][(*j)] && (ft_isalpha((*str_pro_max)[i][(*j) + 1]) || ft_isdigit((*str_pro_max)[i][(*j) + 1]) || (*str_pro_max)[i][(*j) + 1] == '_'))
+		(*j)++;
+	end = (*j);
+	tmp = take_copy((*str_pro_max)[i], start + 1, end);
+	k = -1;
+	h = ft_strlen(tmp);
+	while (env[++k])
+		if (!ft_strncmp(tmp, env[k], h) && env[k][h] == '=')
+		{
+			k = ft_strlen(env[k]);
+			break;
+		}
+	free(tmp);	
+	return (k);
+}
+
+int len_from_env_(char **env, int *j)
+{
+	char *tmp;
+	int k;
+	int h;
+
+	tmp = ft_strdup ("?");
+	(*j)++;
+	k = 0;
+	h = ft_strlen(tmp);
+	while (env[k])
+	{
+		if (!ft_strncmp(tmp, env[k], h) && env[k][h] == '=')
+		{
+			k = ft_strlen (env[k]);
+			break;
+		}
+		k++;
+	}
+	free (tmp);
+	return (k);
+}
+
+int get_len_to_allocate(char ***str_pro_max, int i, char **env)
+{
+	int j;
+	int k;
+
+	k = 0;
+	j = 0;
+	while ((*str_pro_max)[i][j])
+	{
+		if ((*str_pro_max)[i][j] == '$' && ((*str_pro_max)[i][j+1] == '@' || ft_isdigit((*str_pro_max)[i][j+1])))
+			delete_them(&(*str_pro_max)[i], j, j + 1);
+		if ((*str_pro_max)[i][j] == '$' && (ft_isalpha((*str_pro_max)[i][j + 1]) || (*str_pro_max)[i][j + 1] == '_' || ft_isdigit((*str_pro_max)[i][j + 1])))
+			k = len_from_env(&(*str_pro_max), env, i, &j);
+		else if ((*str_pro_max)[i][j] == '$' && ((*str_pro_max)[i][j+1] == '?'))
+			k = len_from_env_(env, &j);
+		else
+			j++;
+		if (j >= (int)ft_strlen((*str_pro_max)[i]))
+			break;
+	}
+	return (k + ft_strlen ((*str_pro_max)[i]));
+}
+
 void expand(char ***str_pro_max, char **env)
 {
 	int i;
@@ -1171,68 +1243,10 @@ void expand(char ***str_pro_max, char **env)
 	int to_expand;
 
 	i = 0;
-	j = 0;
-	start = 0;
-	end = 0;
-
 	str = ft_calloc (sizeof (char *) ,(ft_strcount(*str_pro_max) + 1));
 	while ((*str_pro_max)[i])
 	{
-		j = 0;
-		k = 0;
-		start = 0;
-		end = 0;
-		while ((*str_pro_max)[i][j])
-		{
-			if ((*str_pro_max)[i][j] == '$' && ((*str_pro_max)[i][j+1] == '@' || ft_isdigit((*str_pro_max)[i][j+1])))
-			{
-				delete_them(&(*str_pro_max)[i], j, j + 1);
-			}
-			if ((*str_pro_max)[i][j] == '$' && (ft_isalpha((*str_pro_max)[i][j + 1]) || (*str_pro_max)[i][j + 1] == '_' || ft_isdigit((*str_pro_max)[i][j + 1])))
-			{
-				start = j;
-				while ((*str_pro_max)[i][j] && (ft_isalpha((*str_pro_max)[i][j + 1]) || ft_isdigit((*str_pro_max)[i][j + 1]) || (*str_pro_max)[i][j + 1] == '_'))
-					j++;
-				end = j;
-				tmp = take_copy((*str_pro_max)[i], start + 1, end);
-				k = 0;
-				while (env[k])
-				{
-					h = ft_strlen(tmp);
-					if (!ft_strncmp(tmp, env[k], h) && env[k][h] == '=')
-					{
-						k = ft_strlen(env[k]);
-						break;
-					}
-					k++;
-				}
-				free(tmp);	
-				if (j >= (int)ft_strlen((*str_pro_max)[i]))
-					break;
-			}
-			else if ((*str_pro_max)[i][j] == '$' && ((*str_pro_max)[i][j+1] == '?'))
-			{
-				tmp = ft_strdup ("?");
-				j++;
-				k = 0;
-				h = ft_strlen(tmp);
-				while (env[k])
-				{
-					if (!ft_strncmp(tmp, env[k], h) && env[k][h] == '=')
-					{
-						k = ft_strlen (env[k]);
-						break;
-					}
-					k++;
-				}
-				if (j >= (int)ft_strlen((*str_pro_max)[i]))
-					break;
-				free (tmp);
-			}
-			else
-				j++;
-		}
-		str[i] = ft_calloc (sizeof (char) ,(ft_strlen ((*str_pro_max)[i]) + k + 1) * (char_counter((*str_pro_max)[i], '$') + 3));
+		str[i] = ft_calloc (sizeof (char) ,(get_len_to_allocate(str_pro_max, i, env) + 1) * (char_counter((*str_pro_max)[i], '$') + 3));
 		i++;
 	}
 	i = 0;
@@ -1330,21 +1344,14 @@ void expand(char ***str_pro_max, char **env)
 			else
 				to_expand = checking_direction((*str_pro_max)[i], NULL, env);
 			if (to_expand == 0)
-			{
-			//	printf ("%s\n", (*str_pro_max)[i]);
-				(*str_pro_max)[i] = ft_str_join((*str_pro_max)[i]  ,"\a"); // if you see a '\a' it means only and one thing that this is a error "ambiguous redirect in this case", you also hear a 'ding' sound on it 
-			}
+				(*str_pro_max)[i] = ft_str_join((*str_pro_max)[i]  ,"\a");
 			if (surounded_by((*str_pro_max)[i], '\"') && to_expand == 2)
-			{
 				i_should_replace_them(&(*str_pro_max)[i]);
-			}
 			else if (!surounded_by((*str_pro_max)[i], '\'') && to_expand == 1)
 			{
 				free ((*str_pro_max)[i]);
 				(*str_pro_max)[i] = ft_strdup(str[i]);
 			}
-			//		else
-			//			i_should_replace_them(&(*str_pro_max)[i]);
 		}
 		i++;
 	}
@@ -1376,6 +1383,13 @@ void shlvl(char ***env, int c)
 	}
 }
 
+int error_detected(void)
+{
+	ft_printf ("bash: syntax error near unexpected token `|'\n");
+	g_vars.g_exit_status = 2;
+	return (0);
+}
+
 int fast_check(char *input)
 {
 	int i;
@@ -1386,11 +1400,7 @@ int fast_check(char *input)
 	while (input [i] && input[i] == ' ')
 		i++;
 	if (input[i] == '|')
-	{
-		ft_printf ("bash: syntax error near unexpected token `|'\n");
-		g_vars.g_exit_status = 2;
-		return (0);
-	}
+		return (error_detected());
 	while (input[i])
 		i++;
 	i--;
@@ -1399,11 +1409,7 @@ int fast_check(char *input)
 	if (i >= 0)
 	{
 		if (input[i] == '|')
-		{
-			ft_printf ("bash: syntax error near unexpected token `|'\n");
-			g_vars.g_exit_status = 2;
-			return (0);
-		}
+			return (error_detected());
 	}
 	else 
 		return (0);
@@ -1460,137 +1466,157 @@ void exchange(char **ptr, char c, char b)
 	}
 }
 
-void phil_list(t_input **list, char **split)
+void ambiguous_starter_pack(char ***split)
 {
 	int i;
-	int m;
-	int n;
-	int k;
-	int one_time;
 	int count;
-	t_input *tmp;
-	int j;
-	char **last_split;
 
 	i = 0;
-	m = 0;
-	one_time = 0;
-	tmp = *list;
-
-	while (split[i])
+	while ((*split)[i])
 	{
-		count = char_counter(split[i], '\2');
-		if ((count == 1 && split[i][0] == '\1' && split[i][1] == '\2' && ft_strlen (split[i]) == 2))
-			disable (&split[i], '\1');
-		if (char_counter(split[i], '\5'))
-			exchange (&split[i], '\5', ' ');
+		count = char_counter((*split)[i], '\2');
+		if ((count == 1 && (*split)[i][0] == '\1' && (*split)[i][1] == '\2' && ft_strlen ((*split)[i]) == 2))
+			disable (&(*split)[i], '\1');
+		if (char_counter((*split)[i], '\5'))
+			exchange (&(*split)[i], '\5', ' ');
 		i++;
 	}
-	i = 0;
+}
+
+void list_append(char **split, t_input **list, int i)
+{
+	if (char_counter(split[i], '\2'))
+		disable (&split[i], '\2');
+	if (char_counter(split[i+1], '\2'))
+		disable (&split[i+1], '\2');
+	no_surounded_anymore(&split[i + 1]);
+	(*list)->redirect->type[(*list)->redirect->position] = "2";
+	if (split[i+1])
+		(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
+	(*list)->redirect->position++;
+}
+void list_heardoc(char **split, t_input **list, int i)
+{
+	if (char_counter(split[i], '\2'))
+		disable (&split[i], '\2');
+	if (char_counter(split[i+1], '\2'))
+		disable (&split[i+1], '\2');
+	(*list)->redirect->type[(*list)->redirect->position] = "4";
+	if (split[i+1])
+		(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
+	(*list)->redirect->position++;
+}
+
+
+void list_in(char **split, t_input **list, int i)
+{
+	if (char_counter(split[i], '\2'))
+		disable (&split[i], '\2');
+	no_surounded_anymore(&split[i + 1]);
+	(*list)->redirect->type[(*list)->redirect->position] = "3";
+	if (split[i+1])
+		(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
+	(*list)->redirect->position++;
+}
+
+void list_out(char **split, t_input **list, int i)
+{
+	if (char_counter(split[i], '\2'))
+		disable (&split[i], '\2');
+	no_surounded_anymore(&split[i + 1]);
+	(*list)->redirect->type[(*list)->redirect->position] = "1";
+	if (split[i+1])
+		(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
+	(*list)->redirect->position++;
+}
+
+void list_cmd(char **split, t_input **list, int i, int *m)
+{
+	int n;
+	char **last_split;
+
+	if (char_counter(split[i], '\2'))
+		disable (&split[i], '\2');
+	if (char_counter(split[i], '\1'))
+		exchange(&split[i], '\1' , ' ');
+	no_surounded_anymore(&split[i]);
+	if (char_counter(split[i], '\4'))
+	{
+		last_split = ft_split(split[i], '\4');
+		n = 0;
+		(*list)->cmd = ft_strdup(last_split[n++]);
+		while (last_split[n])
+			(*list)->arg[(*m)++] = ft_strdup(last_split[n++]);
+		free_double_array(last_split);
+	}
+	else
+		(*list)->cmd = ft_strdup (split[i]);
+}
+
+void list_args(char **split, t_input **list, int i, int *m)
+{
+	int n;
+	char **last_split;
+
+	no_surounded_anymore(&split[i]);
+	if (char_counter(split[i], '\4'))
+	{
+		last_split = ft_split(split[i], '\4');
+		n = 0;
+		while (last_split[n])
+			(*list)->arg[(*m)++] = ft_strdup(last_split[n++]);
+		free_double_array(last_split);
+	}
+	else
+	{
+		(*list)->arg[(*m)] = ft_strdup(split[i]);
+		(*m)++;
+	}
+}
+
+void list_details(char **split, t_input **list, int *i, int *m)
+{
+	int one_time;
+
+	one_time = 1;
+	while (split[(*i)])
+	{
+		if (!ft_strncmp(split[(*i)], ">>" , 2))
+			list_append (split, list, (*i)++);
+		else if (!ft_strncmp(split[(*i)], "<<" , 2))
+			list_heardoc(split, list, (*i)++);
+		else if (!ft_strncmp(split[(*i)], ">" , 2))
+			list_out(split, list, (*i)++);
+		else if (!ft_strncmp(split[(*i)], "<" , 1))
+			list_in(split, list, (*i)++);
+		else if (one_time == 1 && ft_strncmp(split [(*i)], "|", 2))
+		{
+			list_cmd(split, list, (*i), m);
+			one_time = 0;
+		}
+		else if (!ft_strncmp(split [(*i)], "|", 1))
+			break;
+		else 
+			list_args(split, list, (*i), m);
+		(*i)++;
+	}
+}
+
+void phil_the_list(t_input **list, char **split)
+{
+	int m;
+	int count;
+	int i;
+	t_input *tmp;
+
+	m = 0;
+	ambiguous_starter_pack(&split);
 	count = ft_strcount(split);
+	tmp = *list;
 	i = 0;
 	while (split[i])
 	{
-		one_time = 1; 
-		while (split[i])
-		{
-			if (!ft_strncmp(split[i], ">>" , 2))
-			{
-				if (char_counter(split[i], '\2'))
-					disable (&split[i], '\2');
-				if (char_counter(split[i+1], '\2'))
-					disable (&split[i+1], '\2');
-				no_surounded_anymore(&split[i + 1]);
-				(*list)->redirect->type[(*list)->redirect->position] = "2";
-				if (split[i+1])
-					(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
-				//	  printf ("file name : %s taked the pos num : %d and type is %s\n", (*list)->redirect->file_name[(*list)->redirect->position], (*list)->redirect->position + 1 , (*list)->redirect->type[(*list)->redirect->position]);
-				(*list)->redirect->position++;
-			}
-			else if (!ft_strncmp(split[i], "<<" , 2))
-			{
-				if (char_counter(split[i], '\2'))
-					disable (&split[i], '\2');
-				if (char_counter(split[i+1], '\2'))
-					disable (&split[i+1], '\2');
-				(*list)->redirect->type[(*list)->redirect->position] = "4";
-				if (split[i+1])
-					(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
-				//	  printf ("file name : %s taked the pos num : %d and type is %s\n", (*list)->redirect->file_name[(*list)->redirect->position], (*list)->redirect->position + 1 , (*list)->redirect->type[(*list)->redirect->position]);
-				(*list)->redirect->position++;
-			}
-			else if (!ft_strncmp(split[i], ">" , 2))
-			{
-				if (char_counter(split[i], '\2'))
-					disable (&split[i], '\2');
-				// if (char_counter(split[i+1], '\2'))
-				// disable (&split[i+1], '\2');
-				no_surounded_anymore(&split[i + 1]);
-				(*list)->redirect->type[(*list)->redirect->position] = "1";
-				if (split[i+1])
-					(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
-				//	  printf ("file name : %s taked the pos num : %d and type is %s\n", (*list)->redirect->file_name[(*list)->redirect->position], (*list)->redirect->position + 1 , (*list)->redirect->type[(*list)->redirect->position]);
-				(*list)->redirect->position++;
-			}
-			else if (!ft_strncmp(split[i], "<" , 1))
-			{
-				if (char_counter(split[i], '\2'))
-					disable (&split[i], '\2');
-				// if (char_counter(split[i+1], '\2'))
-				// disable (&split[i+1], '\2');
-				no_surounded_anymore(&split[i + 1]);
-				(*list)->redirect->type[(*list)->redirect->position] = "3";
-				if (split[i+1])
-					(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
-				//	  printf ("file name : %s taked the pos num : %d and type is %s\n", (*list)->redirect->file_name[(*list)->redirect->position], (*list)->redirect->position + 1 , (*list)->redirect->type[(*list)->redirect->position]);
-				(*list)->redirect->position++;
-			}
-			else if (one_time == 1 && ft_strncmp(split [i], "|", 2))/////// cmd list
-			{
-				if (char_counter(split[i], '\2'))
-					disable (&split[i], '\2');
-				if (char_counter(split[i], '\1'))
-					exchange(&split[i], '\1' , ' ');
-				no_surounded_anymore(&split[i]);
-				//			disable (&split[i], '\1');
-				if (char_counter(split[i], '\4'))
-				{
-					last_split = ft_split(split[i], '\4');
-					n = 0;
-					(*list)->cmd = ft_strdup(last_split[n++]);
-					while (last_split[n])
-						(*list)->arg[m++] = ft_strdup(last_split[n++]);
-					free_double_array(last_split);
-				}
-				else
-					(*list)->cmd = ft_strdup (split[i]);
-				//	  printf ("cmd : %s\n", (*list)->cmd);
-				one_time = 0;
-			}
-			else if (!ft_strncmp(split [i], "|", 1))
-				break;
-			else ////arg list
-			{
-				no_surounded_anymore(&split[i]);
-				//		if (char_counter(split[i], '\1'))
-				//			disable (&split[i], '\1');
-				if (char_counter(split[i], '\4'))
-				{
-					last_split = ft_split(split[i], '\4');
-					n = 0;
-					while (last_split[n])
-						(*list)->arg[m++] = ft_strdup(last_split[n++]);
-					free_double_array(last_split);
-				}
-				else
-				{
-					(*list)->arg[m] = ft_strdup(split[i]);
-					// printf ("arg : %s\n", (*list)->arg[m]);
-					m++;
-				}
-			}
-			i++;
-		}
+		list_details(split, list, &i, &m);
 		if (i >= count)
 			break;
 		if (!ft_strcmp(split [i], "|"))
@@ -1598,13 +1624,18 @@ void phil_list(t_input **list, char **split)
 			(*list)->pipe = 1;
 			append (*list, count);
 			(*list) = (*list)->next;
-			//		printf ("-->pipe\n");
 			m = 0;
 		}
 		i++;
 	}
-	// printer ((*list)->arg);
 	(*list) = tmp;
+}
+
+void check_ambiguous(t_input **list)
+{
+	int k;
+	int count;
+	int j;
 
 	k = 0;
 	while ((*list)->arg[k])
@@ -1625,6 +1656,12 @@ void phil_list(t_input **list, char **split)
 		}
 		k++;
 	}
+}
+
+void disable_some_checks(t_input **list)
+{
+	int k;
+
 	k = 0;
 	while ((*list)->arg[k])
 	{
@@ -1641,6 +1678,21 @@ void phil_list(t_input **list, char **split)
 		}
 		k++;
 	}
+}
+
+void phil_list(t_input **list, char **split)
+{
+	t_input *tmp;
+
+	phil_the_list(list, split);
+	tmp = *list;
+	while (*list)
+	{
+		check_ambiguous(list);
+		disable_some_checks(list);
+		(*list) = (*list)->next;
+	}
+	(*list) = tmp;
 }
 
 int ft_strmegacount(char **c)
@@ -1691,6 +1743,22 @@ void free_list(t_input *list)
 	}
 }
 
+int check_error(char **str, int i)
+{
+	int h;
+
+	h = ft_strlen (str[i]);
+	if (str[i + 1][0] == '|' && str[i][h - 1] == '>')
+		return (i);
+	if (str[i + 1][0] == '|' && str[i][h - 1] == '<')
+		return (i);
+	if (str[i + 1][0] == '>' && str[i][h - 1] == '<')
+		return (i);
+	if (str[i + 1][0] == '<' && str[i][h - 1] == '>')
+		return (i);
+	return (-1);
+}
+
 int last_check(char **str)
 {
 	int i;
@@ -1706,14 +1774,7 @@ int last_check(char **str)
 	}
 	while (str[i + 1])
 	{
-		h = ft_strlen (str[i]);
-		if (str[i + 1][0] == '|' && str[i][h - 1] == '>')
-			return (i);
-		if (str[i + 1][0] == '|' && str[i][h - 1] == '<')
-			return (i);
-		if (str[i + 1][0] == '>' && str[i][h - 1] == '<')
-			return (i);
-		if (str[i + 1][0] == '<' && str[i][h - 1] == '>')
+		if (check_error(str, i) != -1)
 			return (i);
 		i++;
 	}
@@ -1743,7 +1804,6 @@ char **parsing(char **input, char **env)
 		return (NULL);
 	}
 	expand(&new_str, env);
-	//printer (new_str);
 	str_pro_max = ultra_split(new_str, input);
 	free_double_array(new_str);
 	the_joiner(&str_pro_max);
@@ -1752,56 +1812,81 @@ char **parsing(char **input, char **env)
 }
 
 
-// void signals(int signum)
-// {
-// 	int i;
+void sigint(int i)
+{
+	(void)i;
+//	if (g_vars.pid[i] == 0)
+//	{
+//		ft_printf("\n");
+//		rl_on_new_line();
+//		rl_replace_line("", 1);
+//		rl_redisplay();
+//	}
+//	else
+//	{
+//		while (g_vars.pid[i] != 0)
+//		{
+//			kill (g_vars.pid[i], SIGINT);
+//			printf ("%d is dead now\n", g_vars.pid[i]);
+//			g_vars.pid[i] = 0;
+//			i++;
+//		}
+//		ft_bzero (g_vars.pid, PIPE_BUF);
+//		g_vars.index = 0;
+//	}
+//	g_vars.g_exit_status = 130;
+}
 
-// 	i = 0;
-// 	if (signum == SIGINT)
-// 	{
-// 		if (g_vars.pid[i] == 0)
-// 		{
-// 			ft_printf("\n");
-// 			rl_on_new_line();
-// 			rl_replace_line("", 1);
-// 			rl_redisplay();
-// 		}
-// 		else
-// 		{
-// 			while (g_vars.pid[i] != 0)
-// 			{
-// 				kill (g_vars.pid[i], SIGINT);
-// 				printf ("%d is dead now\n", g_vars.pid[i]);
-// 				g_vars.pid[i] = 0;
-// 				i++;
-// 			}
-// 			ft_bzero (g_vars.pid, PIPE_BUF);
-// 			g_vars.index = 0;
-// 		}
-// 		g_vars.g_exit_status = 130;
-// 	}
-// 	else if (signum == SIGQUIT)
-// 	{
-// 		while (g_vars.pid[i] != 0)
-// 		{
-// 			kill (g_vars.pid[i], SIGINT);
-// 			printf ("%d is dead now\n", g_vars.pid[i]);
-// 			g_vars.pid[i] = 0;
-// 			i++;
-// 		}
-// 		ft_bzero (g_vars.pid, PIPE_BUF);
-// 		g_vars.index = 0;
-// 		ft_printf("Quit: 3\n");
-// 	}
-// }
+void sigquit(int i)
+{
+	while (g_vars.pid[i] != 0)
+	{
+		kill (g_vars.pid[i], SIGINT);
+		printf ("%d is dead now\n", g_vars.pid[i]);
+		g_vars.pid[i] = 0;
+		i++;
+	}
+	ft_bzero (g_vars.pid, PIPE_BUF);
+	g_vars.index = 0;
+	ft_printf("Quit: 3\n");
+}
+
+void signals(int signum)
+{
+	int i;
+
+ 	i = 0;
+ 	if (signum == SIGINT)
+		sigint(i);
+ 	else if (signum == SIGQUIT)
+		sigquit(i);
+ }
+
+void re_split(char ***tmp, char **split, int *j)
+{
+	char **ptr;
+	int k;
+
+		if (char_counter ((*split), ' '))
+		{
+			ptr = ft_split((*split), ' ');
+			k = 0;
+			while (ptr[k])
+				(*tmp)[(*j)++] = ptr[k++];
+			free (ptr);
+			if ((*j) > 0)
+				(*j)--;
+		}
+		else
+			(*tmp)[(*j)] = (*split);
+}
 
 void split_and_join(char ***split)
 {
 	int i;
 	int j;
-	int k;
-	char **ptr;
 	char **tmp;
+
 	if (!(*split))
 		return ;
 	tmp = ft_calloc (sizeof (char *) ,ft_strcount((*split)) + mega_counter(*split, ' ') + 2);
@@ -1809,18 +1894,7 @@ void split_and_join(char ***split)
 	j = 0;
 	while ((*split)[i])
 	{
-		if (char_counter ((*split)[i], ' '))
-		{
-			ptr = ft_split((*split)[i], ' ');
-			k = 0;
-			while (ptr[k])
-				tmp[j++] = ptr[k++];
-			free (ptr);
-			if (j > 0)
-				j--;
-		}
-		else
-			tmp[j] = (*split)[i];
+		re_split(&tmp, &(*split)[i], &j);
 		j++;
 		i++;
 	}
@@ -1828,15 +1902,86 @@ void split_and_join(char ***split)
 	*split = tmp;
 }
 
+void parse_it(char **copy, char ***env, char ***split)
+{
+	int check;
 
-int main(int ac, char **av, char **envi)
+	if (char_counter((*copy), '\"') || char_counter((*copy), '\''))
+		(*split) = parsing(&(*copy), *env);
+	else
+	{
+		make_some_space(&(*copy));
+		(*split) = ft_split ((*copy), ' ');
+		expand (&(*split), *env);
+		split_and_join(&(*split));
+	}
+	check = last_check((*split));
+	if (check == -2)
+		(*split) = NULL;
+	if (check != -1 && (*split))
+	{
+		if (check  + 1 < ft_strcount((*split)))
+			ft_printf ("bash: syntax error near unexpected token `%s'\n", (*split)[check + 1]);
+		else
+			error_print ("bash: syntax error near unexpected token `newline'", NULL);
+		g_vars.g_exit_status = 2;
+		free_double_array((*split));
+		(*split) = NULL;
+	}
+}
+
+void parse_phil_list_and_excute(char **copy, char ***env, char ***export)
+{
+	char **split;
+	t_input *list;
+
+	if (fast_check((*copy)))
+	{
+		parse_it(&(*copy), env, &split);
+		ft_update_exit_status(env);
+		if (split)
+		{
+			if (mega_counter(split, '*'))
+				wildcard(&split);
+			list = work_time(split);
+			free_double_array(split);
+			ft_execution(list, env, export);
+			ft_update_exit_status(env);
+			ft_update_last_command(env, list);
+			free_list(list);
+		}
+	}
+}
+
+void minishell(char ***env, char ***export)
 {
 	char *input;
 	char *copy;
-	char **split;
+
+	if (!g_vars.g_exit_status)
+		input = readline("😄\033[0;32mbash-4.2\033[34m$▶️  \033[0m");
+	else
+		input = readline("😡\033[31mbash-4.2\033[34m$❌ \033[0m");
+	if (input == NULL)
+	{
+		// ft_printf ("exit\n");
+		free (input);
+		exit (g_vars.g_exit_status);	
+	}
+	copy = ft_strdup(input);
+	parse_phil_list_and_excute(&copy, env, export);
+	free (copy);
+	add_history(input);
+	if (input && input[0] == 0)
+		g_vars.g_exit_status = 0;
+	free(input);
+	ft_bzero (g_vars.pid, PIPE_BUF);
+	g_vars.index = 0;
+}
+
+int main(int ac, char **av, char **envi)
+{
 	char **env;
-	t_input *list;
-	int check;
 	char **export;
 
 	(void)ac;
@@ -1850,66 +1995,8 @@ int main(int ac, char **av, char **envi)
 	g_vars.index = 0;
 	// signal (SIGINT, signals);
 	// signal (SIGQUIT, signals);
-	//	ft_printf("\033[37mThe default interactive shell is now zsh.\nTo update your account to use zsh, please run chsh -s /bin/zsh.\n\033[0m");
 	while (1)
-	{
-		if (!g_vars.g_exit_status)
-			input = readline("😄\033[0;32mbash-4.2\033[34m$▶️  \033[0m");
-		else
-			input = readline("😡\033[31mbash-4.2\033[34m$❌ \033[0m");
-		if (input == NULL)
-		{
-			// ft_printf ("exit\n");
-			free (input);
-			exit (g_vars.g_exit_status);	
-		}
-		copy = ft_strdup(input);
-		if (fast_check(copy))
-		{
-			if (char_counter(copy, '\"') || char_counter(copy, '\''))
-				split = parsing(&copy, env);
-			else
-			{
-				make_some_space(&copy);
-				split = ft_split (copy, ' ');
-				expand (&split, env);
-				check = 0;
-				split_and_join(&split);
-			}
-			check = last_check(split);
-			if (check == -2)
-				split = NULL;
-			if (check != -1 && split)
-			{
-				if (check  + 1 < ft_strcount(split))
-					ft_printf ("bash: syntax error near unexpected token `%s'\n", split[check + 1]);
-				else
-					error_print ("bash: syntax error near unexpected token `newline'", NULL);
-				g_vars.g_exit_status = 2;
-				free_double_array(split);
-				split = NULL;
-			}
-			ft_update_exit_status(&env);
-			if (split)
-			{
-				if (mega_counter(split, '*'))
-					wildcard(&split);
-				list = work_time(split);
-				free_double_array(split);
-				ft_execution(list, &env, &export);
-				ft_update_exit_status(&env);
-				ft_update_last_command(&env, list);
-				free_list(list);
-			}
-		}
-		free (copy);
-		add_history(input);
-		if (input && input[0] == 0)
-				g_vars.g_exit_status = 0;
-		free(input);
-		ft_bzero (g_vars.pid, PIPE_BUF);
-		g_vars.index = 0;
-	}
+		minishell(&env, &export);
 	shlvl(&env, -1);
 	in_env(NULL, env, 1);
 	free_double_array(env);

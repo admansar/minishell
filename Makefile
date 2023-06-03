@@ -2,7 +2,9 @@ NAME = minishell
 
 USER_NAME := $(USER)
 
-SRC = main.c wildcard.c
+SRC = main.c
+
+WILDCARD_PATH = wildcard
 
 BUILTIN_PATH = builtins
 
@@ -12,6 +14,8 @@ REDIRECTIONS_PATH = redirections
 
 EXECUTION_PATH = execution
 
+PARSE_PATH = parsing/
+
 BUILTIN_SRC = $(addprefix $(BUILTIN_PATH)/, ft_change_dir.c ft_echo.c ft_export.c ft_pwd.c ft_unset.c)
 
 UTILS_SRC = $(addprefix $(UTILS_PATH)/, ft_utils_1.c ft_utils_2.c ft_utils_3.c ft_utils_4.c)
@@ -20,9 +24,11 @@ REDIRECTIONS_SRC = $(addprefix $(REDIRECTIONS_PATH)/, ft_redirections.c ft_here_
 
 EXECUTION_SRC = $(addprefix $(EXECUTION_PATH)/, execution.c)
 
+WILDCARD_SRC = $(addprefix $(WILDCARD_PATH)/, wildcard_cases.c wildcard_utils1.c  the_most_nedded_utils.c wildcard_utils2.c  wildcard.c)
+
 OBJ_DIR := ./objects
 
-OBJ = $(OBJ_DIR)/$(SRC:.c=.o) $(OBJ_DIR)/$(BUILTIN_SRC:.c=.o)  $(OBJ_DIR)/$(UTILS_SRC:.c=.o) $(OBJ_DIR)/$(REDIRECTIONS_SRC:.c=.o) $(OBJ_DIR)/$(EXECUTION_SRC:.c=.o)
+OBJ = $(OBJ_DIR)/$(SRC:.c=.o) $(OBJ_DIR)/$(BUILTIN_SRC:.c=.o)  $(OBJ_DIR)/$(UTILS_SRC:.c=.o) $(OBJ_DIR)/$(REDIRECTIONS_SRC:.c=.o) $(OBJ_DIR)/$(EXECUTION_SRC:.c=.o) $(OBJ_DIR)/$(WILDCARD_SRC:.c=.o)
 
 SRC_DIR := .
 
@@ -38,6 +44,10 @@ $(NAME) : $(OBJ)
 	$(CC) $(OBJ) $(CFLAGS) libft/libft.a -lreadline -o $(NAME)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJ_DIR)/%.o: $(WILDCARD_PATH)/%.c
 	mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
