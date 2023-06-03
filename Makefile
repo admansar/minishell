@@ -16,11 +16,12 @@ EXECUTION_PATH = execution
 
 PARSE_PATH = parsing/
 
-BUILTIN_SRC = $(addprefix $(BUILTIN_PATH)/, ft_change_dir.c ft_echo.c ft_export.c ft_pwd.c ft_unset.c)
+BUILTIN_SRC = $(addprefix $(BUILTIN_PATH)/, ft_change_dir.c ft_echo.c ft_export.c ft_pwd.c ft_unset.c ft_exit.c)
 
 UTILS_SRC = $(addprefix $(UTILS_PATH)/, env_update_utils.c general_utils_1.c general_utils_2.c\
 				here_doc_utils.c redirections_utils_1.c redirections_utils_2.c redirections_utils_3.c\
-				utils_export_unset_1.c	utils_export_unset_2.c)
+				utils_export_unset_1.c	utils_export_unset_2.c execution_utils_1.c execution_utils_2.c\
+				execution_utils_3.c execution_utils_4.c)
 
 REDIRECTIONS_SRC = $(addprefix $(REDIRECTIONS_PATH)/, ft_redirections.c ft_here_doc.c)
 
