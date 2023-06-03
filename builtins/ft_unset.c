@@ -34,10 +34,11 @@ void	ft_fill_unset_vars(t_input *list, t_export *data)
 	data->j = 0;
 	while (list->arg[data->i])
 	{
-		data->ret = ft_get_var(list->arg[data->i], &data->tmp_name, &data->tmp_value);
+		data->ret = ft_get_var(list->arg[data->i],
+				&data->tmp_name, &data->tmp_value);
 		if (ft_unset_name_checker(data->tmp_name) == -1 || data->ret == -13)
 			ft_printf("bash: unset: `%s': not a valid identifier\n",
-					list->arg[data->i]);
+				list->arg[data->i]);
 		else
 		{
 			data->valid_export_vars[data->j] = ft_strdup(list->arg[data->i]);
@@ -66,7 +67,7 @@ void	ft_unset_vars(t_export *data, char ***ptr)
 void	ft_unset(char ***env, t_input *list, char ***export)
 {
 	t_export	data;
-	
+
 	ft_init_export_data(&data);
 	ft_fill_unset_vars(list, &data);
 	ft_unset_vars(&data, export);

@@ -14,25 +14,24 @@ int	check_in_file_permissions(t_input *list, t_redir *data, int i)
 	}
 	data->error = 1;
 	g_vars.g_exit_status = 1;
-	ft_printf("bash: %s: %s\n", list->redirect->file_name[i],
-			strerror(errno));
-	return (0) ;
+	ft_printf("bash: %s: %s\n", list->redirect->file_name[i], strerror(errno));
+	return (0);
 }
 
 int	redirections_error(t_input *list, t_redir *data, t_files *f_data)
 {
 	if (!ft_strcmp(list->redirect->type[f_data->i], OUTPUT))
 	{
-		if (file_found(list, f_data)
-			&& !ft_check_permissions(list, data, f_data, O_TRUNC))
+		if (file_found(list, f_data) && !ft_check_permissions(list, data,
+				f_data, O_TRUNC))
 			return (1);
 		else
 			ft_create_file(list, data, f_data, O_TRUNC);
 	}
 	else if (!ft_strcmp(list->redirect->type[f_data->i], APPEND))
 	{
-		if (file_found(list, f_data)
-			&& !ft_check_permissions(list, data, f_data, O_APPEND))
+		if (file_found(list, f_data) && !ft_check_permissions(list, data,
+				f_data, O_APPEND))
 			return (1);
 		else
 			ft_create_file(list, data, f_data, O_APPEND);
@@ -56,11 +55,11 @@ void	ft_file_creation(t_input *list, t_redir *data)
 	while (list->redirect->type[++f_data.i])
 	{
 		if (ft_ambiguous(list, data, f_data.i))
-			break;
+			break ;
 		if (char_counter(list->redirect->file_name[f_data.i], '\2'))
-			disable (&list->redirect->file_name[f_data.i], '\2');
+			disable(&list->redirect->file_name[f_data.i], '\2');
 		if (redirections_error(list, data, &f_data))
-			break;
+			break ;
 	}
 	get_out_fd(&f_data, data);
 }
@@ -84,13 +83,13 @@ void	ft_get_input(t_input *list, t_redir *data)
 	if (data->herdoc_count > data->input_count)
 	{
 		data->in_fd = open(list->redirect->herdoc_file_name,
-			O_RDONLY, 0644);
+				O_RDONLY, 0644);
 		unlink(list->redirect->herdoc_file_name);
 		free(list->redirect->herdoc_file_name);
-    }
+	}
 	else if (data->herdoc_count < data->input_count)
 		data->in_fd = open(list->redirect->file_name[data->input_count],
-			O_RDONLY, 0644);
+				O_RDONLY, 0644);
 }
 
 void	ft_redirections(t_input *list, t_redir *data, char ***env,

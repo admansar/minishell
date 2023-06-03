@@ -37,13 +37,15 @@ void	ft_fill_export_vars(t_input *list, t_export *data)
 
 void	ft_check_env_var(t_export *data)
 {
-	data->valid_env_vars = (char **)ft_calloc(sizeof(char *), data->var_nbr + 1);
+	data->valid_env_vars = (char **)ft_calloc(sizeof(char *),
+			data->var_nbr + 1);
 	data->i = 0;
 	data->j = 0;
 	while (data->valid_export_vars[data->i])
 	{
 		if (ft_char_checker(data->valid_export_vars[data->i], '=') >= 0)
-			data->valid_env_vars[data->j++] = ft_strdup(data->valid_export_vars[data->i++]);
+			data->valid_env_vars[data->j++] = ft_strdup
+				(data->valid_export_vars[data->i++]);
 		else
 			data->i++;
 	}
@@ -74,13 +76,13 @@ void	ft_export_vars(t_export *data, char **valid_vars, char ***ptr)
 
 void	ft_export(char ***env, t_input *list, char ***export)
 {
-	t_export data;
+	t_export	data;
 
 	ft_init_export_data(&data);
 	ft_export_printer(list, *export, &data);
 	ft_fill_export_vars(list, &data);
 	ft_check_env_var(&data);
-	ft_export_vars(&data, data.valid_export_vars,export);
+	ft_export_vars(&data, data.valid_export_vars, export);
 	ft_export_vars(&data, data.valid_env_vars, env);
 	in_env(NULL, *env, 1);
 	free_double_array(data.valid_env_vars);

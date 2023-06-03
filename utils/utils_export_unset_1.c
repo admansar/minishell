@@ -31,8 +31,8 @@ int	ft_export_name_checker(char *str)
 	while (str[i])
 	{
 		if (ft_isalpha(str[i]) || ft_isdigit(str[i]) || str[i] == '_'
-			|| str[i] == '=' ||
-			(str[i] == '+' && (str[i + 1] == '=' || str[i + 1] == '\0')))
+			|| str[i] == '='
+			|| (str[i] == '+' && (str[i + 1] == '=' || str[i + 1] == '\0')))
 			i++;
 		else
 			return (-1);
@@ -81,7 +81,7 @@ void	ft_export_printer(t_input *list, char **export, t_export *data)
 	}
 }
 
-// search for a '+' in my string and create new str that does not contain the '+'
+// search for a '+' in my str and create new str that does not contain the '+'
 void	ft_clean_up_name(char **str)
 {
 	int		i;

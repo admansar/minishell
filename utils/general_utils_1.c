@@ -2,8 +2,8 @@
 
 int	ft_strcmp(const char *s1, const char *s2)
 {
-	unsigned char *str1;
-	unsigned char *str2;
+	unsigned char	*str1;
+	unsigned char	*str2;
 
 	if (!s1 || !s2)
 		return (-1);
@@ -29,7 +29,8 @@ int	ft_in_env(char *str, char **env)
 	len = ft_strlen(str);
 	while (env[i])
 	{
-		if (!ft_strncmp(env[i], str, ft_strlen(str)) && (env[i][len] == '=' || env[i][len] == '\0'))
+		if (!ft_strncmp(env[i], str, ft_strlen(str))
+			&& (env[i][len] == '=' || env[i][len] == '\0'))
 			return (i);
 		i++;
 	}
@@ -51,7 +52,7 @@ int	ft_char_checker(char *str, char c)
 	return (-1);
 }
 
-// extract the variable name from the var and assign to the given var_name  
+// extract the variable name from the var and assign to the given var_name
 void	ft_get_var_name(char *var, char **var_name)
 {
 	int	ret;
@@ -67,7 +68,7 @@ void	ft_get_var_name(char *var, char **var_name)
 		*var_name = take_copy(var, 0, ret - 1);
 }
 
-// extract the variable name from the var and assign to the given var_name  
+// extract the variable name from the var and assign to the given var_name
 void	ft_get_var_value(char *var, char *var_name, char **var_value)
 {
 	int	i;

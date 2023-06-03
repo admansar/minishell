@@ -26,7 +26,7 @@ void	ft_update_exit_status(char ***env)
 {
 	int		exist;
 	char	*tmp_name;
-	char	*itoi_arr;;
+	char	*itoi_arr;
 
 	exist = ft_in_env("?", *env);
 	if (exist >= 0)

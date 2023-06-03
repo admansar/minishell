@@ -1,4 +1,3 @@
-
 #include "../minishell.h"
 
 int	*ft_get_operators_pos(t_input *list, char *str, int *count)
@@ -26,14 +25,13 @@ int	*ft_get_operators_pos(t_input *list, char *str, int *count)
 void	ft_write_in_file(t_input *list, t_redir *data, char **env)
 {
 	g_vars.g_exit_status = 0;
-	data->in_fd = open(list->redirect->herdoc_file_name ,
-		O_RDWR | O_CREAT | O_APPEND, 0644);
+	data->in_fd = open(list->redirect->herdoc_file_name,
+			O_RDWR | O_CREAT | O_APPEND, 0644);
 	if (data->expand)
-		array_expander(&data->input , env);
+		array_expander(&data->input, env);
 	ft_putstr_fd(data->input, data->in_fd);
-	write (data->in_fd, "\n", 1);
+	write(data->in_fd, "\n", 1);
 	free(data->input);
-
 }
 
 // launch here-doc as many times as it appear in the input
