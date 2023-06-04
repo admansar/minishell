@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:18:17 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/03 20:18:18 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/04 15:03:09 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,8 @@ int	ft_export_name_checker(char *str)
 	while (str[i])
 	{
 		if (ft_isalpha(str[i]) || ft_isdigit(str[i]) || str[i] == '_'
-			|| str[i] == '='
-			|| (str[i] == '+' && (str[i + 1] == '=' || str[i + 1] == '\0')))
+			|| str[i] == '=' || (str[i] == '+' && (str[i + 1] == '='
+					|| str[i + 1] == '\0')))
 			i++;
 		else
 			return (-1);

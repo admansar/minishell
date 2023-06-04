@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:18:14 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/04 11:27:19 by admansar         ###   ########.fr       */
+/*   Updated: 2023/06/04 15:45:47 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void	ft_get_all_fds(t_files *f_data, t_input *list, t_redir *data)
 		else if (!ft_strcmp(list->redirect->type[f_data->i], APPEND))
 			data->count++;
 	}
-	f_data->arr = ft_calloc(sizeof(int), (data->count + 3));
+	f_data->arr = ft_calloc(sizeof(int), (data->count + 2));
 	f_data->i = -1;
 	f_data->j = 0;
 }

@@ -47,9 +47,8 @@ int	ambiguous_check_2(t_input *list, t_redir *data, char *tmp, int i)
 		free(tmp);
 		return (1);
 	}
-	else if (char_counter(list->redirect->file_name[i], '\1')
-		&& (inside_of(tmp, '\1') || consecutive(tmp, '\1')
-			|| ft_strlen(tmp) == 1))
+	else if (char_counter(list->redirect->file_name[i], '\1') && (inside_of(tmp,
+				'\1') || consecutive(tmp, '\1') || ft_strlen(tmp) == 1))
 	{
 		ft_error(data, AMBIGUOUS);
 		free(tmp);

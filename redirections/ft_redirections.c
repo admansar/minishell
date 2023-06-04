@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:17:47 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/03 20:17:48 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/04 15:44:29 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,8 +94,7 @@ void	ft_get_input(t_input *list, t_redir *data)
 	}
 	if (data->herdoc_count > data->input_count)
 	{
-		data->in_fd = open(list->redirect->herdoc_file_name,
-				O_RDONLY, 0644);
+		data->in_fd = open(list->redirect->herdoc_file_name, O_RDONLY, 0644);
 		unlink(list->redirect->herdoc_file_name);
 		free(list->redirect->herdoc_file_name);
 	}

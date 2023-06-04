@@ -36,7 +36,7 @@ char	*ft_fix_path(char *str, int in_mid)
 
 	i = 0;
 	j = 0;
-	fixed = (char *) ft_calloc(sizeof(char), ft_strlen(str) + in_mid + 1);
+	fixed = (char *)ft_calloc(sizeof(char), ft_strlen(str) + in_mid + 1);
 	while (str[i])
 	{
 		if (str[i] == ':' && str[i + 1] == ':')

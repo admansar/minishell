@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:17:32 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/03 20:17:33 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/04 15:43:16 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,8 @@ void	ft_fill_export_vars(t_input *list, t_export *data)
 	data->j = 0;
 	while (list->arg[data->i])
 	{
-		data->ret = ft_get_var(list->arg[data->i],
-				&data->tmp_name, &data->tmp_value);
+		data->ret = ft_get_var(list->arg[data->i], &data->tmp_name,
+				&data->tmp_value);
 		if (ft_export_name_checker(data->tmp_name) == -1 || data->ret == -1)
 		{
 			ft_printf("bash: export: `%s': not a valid identifier\n",
@@ -49,15 +49,15 @@ void	ft_fill_export_vars(t_input *list, t_export *data)
 
 void	ft_check_env_var(t_export *data)
 {
-	data->valid_env_vars = (char **)ft_calloc(sizeof(char *),
-			data->var_nbr + 1);
+	data->valid_env_vars = (char **)ft_calloc(sizeof(char *), data->var_nbr
+			+ 1);
 	data->i = 0;
 	data->j = 0;
 	while (data->valid_export_vars[data->i])
 	{
 		if (ft_char_checker(data->valid_export_vars[data->i], '=') >= 0)
-			data->valid_env_vars[data->j++] = ft_strdup
-				(data->valid_export_vars[data->i++]);
+			data->valid_env_vars[data->j++]
+				= ft_strdup(data->valid_export_vars[data->i++]);
 		else
 			data->i++;
 	}
@@ -71,15 +71,12 @@ void	ft_export_vars(t_export *data, char **valid_vars, char ***ptr)
 	while (valid_vars[i])
 	{
 		ft_get_var_name(valid_vars[i], &data->tmp_name);
-		ft_get_var_value(valid_vars[i],
-			data->tmp_name, &data->tmp_value);
+		ft_get_var_value(valid_vars[i], data->tmp_name, &data->tmp_value);
 		data->exist = ft_in_env(data->tmp_name, *ptr);
 		if (data->exist == -1)
-			*ptr = ft_join_ptr_to_double_ptr(*ptr,
-					valid_vars[i]);
+			*ptr = ft_join_ptr_to_double_ptr(*ptr, valid_vars[i]);
 		else if (data->tmp_value)
-			ft_update_value_env(valid_vars[i],
-				ptr, data->exist);
+			ft_update_value_env(valid_vars[i], ptr, data->exist);
 		free(data->tmp_name);
 		free(data->tmp_value);
 		i++;

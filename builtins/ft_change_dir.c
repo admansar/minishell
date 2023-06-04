@@ -29,8 +29,8 @@ void	ft_update_pwd(t_cd *data, char ***ptr)
 {
 	if (data->index_old_pwd > 0)
 	{
-		ft_get_var_value((*ptr)[data->index_pwd],
-			data->pwd_name, &data->old_pwd);
+		ft_get_var_value((*ptr)[data->index_pwd], data->pwd_name,
+			&data->old_pwd);
 		data->joined = ft_strjoin(data->old_name, data->old_pwd);
 		free(data->old_pwd);
 		data->old_pwd = data->joined;
@@ -40,8 +40,8 @@ void	ft_update_pwd(t_cd *data, char ***ptr)
 	}
 	else
 	{
-		ft_get_var_value((*ptr)[data->index_pwd],
-			data->pwd_name, &data->old_pwd);
+		ft_get_var_value((*ptr)[data->index_pwd], data->pwd_name,
+			&data->old_pwd);
 		data->joined = ft_strjoin(data->old_name, data->old_pwd);
 		free(data->old_pwd);
 		data->old_pwd = data->joined;

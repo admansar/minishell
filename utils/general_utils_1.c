@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:18:02 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/03 20:18:03 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/04 15:07:20 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,8 @@ int	ft_in_env(char *str, char **env)
 	len = ft_strlen(str);
 	while (env[i])
 	{
-		if (!ft_strncmp(env[i], str, ft_strlen(str))
-			&& (env[i][len] == '=' || env[i][len] == '\0'))
+		if (!ft_strncmp(env[i], str, ft_strlen(str)) && (env[i][len] == '='
+			|| env[i][len] == '\0'))
 			return (i);
 		i++;
 	}
