@@ -1,15 +1,16 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <readline/history.h>
-#include <readline/readline.h>
-#include "libft/libft.h"
-#include "libft/ft_printf.h"
-#include "minishell.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: admansar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/06/03 23:09:12 by admansar          #+#    #+#             */
+/*   Updated: 2023/06/03 23:09:15 by admansar         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-void make_some_space(char **str);
-void	free_double_array(char **new_str);
-void should_i_replace_them(char **input);
-void printer(char **ptr);
+#include "minishell.h"
 
 //how many worlds before the letter indicated as the second char 
 int ft_simularity_len(char *str, char c)
@@ -143,7 +144,7 @@ char *clean_copy(char *c)
 
 	if (surounded_by(c, '\"'))
 	{
-		re = malloc (sizeof (char) * ft_strlen(c));
+		re = ft_calloc (sizeof (char), ft_strlen(c) + 1);
 		i = 0;
 		k = 0;
 		j = 0;
@@ -158,7 +159,6 @@ char *clean_copy(char *c)
 				k++;
 			i++;
 		}
-		re[j] = '\0';
 		return (re);
 	}
 	return (ft_strdup(c));
@@ -183,104 +183,118 @@ int max_len(char **str)
 	return (max);
 }
 
+void delete_both_double (t_parse *pars, char **input)
+{
+	if (pars->start == pars->end - 1)
+	{
+		if (pars->start > 0)
+			if ((*input)[pars->start - 1] == ' ')
+				pars->used = 0.5;
+		if (pars->end < pars->len)
+			if ((*input)[pars->end + 1] == ' ' || pars->end + 1 == pars->len)
+				pars->used += 0.5;
+		if (pars->used != 1)
+		{
+			delete_both(input, pars->start, pars->end, '\"');
+			pars->i = -1;
+			pars->start = 0;
+			pars->end = 0;
+			pars->taken = 1;
+		}
+	}
+}
 
 void d_delete(char **input) // d for double quotes
-{	
-	int i;
-	int taken;
-	int start;
-	int end;
-	float used;
-	int len;
+{
+	t_parse pars;
 
-	i = 0;
-	taken = 1;
-	start = 0;
-	end = 0;
-	len = ft_strlen (*input) + 1;
-	while ((*input)[i])
+	pars.i = 0;
+	pars.taken = 1;
+	pars.start = 0;
+	pars.end = 0;
+	pars.len = ft_strlen (*input) + 1;
+	while ((*input)[pars.i])
 	{
-		used = 0;
-		if ((*input)[i] == '\"' && taken == 1)
+		pars.used = 0;
+		if ((*input)[pars.i] == '\"' && pars.taken == 1)
 		{
-			start = i;
-			taken = 0;
+			pars.start = pars.i;
+			pars.taken = 0;
 		}
-		else if ((*input)[i] == '\"' && taken == 0)
+		else if ((*input)[pars.i] == '\"' && pars.taken == 0)
 		{
-			end = i;
-			taken = 1;
+			pars.end = pars.i;
+			pars.taken = 1;
 		}
-		if (start == end - 1)
+		delete_both_double (&pars, input);
+		pars.i++;
+	}
+}
+
+void delete_both_single(t_parse *pars, char **input)
+{
+	if (pars->start == pars->end - 1)
+	{
+		if (pars->start > 0)
+			if ((*input)[pars->start - 1] == ' ')
+				pars->used = 0.5;
+		if (pars->end < pars->len)
+			if ((*input)[pars->end + 1] == ' ' || pars->end + 1 == pars->len)
+				pars->used += 0.5;
+		if (pars->used != 1)
 		{
-			if (start > 0)
-				if ((*input)[start - 1] == ' ')
-					used = 0.5;
-			if (end < len)
-				if ((*input)[end + 1] == ' ' || end + 1 == len)
-					used += 0.5;
-			if (used != 1)
-			{
-				delete_both(input, start, end, '\"');
-				i = -1;
-				start = 0;
-				end = 0;
-				taken = 1;
-			}
+			delete_both(input, pars->start, pars->end, '\'');
+			pars->i = -1;
+			pars->start = 0;
+			pars->end = 0;
+			pars->taken = 1;
 		}
-		i++;
 	}
 }
 
 void s_delete(char **input) // s for single quotes
 {	
-	int i;
-	int taken;
-	int start;
-	float used;
-	int end;
-	int len;
+	t_parse pars;
 
-	i = 0;
-	taken = 1;
-	start = 0;
-	end = 0;
-	len = ft_strlen (*input) + 1;
-	while ((*input)[i])
+	pars.i = 0;
+	pars.taken = 1;
+	pars.start = 0;
+	pars.end = 0;
+	pars.len = ft_strlen (*input) + 1;
+	while ((*input)[pars.i])
 	{
-		if ((*input)[i] == '\'' && taken == 1)
+		if ((*input)[pars.i] == '\'' && pars.taken == 1)
 		{
-			start = i;
-			taken = 0;
+			pars.start = pars.i;
+			pars.taken = 0;
 		}
-		else if ((*input)[i] == '\'' && taken == 0)
+		else if ((*input)[pars.i] == '\'' && pars.taken == 0)
 		{
-			end = i;
-			taken = 1;
+			pars.end = pars.i;
+			pars.taken = 1;
 		}
-		if (start == end - 1)
-		{
-			if (start > 0)
-				if ((*input)[start - 1] == ' ')
-					used = 0.5;
-			if (end < len)
-				if ((*input)[end + 1] == ' ' || end + 1 == len)
-					used += 0.5;
-			if (used != 1)
-			{
-				delete_both(input, start, end, '\'');
-				i = -1;
-				start = 0;
-				end = 0;
-				taken = 1;
-			}
-		}
-		i++;
+		delete_both_single(&pars, input);
+		pars.i++;
 	}
 }
 
-
-
+void look_for_partner(t_parse *pars, char ***new_str, char **input)
+{
+	(*new_str)[pars->j] = ft_calloc (sizeof (char), (ft_strlen((*input)) + 1));
+	pars->k = 0;
+	while ((*input)[pars->i] && (*input)[pars->i] != '\''
+			&& (*input)[pars->i] != '\"')
+	{ 
+		(*new_str)[pars->j][pars->k] = (*input)[pars->i];
+		pars->k++;
+		pars->i++;
+	}
+	(*new_str)[pars->j][pars->k] = '\0';
+	should_i_replace_them(&(*new_str)[pars->j]);
+	make_some_space(&(*new_str)[pars->j]);
+	pars->j++;
+	pars->i--;
+}
 
 //no need to the comment !!
 //anyway this function delete the double qoutes that start and end with nothing inside
@@ -291,64 +305,49 @@ void delete_non_sense(char **input)
 	s_delete(input);
 }
 
+void split_without_weast_utils(t_parse *pars, char ***new_str, char **input)
+{
+	if (((*input)[pars->i] == '\"'||(*input)[pars->i] == '\'')
+				&& pars->taken == 1)
+		{
+			pars->start = pars->i;
+			pars->taken = 0;
+		}
+		else if (pars->taken == 1) 
+			look_for_partner(pars, new_str, input);
+		else if (((*input)[pars->i] == '\"'||(*input)[pars->i] == '\'')	&& pars->taken == 0 && (*input)[pars->start] == ((*input)[pars->i]))
+		{
+			pars->end = pars->i;
+			if ((*input)[pars->i + 1] == ' ')
+				pars->end = ++pars->i;
+			pars->taken = 1;
+		}
+		if (pars->start < pars->end)
+		{
+			(*new_str)[pars->j++] = take_copy((*input), pars->start, pars->end);
+			if (!surounded_by((*new_str)[pars->j - 1], '\"'))
+				should_i_replace_them(&(*new_str)[pars->j - 1]);
+			pars->start = pars->end;
+		}
+		pars->i++;
+}
+
 //better for cheking errors the advantage of it that i split the double quote without waisting the double quotes
 char **split_without_weast(char **input) 
 {
-	int i;
-	int j;
-	int k;
-	int taken;
-	int start;
-	int end;
+	t_parse pars;
 	char **new_str;
 
 	new_str = malloc (sizeof (char *) * ft_strlen((*input)));
-	start = 0;
-	end = 0;
-	taken = 1;
-	j = 0;
-	i = 0;
-	while ((*input)[i])
-	{
-		if (((*input)[i] == '\"'||(*input)[i] == '\'') && taken == 1)
-		{
-			start = i;
-			taken = 0;
-		}
-		else if (taken == 1) 
-		{
-			new_str[j] = ft_calloc (sizeof (char), (ft_strlen((*input)) + 1));
-			k = 0;
-			while ((*input)[i] && (*input)[i] != '\''  && (*input)[i] != '\"')
-			{ 
-				new_str[j][k] = (*input)[i];
-				k++;
-				i++;
-			}
-			new_str[j][k] = '\0';
-			should_i_replace_them(&new_str[j]);
-			make_some_space(&new_str[j]);
-			j++;
-			i--;
-		}
-		else if (((*input)[i] == '\"'||(*input)[i] == '\'') && taken == 0 && (*input)[start] == ((*input)[i]))
-		{
-			end = i;
-			if ((*input)[i + 1] == ' ')
-				end = ++i;
-			taken = 1;
-		}
-		if (start < end)
-		{
-			new_str[j++] = take_copy((*input), start, end);
-			if (!surounded_by(new_str[j - 1], '\"'))
-				should_i_replace_them(&new_str[j - 1]);
-			start = end;
-		}
-		i++;
-	}
-	new_str[j] = NULL;
-	if (start > end)
+	pars.start = 0;
+	pars.end = 0;
+	pars.taken = 1;
+	pars.j = 0;
+	pars.i = 0;
+	while ((*input)[pars.i])
+		split_without_weast_utils(&pars, &new_str, input);
+	new_str[pars.j] = NULL;
+	if (pars.start > pars.end)
 	{
 		free_double_array(new_str);
 		new_str = NULL;
@@ -357,176 +356,85 @@ char **split_without_weast(char **input)
 	return (new_str);
 }
 
-
-//search if a letter 'c' is inside a single quotes 
-int insider(char **input, char c)
+void search_and_replace(t_parse *pars, char **input)
 {
-	int i;
-	int k;
-	int taken;
-	int start;
-	int end;
-	char *str;
-
-	start = 0;
-	k = 0;
-	end = 0;
-	taken = 1;
-	i = 0;
-	while ((*input)[i])
-	{
-		if ((*input)[i] == '\'' && taken == 1)
+		if ((*input)[pars->i] == '\'' && pars->taken == 1)
 		{
-			start = i;
-			taken = 0;
+			pars->start = pars->i;
+			pars->taken = 0;
 		}
-		else if ((*input)[i] == '\'' && taken == 0)
+		else if ((*input)[pars->i] == '\'' && pars->taken == 0)
 		{
-			end = i;
-			taken = 1;
+			pars->end = pars->i;
+			pars->taken = 1;
 		}
-		if (start < end)
+		if (pars->start < pars->end)
 		{
-			str = take_copy((*input), start, end);
-			while (str[k])
+			pars->str = take_copy((*input), pars->start, pars->end);
+			if (!char_counter(pars->str, '\"') && !char_counter(pars->str, '$'))
 			{
-				if (str[k] == c)
-				{
-					free(str);
-					return (1);
-				}
-				k++;
+				(*input)[pars->start] = '\"';
+				(*input)[pars->end] = '\"';
 			}
-			free (str);
-			str = NULL;
-			start = end;
+			free (pars->str);
+			pars->str = NULL;
+			pars->start = pars->end;
 		}
-		i++;
-	}
-	return (0);
+		pars->i++;
 }
-
 
 // in some cases the single quote act exactly like double quotes ... then should i replace them in that case ?
 void should_i_replace_them(char **input)
 {
-	int i;
-	int taken;
-	int start;
-	int end;
-	char *str;
+	t_parse pars;
 
-	start = 0;
-	end = 0;
-	taken = 1;
-	i = 0;
-	while ((*input)[i])
-	{
-		if ((*input)[i] == '\'' && taken == 1)
-		{
-			start = i;
-			taken = 0;
-		}
-		else if ((*input)[i] == '\'' && taken == 0)
-		{
-			end = i;
-			taken = 1;
-		}
-		if (start < end)
-		{
-			str = take_copy((*input), start, end);
-			if (!char_counter(str, '\"') && !char_counter(str, '$'))
-			{
-				(*input)[start] = '\"';
-				(*input)[end] = '\"';
-			}
-			free (str);
-			str = NULL;
-			start = end;
-		}
-		i++;
-	}
+	pars.start = 0;
+	pars.end = 0;
+	pars.taken = 1;
+	pars.i = 0;
+	while ((*input)[pars.i])
+		search_and_replace(&pars, input);
 }
+
+void i_should_replace_single(t_parse *pars, char **input)
+{
+	if ((*input)[pars->i] == '\'' && pars->taken == 1)
+	{
+		pars->start = pars->i;
+		pars->taken = 0;
+	}
+	else if ((*input)[pars->i] == '\'' && pars->taken == 0)
+	{
+		pars->end = pars->i;
+		pars->taken = 1;
+	}
+	if (pars->start < pars->end)
+	{
+		pars->str = take_copy((*input), pars->start, pars->end);
+		if (!char_counter(pars->str, '\"'))
+		{
+			(*input)[pars->start] = '\"';
+			(*input)[pars->end] = '\"';
+		}
+		free (pars->str);
+		pars->str = NULL;
+		pars->start = pars->end;
+	}
+	pars->i++;
+}
+
 
 // i mean the name is really clear
 void i_should_replace_them(char **input)
 {
-	int i;
-	int taken;
-	int start;
-	int end;
-	char *str;
+	t_parse pars;
 
-	start = 0;
-	end = 0;
-	taken = 1;
-	i = 0;
-	while ((*input)[i])
-	{
-		if ((*input)[i] == '\'' && taken == 1)
-		{
-			start = i;
-			taken = 0;
-		}
-		else if ((*input)[i] == '\'' && taken == 0)
-		{
-			end = i;
-			taken = 1;
-		}
-		if (start < end)
-		{
-			str = take_copy((*input), start, end);
-			if (!char_counter(str, '\"'))
-			{
-				(*input)[start] = '\"';
-				(*input)[end] = '\"';
-			}
-			free (str);
-			str = NULL;
-			start = end;
-		}
-		i++;
-	}
-}
-
-
-//to suround a string by the quotes
-void rebuild_using(char **ptr, char c)
-{
-	char *tmp;
-	int i;
-	int j;
-	int k;
-
-	i = 0;
-	j = 0;
-	k = 0;
-	tmp = ft_calloc (sizeof(char), (2 + ft_strlen(*ptr)));
-	tmp[j++] = c;
-	while ((*ptr)[i])
-	{
-		if (k == 2 && (*ptr)[i] == ' ')
-		{
-			tmp[j++] = c;
-			tmp[j++] = ' ';
-			i++;
-		}
-		if ((*ptr)[i] != c)
-		{
-			tmp[j] = (*ptr)[i];
-			j++;
-		}
-		else 
-			k++;
-		i++;
-	}
-	if (char_counter(tmp, c) != 2)
-		tmp[j++] = c;
-	tmp[j] = '\0';
-	free (*ptr);
-	*ptr = malloc (sizeof (char) * (ft_strlen(tmp) + 1));
-	ft_strlcpy(*ptr, tmp, ft_strlen(tmp) + 1);
-	free(tmp);
+	pars.start = 0;
+	pars.end = 0;
+	pars.taken = 1;
+	pars.i = 0;
+	while ((*input)[pars.i])
+		i_should_replace_single(&pars, input);
 }
 
 void free_double_array(char **c)
@@ -544,6 +452,16 @@ void free_double_array(char **c)
 	c = NULL;
 }
 
+void make_space_split_join(char **new_str, char ***split, int i)
+{
+	make_some_space(&(new_str)[i]);
+	(*split) = my_spliter(new_str[i], 0, 0, 0);
+	if (new_str[i][ft_strlen(new_str[i]) - 1] == ' ')
+		(*split)[ft_strcount(*split) - 1]
+		   	= ft_str_join((*split)[ft_strcount(*split) - 1], " ");
+}
+
+
 //the best split for the project 
 char **ultra_split(char **new_str , char **input)
 {
@@ -553,35 +471,39 @@ char **ultra_split(char **new_str , char **input)
 	int j;
 	int k;
 
-	i = 0;
+	i = -1;
 	j = 0;
 	k = 0;
 	str_pro_max = ft_calloc(sizeof(char *), ft_strlen((*input)));
-	while (new_str[i])
-	{
-		if (!surounded_by(new_str[i], '\"') && char_counter(new_str[i], ' ')  && !surounded_by(new_str[i], '\''))
+	while (new_str[++i])
+		if (!surounded_by(new_str[i], '\"')	&& char_counter(new_str[i], ' ')
+			  	&& !surounded_by(new_str[i], '\''))
 		{
-			make_some_space(&(new_str)[i]);
-			split = my_spliter(new_str[i], 0, 0, 0);
-			if (new_str[i][ft_strlen(new_str[i]) - 1] == ' ')
-				split[ft_strcount(split) - 1] = ft_str_join(split[ft_strcount(split) - 1], " ");
+			make_space_split_join(new_str, &split, i);
 			j = 0;
 			while (split[j])
-			{
-				str_pro_max [k] = ft_strdup(split[j]);
-				j++;
-				k++;
-			}
+				str_pro_max [k++] = ft_strdup(split[j++]);
 			free_double_array(split);
 		}
 		else
-		{
-			str_pro_max[k] = ft_strdup(new_str[i]);		
-			k++;
-		}
-		i++;
-	}
+			str_pro_max[k++] = ft_strdup(new_str[i]);		
 	return (str_pro_max);
+}
+
+void delete_array_form_double_array(int *i, char ***str_pro_max)
+{
+	int j;
+
+	j = (*i) + 1;
+	while ((*str_pro_max)[j + 1])
+	{
+		free ((*str_pro_max)[j]);
+		(*str_pro_max)[j] = ft_strdup((*str_pro_max)[j + 1]);
+		j++;
+	}
+	free((*str_pro_max)[j]);
+	(*str_pro_max)[j] = NULL;
+	(*i) = -1;
 }
 
 //join the string to the next one that should be joined with 
@@ -605,16 +527,7 @@ void the_joiner(char ***str_pro_max)
 				if (char_counter((*str_pro_max)[i + 1], '$') && surounded_by((*str_pro_max)[i + 1], '\''))
 					exchange (&(*str_pro_max)[i + 1], '\'', '\"');
 				(*str_pro_max)[i] = ft_str_join((*str_pro_max)[i], (*str_pro_max)[i + 1]);
-				j = i + 1;
-				while ((*str_pro_max)[j + 1])
-				{
-					free ((*str_pro_max)[j]);
-					(*str_pro_max)[j] = ft_strdup((*str_pro_max)[j + 1]);
-					j++;
-				}
-				free((*str_pro_max)[j]);
-				(*str_pro_max)[j] = NULL;
-				i = -1;
+				delete_array_form_double_array(&i, str_pro_max);
 			}
 			i++;
 		}
@@ -634,7 +547,6 @@ void printer(char **ptr)
 			printf ("%s\n", ptr[i++]);
 	}
 	g_vars.g_exit_status = 0;
-	//	printf ("-------%d\n", ft_strcount(ptr));
 }
 
 //the dual of qoutes and double qoutes 
@@ -645,54 +557,52 @@ char dual(char c)
 	return ('\'');
 }
 
+void delete_the_chosen(t_expand *var, char **ptr, int number_of_char, char c)
+{
+	while ((*ptr)[var->i])
+	{
+		if (var->k == number_of_char && (*ptr)[var->i] == dual(c))
+		{
+			var->tmp[var->j++] = c;
+			var->k = number_of_char + 1;
+		}
+		if (var->k == number_of_char && (*ptr)[var->i] == ' ')
+		{
+			var->tmp[var->j++] = c;
+			var->tmp[var->j++] = ' ';
+			var->i++;
+			if ((unsigned int)var->i == ft_strlen((*ptr)))
+				break;
+		}
+		if ((*ptr)[var->i] != c)
+			var->tmp[var->j++] = (*ptr)[var->i];
+		else  
+			var->k++;
+		var->i++;
+	}
+}
+
+
 //delete the usless iner things
 void delete_them_inside(char **ptr, char c)
 {
-	char	*tmp;
-	int		i;
-	int		j;
-	int		k;
-	int		h;
+	t_expand var;
 	int		number_of_char;
 
-	i = 0;
-	j = 0;
-	k = 0;
-	h = ft_strlen((*ptr));
+	var.i = 0;
+	var.j = 0;
+	var.k = 0;
 	number_of_char = char_counter(*ptr, c);
-	tmp = ft_calloc (sizeof(char), (ft_strlen(*ptr) + 3));
-	tmp[j++] = c;
-	while ((*ptr)[i])
-	{
-		if (k == number_of_char && (*ptr)[i] == dual(c))
-		{
-			tmp[j++] = c;
-			k = number_of_char + 1;
-		}
-		if (k == number_of_char && (*ptr)[i] == ' ')
-		{
-			tmp[j++] = c;
-			tmp[j++] = ' ';
-			i++;
-			if (i == h)
-				break;
-		}
-		if ((*ptr)[i] != c)
-		{
-			tmp[j] = (*ptr)[i];
-			j++;
-		}
-		else  
-			k++;
-		i++;
-	}
-	if (char_counter(tmp, c) != 2)
-		tmp[j++] = c;
-	tmp[j] = '\0';
+	var.tmp = ft_calloc (sizeof(char), (ft_strlen(*ptr) + 3));
+	var.tmp[var.j++] = c;
+	delete_the_chosen(&var, ptr, number_of_char, c);
+	if (char_counter(var.tmp, c) != 2)
+		var.tmp[var.j++] = c;
+	var.tmp[var.j] = '\0';
 	free (*ptr);
-	*ptr = malloc (sizeof (char) * (ft_strlen(tmp) + 1));
-	ft_strlcpy(*ptr, tmp, ft_strlen(tmp) + 1);
-	free(tmp);
+	*ptr = malloc (sizeof (char) * (ft_strlen(var.tmp) + 1));
+	ft_strlcpy(*ptr, var.tmp, ft_strlen(var.tmp) + 1);
+	free(var.tmp);
 }
 
 void check_delete(char **str)
@@ -772,6 +682,40 @@ void no_etxra_qoutes(char ***str)
 	delete_last_spaces(str);
 }
 
+void space_append_heardoc(char **tmp, int *i, int *j, int type)
+{
+	if (type == 2)
+	{
+		(*tmp)[(*j)++] = ' ';
+		(*tmp)[(*j)++] = '>';
+		(*tmp)[(*j)++] = '>';
+		(*tmp)[(*j)++] = ' ';
+		(*i)+=2;
+	}
+	else if (type == 4)
+	{
+		(*tmp)[(*j)++] = ' ';
+		(*tmp)[(*j)++] = '<';
+		(*tmp)[(*j)++] = '<';
+		(*tmp)[(*j)++] = ' ';
+		(*i)+=2;
+	}
+}
+
+void space_char(char **tmp, int *i, int *j, char c)
+{
+	(*tmp)[(*j)++] = ' ';
+	(*tmp)[(*j)++] = c;
+	(*tmp)[(*j)++] = ' ';
+	(*i)++;
+}
+
+int size_to_allocate(char **str)
+{
+	return (ft_strlen((*str)) + (char_counter((*str),'>') * 2)
+		   	+ (char_counter((*str),'<') * 2)
+			+ (char_counter((*str),'|') * 2) + 1);
+}
 
 // making space to let the "rederections" easy to detect inside by the ultra_split 
 void make_some_space(char **str) 
@@ -782,69 +726,25 @@ void make_some_space(char **str)
 
 	j = 0;  
 	i = 0;
-
-
-	if ((char_counter((*str),'>')) || (char_counter((*str),'<')) || (char_counter((*str),'|')))
-	{
-		tmp = ft_calloc(sizeof(char), ft_strlen((*str)) + (char_counter((*str),'>') * 2) + (char_counter((*str),'<') * 2) +  (char_counter((*str),'|') * 2) + 1);
+	if (!((char_counter((*str),'>')) || (char_counter((*str),'<'))
+		   	||	(char_counter((*str),'|'))))
+		return ;
+		tmp = ft_calloc(sizeof(char), size_to_allocate(str));
 		while ((*str)[i])
-		{
-
 			if ((*str)[i] == '>' && (*str)[i + 1] == '>')
-			{
-				tmp[j++] = ' ';
-				tmp[j++] = '>';
-				tmp[j++] = '>';
-				tmp[j++] = ' ';
-				i+=2;
-			}
+				space_append_heardoc(&tmp, &i, &j, 2);
 			else if ((*str)[i] == '>')
-			{
-				tmp[j++] = ' ';
-				tmp[j++] = '>';
-				tmp[j++] = ' ';
-				i++;
-			}
+				space_char(&tmp, &i, &j, '>');
 			else if ((*str)[i] == '|')
-			{
-				tmp[j++] = ' ';
-				tmp[j++] = '|';
-				tmp[j++] = ' ';
-				i++;
-			}
+				space_char(&tmp, &i, &j, '|');
 			else if ((*str)[i] == '<' && (*str)[i + 1] == '<')
-			{
-				tmp[j++] = ' ';
-				tmp[j++] = '<';
-				tmp[j++] = '<';
-				tmp[j++] = ' ';
-				i+=2;
-			}
+				space_append_heardoc(&tmp, &i, &j, 4);
 			else if ((*str)[i] == '<')
-			{
-				tmp[j++] = ' ';
-				tmp[j++] = '<';
-				tmp[j++] = ' ';
-				i++;
-			}
+				space_char(&tmp, &i, &j, '<');
 			else 
-			{
-		//		if ((*str)[i] == '\1')
-		//		{
-		//			i++;
-		//			while ((*str)[i] != 0 && (*str[i] != '\1'))
-		//				tmp[j++] = (*str)[i++];
-		//			if ((*str)[i] != '\0')
-		//				i++;
-		//		}
-		//		else
-					tmp[j++] = (*str)[i++];
-			}
-		}
+				tmp[j++] = (*str)[i++];
 		free((*str));
-		(*str) = ft_strdup(tmp);
-		free (tmp);
-	}
+		(*str) = tmp;
 }
 
 
@@ -864,19 +764,16 @@ char **fill(char **str)
 	return (re);
 }
 
-int in_env(char *ptr, char **env, int flag) //this function cheeck if a pointer ptr is in the envirement and also save the env , you can  change it by sending 1 as a flag , it returns in which place the ptr is, in case the ptr its  exists in the env else it return -1
-	// new feature added send flag 2 to print the current env !! have fun
+int in_env(char *ptr, char **env, int flag) 
 {
 	static char **the_env;
 	int k;
-	int h;
 
+	k = -1;
 	if (flag == 1)
 	{
 		if (!the_env)
-		{
 			the_env = fill(env);
-		}
 		else if (env)
 		{
 			free_double_array(the_env);
@@ -884,102 +781,106 @@ int in_env(char *ptr, char **env, int flag) //this function cheeck if a pointer 
 		}
 		return (-2);
 	}
-	if (flag == 2)
-	{
-		k = 0;
-		while (the_env[k])
-			printf ("%s\n", the_env[k++]);
-		return (-3);
-	}
-	k = 0;
-	while (the_env[k])
-	{
-		h = ft_strlen (ptr);
-		if (!ft_strncmp(the_env[k], ptr, h) && the_env[k][h] == '=')
+	while (the_env[++k])
+		if (!ft_strncmp(the_env[k], ptr, ft_strlen (ptr))
+			   	&& the_env[k][ft_strlen (ptr)] == '=')
 			return (k);
-		k++;
-	}
 	return (-1);
-
 }
 
-int	checking_direction(char *str, char *behind_str, char **env) //this function take a look the expand to make it more exact ...
+int checking_direction_expand(char *str, char **env)
 {
-	char *tmp;
 	int end;
-	int i;
-	char **split;
+	char *tmp;
 
-	end = 1;
-	if (behind_str)
+	end = ft_simularity_len(str, '$');
+	while (str[end + 1] && (ft_isalpha(str[end + 1])
+			   	|| ft_isdigit((str[end + 1]))
+			   	|| (str[end + 1] == '_')))
+		end++;
+	tmp = take_copy(str, ft_simularity_len(str, '$') + 1, end);
+	end = in_env(tmp, NULL, 0);
+	if (end >= 0)
 	{
-		if (!surounded_by(str, '\'') && /* !char_counter(str, ' ') && */ (!ft_strncmp(behind_str + ft_simularity_len(behind_str, '<'), "<<", 2)))
-			return (2);
-		else if (!surounded_by(str, '\'') && !surounded_by(str, '\"') && !char_counter(str, ' ') && (!ft_strncmp(behind_str, ">>", 2) || !ft_strncmp(behind_str, "<", 1) || !ft_strncmp(behind_str, ">", 1)))
+		if (!char_counter(env[end], ' '))
 		{
-			end = ft_simularity_len(str, '$');
-
-			while (str[end + 1] && (ft_isalpha(str[end + 1]) || ft_isdigit((str[end + 1])) || (str[end + 1] == '_')))
-				end++;
-
-			tmp = take_copy(str, ft_simularity_len(str, '$') + 1, end);
-			i = in_env(tmp, NULL, 0);
-			if (i >= 0)
-			{
-				if (!char_counter(env[i], ' '))
-				{
-					free (tmp);
-					return (1);
-				}
-				// else
-				// {
-					// free (tmp);
-					// return (0);
-				// }
-			}
-			else
-			{
-				free (tmp);
-				return (0);
-			}
-		}
-		else if (!surounded_by(str, '\'') && !surounded_by(str, '\"') && char_counter(str, ' '))
-		{
-			split = ft_split(str, ' ');
-			i = -1;
-			while (split[++i])
-				if (char_counter(split[i], '$'))
-				{
-					if (i > 0)
-						end = checking_direction(split[i], split[i - 1], env);
-					else
-						end = checking_direction(split[i], NULL, env);
-
-					break;	
-				}
-			free_double_array(split);
-			return (end);
+			free (tmp);
+			return (1);
 		}
 	}
 	else
 	{
-		if (!surounded_by(str, '\'') && !surounded_by(str, '\"') && char_counter(str, ' '))
-		{
-			split = ft_split(str, ' ');
-			i = -1;		
-			while (split[++i])
-				if (char_counter(split[i], '$'))
-				{
-					if (i > 0)
-					{
-						end = checking_direction(split[i], split[i - 1], env);
-						break;
-					}	
-				}
-			free_double_array(split);
-			return (end);
-		}
+		free (tmp);
+		return (0);
 	}
+	free (tmp);
+	return (1);
+}
+
+int recursive_why_not(char *str, char **env)
+{
+	int i;
+	char **split;
+	int end;
+
+	split = ft_split(str, ' ');
+	i = -1;
+	end = 1;
+	while (split[++i])
+		if (char_counter(split[i], '$'))
+		{
+			if (i > 0)
+				end = checking_direction(split[i], split[i - 1], env);
+			else
+				end = checking_direction(split[i], NULL, env);
+
+			break;	
+		}
+	free_double_array(split);
+	return (end);
+}
+
+int recursive_untill_found(char *str, char **env)
+{
+	char **split;
+	int i;
+	int end;
+
+	end = 1;
+	split = ft_split(str, ' ');
+	i = -1;		
+	while (split[++i])
+		if (char_counter(split[i], '$'))
+			if (i > 0)
+			{
+				end = checking_direction(split[i], split[i - 1], env);
+				break;
+			}	
+	free_double_array(split);
+	return (end);
+}
+
+int	checking_direction(char *str, char *behind_str, char **env) //this function take a look the expand to make it more exact ...
+{
+	if (behind_str)
+	{
+		if (!surounded_by(str, '\'') && (!ft_strncmp(behind_str
+						+ ft_simularity_len(behind_str, '<'), "<<", 2)))
+			return (2);
+		else if (!surounded_by(str, '\'') &&
+				!surounded_by(str, '\"') && !char_counter(str, ' ')
+				&& (!ft_strncmp(behind_str, ">>", 2)
+					|| !ft_strncmp(behind_str, "<", 1)
+					|| !ft_strncmp(behind_str, ">", 1)))
+			return (checking_direction_expand(str, env));
+		else if (!surounded_by(str, '\'')
+				&& !surounded_by(str, '\"') && char_counter(str, ' '))
+			return (recursive_why_not(str, env));
+	}
+	else
+		if (!surounded_by(str, '\'')
+				&& !surounded_by(str, '\"') && char_counter(str, ' '))
+			return (recursive_untill_found(str, env));
 	return (1);
 }
 
@@ -1011,12 +912,10 @@ void no_extra_(char **ptr, char c)
 	int j;
 	int k;
 	char *re;
-	int len;
 
-	if (consecutive(*ptr, c))
-	{
-		len = ft_strlen (*ptr) + 1;
-		re = ft_calloc (sizeof (char), len);
+	if (!consecutive(*ptr, c))
+		return ;
+		re = ft_calloc (sizeof (char), ft_strlen (*ptr) + 1);
 		i = 0;
 		j = 0;
 		while ((*ptr)[i])
@@ -1034,323 +933,398 @@ void no_extra_(char **ptr, char c)
 		free (*ptr);
 		*ptr = ft_strdup (re);
 		free (re);
+}
+
+
+void the_array_size_to_expand(t_expand *expand, char **ptr, char **env)
+{
+	expand->start = expand->i;
+	while ((*ptr)[expand->i] && (ft_isalpha((*ptr)[expand->i+1])
+				|| ft_isdigit((*ptr)[expand->i+1])
+				|| (*ptr)[expand->i+1] == '_'))
+		expand->i++;
+	expand->end = expand->i;
+	expand->tmp = take_copy((*ptr), expand->start + 1,
+			expand->end);
+	expand->k = 0;
+	while (env[expand->k])
+	{
+		expand->h = ft_strlen(expand->tmp);
+		if (!ft_strncmp(env[expand->k], expand->tmp, expand->h)
+				&& env[expand->k][expand->h] == '=')
+		{
+			expand->k = ft_strlen (env[expand->k]);
+			break;
+		}
+		expand->k++;
 	}
+	free (expand->tmp);
+}
+
+void expand_exit_stat_size(t_expand *expand, char **env)
+{
+	expand->tmp = ft_strdup ("?");
+	expand->i++;
+	expand->k = 0;
+	expand->h = ft_strlen(expand->tmp);
+	while (env[expand->k])
+	{
+		if (!ft_strncmp(expand->tmp, env[expand->k], expand->h)
+			   	&& env[expand->k][expand->h] == '=')
+		{
+			expand->k = ft_strlen (env[expand->k]);
+			break;
+		}
+		expand->k++;
+	}
+	free (expand->tmp);
+}
+
+void the_expander(t_expand *expand, char **ptr, char **env)
+{
+	expand->start = expand->i;
+	while ((*ptr)[expand->i] && (ft_isalpha((*ptr)[expand->i+1])
+			   	|| ft_isdigit((*ptr)[expand->i+1])
+			   	|| (*ptr)[expand->i+1] == '_'))
+		expand->i++;
+	expand->end = expand->i;
+	expand->tmp = take_copy((*ptr), expand->start + 1, expand->end);
+	expand->k = -1;
+	expand->h = ft_strlen(expand->tmp);
+	while (env[++expand->k])
+		if (!ft_strncmp(env[expand->k], expand->tmp, expand->h)
+			   	&& env[expand->k][expand->h] == '=')
+		{
+			expand->tmp2 = take_copy(env[expand->k], expand->h + 1,
+				   	ft_strlen(env[expand->k]));
+			expand->k = 0;
+			while (expand->tmp2[expand->k])
+				expand->re[expand->j++] = expand->tmp2[expand->k++];
+			free (expand->tmp2);
+			break;
+		}
+	expand->j--;
+	free (expand->tmp);
+}
+
+void expand_exit_stat_array(t_expand *expand, char **env)
+{
+	expand->tmp = ft_strdup ("?");
+	expand->i++;
+	expand->k = 0;
+	expand->h = ft_strlen(expand->tmp);
+	while (env[expand->k])
+	{
+		if (!ft_strncmp(expand->tmp, env[expand->k], expand->h)
+			   	&& env[expand->k][expand->h] == '=')
+		{
+			expand->tmp2 = take_copy(env[expand->k], expand->h + 1,
+				   	ft_strlen(env[expand->k]));
+			expand->k = 0;
+			while (expand->tmp2[expand->k])
+				expand->re[expand->j++] = expand->tmp2[expand->k++];
+			free (expand->tmp2);
+			break;
+		}
+		expand->k++;
+	}
+	expand->j--;
+	free (expand->tmp);
+}
+
+void time_to_expand(t_expand *expand, char **ptr, char **env)
+{
+	expand->re = malloc (sizeof (char) * (ft_strlen ((*ptr)) + expand->k + 1)
+		   	* (char_counter((*ptr), '$')  + 1));
+	expand->i = 0;
+	expand->j = 0;
+	while ((*ptr)[expand->i])
+	{
+		if ((*ptr)[expand->i] == '$' && (ft_isalpha((*ptr)[expand->i+1])
+				   	|| ft_isdigit((*ptr)[expand->i+1])
+				   	|| (*ptr)[expand->i+1] == '_'))
+			the_expander(expand, ptr, env);
+		else if ((*ptr)[expand->i] == '$' && (*ptr)[expand->i + 1] == '?')
+			expand_exit_stat_array(expand, env);
+		else
+			expand->re[expand->j] = (*ptr)[expand->i];
+		expand->j++;
+		expand->i++;
+	}
+	expand->re[expand->j] = '\0';
 }
 
 void array_expander(char **ptr, char **env)
 {
-	int i;
+	t_expand expand;
+
+	expand.i = 0;
+	expand.k = 0;
+	while ((*ptr)[expand.i])
+	{
+		if ((*ptr)[expand.i] == '$' && (ft_isalpha((*ptr)[expand.i+1])
+				   	|| ft_isdigit((*ptr)[expand.i+1])
+				   	|| (*ptr)[expand.i+1] == '_'))
+			the_array_size_to_expand(&expand, ptr, env);
+		else if ((*ptr)[expand.i] == '$' && (*ptr)[expand.i+1] == '?')
+			expand_exit_stat_size(&expand, env);
+		expand.i++;
+	}
+	time_to_expand(&expand, ptr, env);
+	free (*ptr);
+	*ptr = ft_strdup (expand.re);
+	free (expand.re);
+}
+
+int len_from_env(char ***str_pro_max, char **env, int i, int *j)
+{
+	int start;
+	int k;
 	int h;
+	int end;
+	char *tmp;
+
+	start = (*j);
+	while ((*str_pro_max)[i][(*j)] &&
+		   	(ft_isalpha((*str_pro_max)[i][(*j) + 1])
+			 || ft_isdigit((*str_pro_max)[i][(*j) + 1])
+			 || (*str_pro_max)[i][(*j) + 1] == '_'))
+		(*j)++;
+	end = (*j);
+	tmp = take_copy((*str_pro_max)[i], start + 1, end);
+	k = -1;
+	h = ft_strlen(tmp);
+	while (env[++k])
+		if (!ft_strncmp(tmp, env[k], h) && env[k][h] == '=')
+		{
+			k = ft_strlen(env[k]);
+			break;
+		}
+	free(tmp);	
+	return (k);
+}
+
+int len_from_env_(char **env, int *j)
+{
+	char *tmp;
+	int k;
+	int h;
+
+	tmp = ft_strdup ("?");
+	(*j)++;
+	k = 0;
+	h = ft_strlen(tmp);
+	while (env[k])
+	{
+		if (!ft_strncmp(tmp, env[k], h) && env[k][h] == '=')
+		{
+			k = ft_strlen (env[k]);
+			break;
+		}
+		k++;
+	}
+	free (tmp);
+	return (k);
+}
+
+int get_len_to_allocate(char ***str_pro_max, int i, char **env)
+{
 	int j;
 	int k;
-	int start;
-	int end;
-	char *str;
-	char *tmp;
-	char *tmp2;
-	char *re;
+
+	k = 0;
+	j = 0;
+	while ((*str_pro_max)[i][j])
+	{
+		if ((*str_pro_max)[i][j] == '$' && ((*str_pro_max)[i][j+1] == '@'
+				   	|| ft_isdigit((*str_pro_max)[i][j+1])))
+			delete_them(&(*str_pro_max)[i], j, j + 1);
+		if ((*str_pro_max)[i][j] == '$' && (ft_isalpha((*str_pro_max)[i][j + 1])
+				   	|| (*str_pro_max)[i][j + 1] == '_'
+				   	|| ft_isdigit((*str_pro_max)[i][j + 1])))
+			k = len_from_env(&(*str_pro_max), env, i, &j);
+		else if ((*str_pro_max)[i][j] == '$' && ((*str_pro_max)[i][j+1] == '?'))
+			k = len_from_env_(env, &j);
+		else
+			j++;
+		if (j >= (int)ft_strlen((*str_pro_max)[i]))
+			break;
+	}
+	return (k + ft_strlen ((*str_pro_max)[i]));
+}
+
+void get_size_to_expand(char ***str, char ***str_pro_max, char **env)
+{
+	int i;
 
 	i = 0;
-	str = *ptr;
+	(*str) = ft_calloc (sizeof (char *) ,(ft_strcount(*str_pro_max) + 1));
+	while ((*str_pro_max)[i])
+	{
+		(*str)[i] = ft_calloc (sizeof (char) ,(get_len_to_allocate(str_pro_max
+						, i, env) + 1) * (char_counter((*str_pro_max)[i], '$') + 3));
+		i++;
+	}
+}
+
+char *take_variable_from_env(char **env, int k, char *str_pro_max, int h)
+{
+	char *tmp2;
+
+	tmp2 = take_copy(env[k], h + 1, ft_strlen(env[k]));
+	if (surounded_by(str_pro_max, '\"'))
+		exchange(&tmp2, ' ', '\5');
+	no_extra_(&tmp2, ' ');
+	replace_spaces(&tmp2);
+	tmp2 = ft_str_join(tmp2, "\2");
+	return (tmp2);
+}
+
+void store_after_expand_var(char *tmp2, int *m, char **str)
+{
+	int k;
+
 	k = 0;
-	while (str[i])
+	while (tmp2[k])
+		(*str)[(*m)++] = tmp2[k++];
+	free (tmp2);
+}
+
+
+void start_expanding(t_expand *expand, char ***str_pro_max, char **env)
+{
+	(*expand).start = (*expand).j;
+	while ((*str_pro_max)[(*expand).i][(*expand).j]
+			&& (ft_isalpha((*str_pro_max)[(*expand).i][(*expand).j + 1])
+				|| ft_isdigit((*str_pro_max)[(*expand).i][(*expand).j + 1])
+				|| (*str_pro_max)[(*expand).i][(*expand).j + 1] == '_'))
+		(*expand).j++;
+	(*expand).end = (*expand).j;
+	(*expand).tmp = take_copy((*str_pro_max)[(*expand).i],
+			(*expand).start + 1, (*expand).end); 
+	(*expand).k = -1;
+	while (env[++(*expand).k])
 	{
-		if (str[i] == '$' && (ft_isalpha(str[i+1]) || ft_isdigit(str[i+1]) || str[i+1] == '_'))
+		(*expand).h = ft_strlen((*expand).tmp);
+		if (!ft_strncmp((*expand).tmp, env[(*expand).k],
+				   	(*expand).h) && env[(*expand).k][(*expand).h] == '=')
 		{
-			start = i;
-			while (str[i] && (ft_isalpha(str[i+1]) || ft_isdigit(str[i+1]) || str[i+1] == '_'))
-				i++;
-			end = i;
-			tmp = take_copy(str, start + 1, end);
-			k = 0;
-			while (env[k])
-			{
-				h = ft_strlen(tmp);
-				if (!ft_strncmp(env[k], tmp, h) && env[k][h] == '=')
-				{
-					k = ft_strlen (env[k]);
-					break;
-				}
-					k++;
-			}
-			free (tmp);
+			(*expand).tmp2 = take_variable_from_env(env,
+				   	(*expand).k, (*str_pro_max)[(*expand).i], (*expand).h);
+			store_after_expand_var((*expand).tmp2, &(*expand).m,
+				   	&((*expand).str)[(*expand).i]);
+			break;
 		}
-		else if (str[i] == '$' && str[i+1] == '?')
-		{
-				tmp = ft_strdup ("?");
-				i++;
-				k = 0;
-				h = ft_strlen(tmp);
-				while (env[k])
-				{
-					if (!ft_strncmp(tmp, env[k], h) && env[k][h] == '=')
-					{
-						k = ft_strlen (env[k]);
-						break;
-					}
-					k++;
-				}
-				free (tmp);
-			}
-		i++;
 	}
-	// printf("to allocate : %lu\n", ((ft_strlen (str) + k + 1) * (char_counter(str, '$')  + 1)));
-	re = malloc (sizeof (char) * ((ft_strlen (str) + k + 1) * (char_counter(str, '$')  + 1)));
-	i = 0;
-	j = 0;
-	while (str[i])
+	(*expand).m--;
+	free((*expand).tmp);
+}
+
+void expand_exit_stat(t_expand *expand, char **env)
+{
+	(*expand).tmp = ft_strdup ("?");
+	(*expand).j++;
+	(*expand).k = 0;
+	(*expand).h = ft_strlen((*expand).tmp);
+	while (env[(*expand).k])       	
 	{
-		if (str[i] == '$' && (ft_isalpha(str[i+1]) || ft_isdigit(str[i+1]) || str[i+1] == '_'))
+		if (!ft_strncmp((*expand).tmp, env[(*expand).k],
+				   	(*expand).h) && env[(*expand).k][(*expand).h] == '=')
 		{
-			start = i;
-			while (str[i] && (ft_isalpha(str[i+1]) || ft_isdigit(str[i+1]) || str[i+1] == '_'))
-				i++;
-			end = i;
-			tmp = take_copy(str, start + 1, end);
-			k = 0;
-			h = ft_strlen(tmp);
-			while (env[k])
-			{
-				if (!ft_strncmp(env[k], tmp, h) && env[k][h] == '=')
-				{
-					tmp2 = take_copy(env[k], h + 1, ft_strlen(env[k]));
-					k = 0;
-				   while (tmp2[k])
-					   re[j++] = tmp2[k++];
-				   free (tmp2);
-					break;
-				}
-					k++;
-			}
-			j--;
-			free (tmp);
+			(*expand).tmp2 = take_copy(env[(*expand).k],
+				   	(*expand).h + 1, ft_strlen(env[(*expand).k]));
+			(*expand).k = 0;
+			while ((*expand).tmp2[(*expand).k])
+				(*expand).str[(*expand).i][(*expand).m++] =
+				   	(*expand).tmp2[(*expand).k++];
+			free ((*expand).tmp2);
+			break;
 		}
-		else if (str[i] == '$' && str[i + 1] == '?')
-		{
-				tmp = ft_strdup ("?");
-				i++;
-				k = 0;
-				h = ft_strlen(tmp);
-				while (env[k])
-				{
-					if (!ft_strncmp(tmp, env[k], h) && env[k][h] == '=')
-					{
-						tmp2 = take_copy(env[k], h + 1, ft_strlen(env[k]));
-						k = 0;
-						while (tmp2[k])
-							re[j++] = tmp2[k++];
-						free (tmp2);
-						break;
-					}
-					k++;
-				}
-				j--;
-				free (tmp);
-		}
-		else
-			re[j] = str[i];
-		j++;
-		i++;
+		(*expand).k++;
 	}
-	re[j] = '\0';
-	free (*ptr);
-	*ptr = ft_strdup (re);
-	free (re);
+	(*expand).m--;
+	free ((*expand).tmp);
+}
+
+void fill_str(t_expand *expand, char ***str_pro_max, char **env)
+{
+	while ((*str_pro_max)[(*expand).i])
+	{
+		(*expand).j = 0;
+		(*expand).m = 0;
+		while ((*str_pro_max)[(*expand).i][(*expand).j])
+		{
+			if ((*str_pro_max)[(*expand).i][(*expand).j] == '$'
+					&& (ft_isalpha((*str_pro_max)[(*expand).i][(*expand).j + 1]) 
+						|| (*str_pro_max)[(*expand).i][(*expand).j + 1] == '_' 
+						|| ft_isdigit((*str_pro_max)[(*expand).i][(*expand).j + 1])))
+				start_expanding(&(*expand), str_pro_max, env);
+			else if ((*str_pro_max)[(*expand).i][(*expand).j] == '$' && 
+					((*str_pro_max)[(*expand).i][(*expand).j+1] == '?'))
+				expand_exit_stat (&(*expand), env);
+			else 
+				(*expand).str[(*expand).i][(*expand).m] =
+					(*str_pro_max)[(*expand).i][(*expand).j];
+			(*expand).j++;
+			(*expand).m++;
+		}
+		(*expand).i++;
+	}
+}
+
+void expand_after_redirections(t_expand *expand, char ***str_pro_max, char **env)
+{
+	if (mega_counter((*str_pro_max), '\'') || mega_counter((*str_pro_max), '\"'))
+		while ((*expand).j > 0)
+		{
+			(*expand).h = ft_strlen ((*str_pro_max)[(*expand).j]) - 1;
+			if ((*expand).h >= 0 && (*str_pro_max)[(*expand).j][(*expand).h-1]
+				   	== ' ')
+				break;
+			(*expand).j--;
+		}
+	if ((*expand).j >= 0 && (*expand).j != (*expand).i)
+		(*expand).to_expand = checking_direction((*str_pro_max)[(*expand).i],
+			   	(*str_pro_max)[(*expand).j], env);
+	else if ((*expand).i > 0)
+		(*expand).to_expand = checking_direction((*str_pro_max)[(*expand).i],
+			   	(*str_pro_max)[(*expand).i - 1], env);
+	else
+		(*expand).to_expand = checking_direction((*str_pro_max)[(*expand).i],
+			   	NULL, env);
+}
+
+void should_i_expand(t_expand *expand, char ***str_pro_max, char **env)
+{
+	(*expand).j = (*expand).i;
+	expand_after_redirections(&(*expand), str_pro_max, env);
+	if ((*expand).to_expand == 0)
+		(*str_pro_max)[(*expand).i] = ft_str_join((*str_pro_max)[(*expand).i]  ,"\a");
+	if (surounded_by((*str_pro_max)[(*expand).i], '\"') && expand->to_expand == 2)
+		i_should_replace_them(&(*str_pro_max)[(*expand).i]);
+	else if (!surounded_by((*str_pro_max)[(*expand).i], '\'') &&
+		   	(*expand).to_expand == 1)
+	{
+		free ((*str_pro_max)[(*expand).i]);
+		(*str_pro_max)[(*expand).i] = ft_strdup((*expand).str[(*expand).i]);
+	}
 }
 
 void expand(char ***str_pro_max, char **env)
 {
-	int i;
-	int k;
-	int h;
-	int j;
-	int m;
-	int start;
-	int end;
-	char *tmp;
-	char *tmp2;
-	char **str;
-	int to_expand;
+	t_expand expand;
 
-	i = 0;
-	j = 0;
-	start = 0;
-	end = 0;
-
-	str = ft_calloc (sizeof (char *) ,(ft_strcount(*str_pro_max) + 1));
-	while ((*str_pro_max)[i])
-	{
-		j = 0;
-		k = 0;
-		start = 0;
-		end = 0;
-		while ((*str_pro_max)[i][j])
-		{
-			if ((*str_pro_max)[i][j] == '$' && ((*str_pro_max)[i][j+1] == '@' || ft_isdigit((*str_pro_max)[i][j+1])))
-			{
-				delete_them(&(*str_pro_max)[i], j, j + 1);
-			}
-			if ((*str_pro_max)[i][j] == '$' && (ft_isalpha((*str_pro_max)[i][j + 1]) || (*str_pro_max)[i][j + 1] == '_' || ft_isdigit((*str_pro_max)[i][j + 1])))
-			{
-				start = j;
-				while ((*str_pro_max)[i][j] && (ft_isalpha((*str_pro_max)[i][j + 1]) || ft_isdigit((*str_pro_max)[i][j + 1]) || (*str_pro_max)[i][j + 1] == '_'))
-					j++;
-				end = j;
-				tmp = take_copy((*str_pro_max)[i], start + 1, end);
-				k = 0;
-				while (env[k])
-				{
-					h = ft_strlen(tmp);
-					if (!ft_strncmp(tmp, env[k], h) && env[k][h] == '=')
-					{
-						k = ft_strlen(env[k]);
-						break;
-					}
-					k++;
-				}
-				free(tmp);	
-				if (j >= (int)ft_strlen((*str_pro_max)[i]))
-					break;
-			}
-			else if ((*str_pro_max)[i][j] == '$' && ((*str_pro_max)[i][j+1] == '?'))
-			{
-				tmp = ft_strdup ("?");
-				j++;
-				k = 0;
-				h = ft_strlen(tmp);
-				while (env[k])
-				{
-					if (!ft_strncmp(tmp, env[k], h) && env[k][h] == '=')
-					{
-						k = ft_strlen (env[k]);
-						break;
-					}
-					k++;
-				}
-				if (j >= (int)ft_strlen((*str_pro_max)[i]))
-					break;
-				free (tmp);
-			}
-			else
-				j++;
-		}
-		str[i] = ft_calloc (sizeof (char) ,(ft_strlen ((*str_pro_max)[i]) + k + 1) * (char_counter((*str_pro_max)[i], '$') + 3));
-		i++;
-	}
-	i = 0;
-	j = 0;
-	start = 0;
-	end = 0;
-	while ((*str_pro_max)[i])
-	{
-		j = 0;
-		m = 0;
-		while ((*str_pro_max)[i][j])
-		{
-			if ((*str_pro_max)[i][j] == '$' && ( ft_isalpha((*str_pro_max)[i][j + 1]) 
-						|| (*str_pro_max)[i][j + 1] == '_' 
-						|| ft_isdigit((*str_pro_max)[i][j + 1])))
-			{
-				start = j;
-				while ((*str_pro_max)[i][j] && (ft_isalpha((*str_pro_max)[i][j + 1])
-							|| ft_isdigit((*str_pro_max)[i][j + 1])
-							|| (*str_pro_max)[i][j + 1] == '_'))
-					j++;
-				end = j;
-				tmp = take_copy((*str_pro_max)[i], start + 1, end); 
-				k = 0;
-				while (env[k])
-				{
-					h = ft_strlen(tmp);
-					if (!ft_strncmp(tmp, env[k], h) && env[k][h] == '=')
-					{
-						tmp2 = take_copy(env[k], h + 1, ft_strlen(env[k]));
-						if (surounded_by((*str_pro_max)[i], '\"'))
-							exchange(&tmp2, ' ', '\5');
-						no_extra_(&tmp2, ' ');
-						replace_spaces(&tmp2);
-						tmp2 = ft_str_join(tmp2, "\2");
-
-						k = 0;
-						while (tmp2[k])
-							str[i][m++] = tmp2[k++];
-						free (tmp2);
-						break;
-					}
-					k++;
-				}
-				m--;
-				free(tmp);
-			}
-			else if ((*str_pro_max)[i][j] == '$' && ((*str_pro_max)[i][j+1] == '?'))
-			{
-				tmp = ft_strdup ("?");
-				j++;
-				k = 0;
-				h = ft_strlen(tmp);
-				while (env[k])
-				{
-					if (!ft_strncmp(tmp, env[k], h) && env[k][h] == '=')
-					{
-						tmp2 = take_copy(env[k], h + 1, ft_strlen(env[k]));
-						k = 0;
-						while (tmp2[k])
-							str[i][m++] = tmp2[k++];
-						free (tmp2);
-						break;
-					}
-					k++;
-				}
-				m--;
-				free (tmp);
-			}
-			else 
-				str[i][m] = (*str_pro_max)[i][j];
-			j++;
-			m++;
-		}
-		i++;
-	}
-	i = 0;
-	while ((*str_pro_max)[i])
-	{
-		if (char_counter((*str_pro_max)[i], '$'))
-		{
-			j = i;
-			if (mega_counter((*str_pro_max), '\'') || mega_counter((*str_pro_max), '\"'))
-				while (j > 0)
-				{
-					h = ft_strlen ((*str_pro_max)[j]) - 1;
-					if (h >= 0 && (*str_pro_max)[j][h-1] == ' ')
-						break;
-					j--;
-				}
-			if (j >= 0 && j != i)
-				to_expand = checking_direction((*str_pro_max)[i], (*str_pro_max)[j], env);
-			else if (i > 0)
-				to_expand = checking_direction((*str_pro_max)[i], (*str_pro_max)[i - 1], env);
-			else
-				to_expand = checking_direction((*str_pro_max)[i], NULL, env);
-			if (to_expand == 0)
-			{
-			//	printf ("%s\n", (*str_pro_max)[i]);
-				(*str_pro_max)[i] = ft_str_join((*str_pro_max)[i]  ,"\a"); // if you see a '\a' it means only and one thing that this is a error "ambiguous redirect in this case", you also hear a 'ding' sound on it 
-			}
-			if (surounded_by((*str_pro_max)[i], '\"') && to_expand == 2)
-			{
-				i_should_replace_them(&(*str_pro_max)[i]);
-			}
-			else if (!surounded_by((*str_pro_max)[i], '\'') && to_expand == 1)
-			{
-				free ((*str_pro_max)[i]);
-				(*str_pro_max)[i] = ft_strdup(str[i]);
-			}
-			//		else
-			//			i_should_replace_them(&(*str_pro_max)[i]);
-		}
-		i++;
-	}
-	free_double_array(str);
+	get_size_to_expand(&expand.str, str_pro_max, env);
+	expand.i = 0;
+	expand.j = 0;
+	expand.start = 0;
+	expand.end = 0;
+	fill_str(&expand, str_pro_max, env);
+	expand.i = -1;
+	while ((*str_pro_max)[++expand.i])
+		if (char_counter((*str_pro_max)[expand.i], '$'))
+			should_i_expand(&expand, str_pro_max, env);
+	free_double_array(expand.str);
 }
 
 void shlvl(char ***env, int c)
@@ -1378,6 +1352,13 @@ void shlvl(char ***env, int c)
 	}
 }
 
+int error_detected(void)
+{
+	ft_printf ("bash: syntax error near unexpected token `|'\n");
+	g_vars.g_exit_status = 2;
+	return (0);
+}
+
 int fast_check(char *input)
 {
 	int i;
@@ -1388,11 +1369,7 @@ int fast_check(char *input)
 	while (input [i] && input[i] == ' ')
 		i++;
 	if (input[i] == '|')
-	{
-		ft_printf ("bash: syntax error near unexpected token `|'\n");
-		g_vars.g_exit_status = 2;
-		return (0);
-	}
+		return (error_detected());
 	while (input[i])
 		i++;
 	i--;
@@ -1401,11 +1378,7 @@ int fast_check(char *input)
 	if (i >= 0)
 	{
 		if (input[i] == '|')
-		{
-			ft_printf ("bash: syntax error near unexpected token `|'\n");
-			g_vars.g_exit_status = 2;
-			return (0);
-		}
+			return (error_detected());
 	}
 	else 
 		return (0);
@@ -1462,137 +1435,157 @@ void exchange(char **ptr, char c, char b)
 	}
 }
 
-void phil_list(t_input **list, char **split)
+void ambiguous_starter_pack(char ***split)
 {
 	int i;
-	int m;
-	int n;
-	int k;
-	int one_time;
 	int count;
-	t_input *tmp;
-	int j;
-	char **last_split;
 
 	i = 0;
-	m = 0;
-	one_time = 0;
-	tmp = *list;
-
-	while (split[i])
+	while ((*split)[i])
 	{
-		count = char_counter(split[i], '\2');
-		if ((count == 1 && split[i][0] == '\1' && split[i][1] == '\2' && ft_strlen (split[i]) == 2))
-			disable (&split[i], '\1');
-		if (char_counter(split[i], '\5'))
-			exchange (&split[i], '\5', ' ');
+		count = char_counter((*split)[i], '\2');
+		if ((count == 1 && (*split)[i][0] == '\1' && (*split)[i][1] == '\2' && ft_strlen ((*split)[i]) == 2))
+			disable (&(*split)[i], '\1');
+		if (char_counter((*split)[i], '\5'))
+			exchange (&(*split)[i], '\5', ' ');
 		i++;
 	}
-	i = 0;
+}
+
+void list_append(char **split, t_input **list, int i)
+{
+	if (char_counter(split[i], '\2'))
+		disable (&split[i], '\2');
+	if (char_counter(split[i+1], '\2'))
+		disable (&split[i+1], '\2');
+	no_surounded_anymore(&split[i + 1]);
+	(*list)->redirect->type[(*list)->redirect->position] = "2";
+	if (split[i+1])
+		(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
+	(*list)->redirect->position++;
+}
+void list_heardoc(char **split, t_input **list, int i)
+{
+	if (char_counter(split[i], '\2'))
+		disable (&split[i], '\2');
+	if (char_counter(split[i+1], '\2'))
+		disable (&split[i+1], '\2');
+	(*list)->redirect->type[(*list)->redirect->position] = "4";
+	if (split[i+1])
+		(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
+	(*list)->redirect->position++;
+}
+
+
+void list_in(char **split, t_input **list, int i)
+{
+	if (char_counter(split[i], '\2'))
+		disable (&split[i], '\2');
+	no_surounded_anymore(&split[i + 1]);
+	(*list)->redirect->type[(*list)->redirect->position] = "3";
+	if (split[i+1])
+		(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
+	(*list)->redirect->position++;
+}
+
+void list_out(char **split, t_input **list, int i)
+{
+	if (char_counter(split[i], '\2'))
+		disable (&split[i], '\2');
+	no_surounded_anymore(&split[i + 1]);
+	(*list)->redirect->type[(*list)->redirect->position] = "1";
+	if (split[i+1])
+		(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
+	(*list)->redirect->position++;
+}
+
+void list_cmd(char **split, t_input **list, int i, int *m)
+{
+	int n;
+	char **last_split;
+
+	if (char_counter(split[i], '\2'))
+		disable (&split[i], '\2');
+	if (char_counter(split[i], '\1'))
+		exchange(&split[i], '\1' , ' ');
+	no_surounded_anymore(&split[i]);
+	if (char_counter(split[i], '\4'))
+	{
+		last_split = ft_split(split[i], '\4');
+		n = 0;
+		(*list)->cmd = ft_strdup(last_split[n++]);
+		while (last_split[n])
+			(*list)->arg[(*m)++] = ft_strdup(last_split[n++]);
+		free_double_array(last_split);
+	}
+	else
+		(*list)->cmd = ft_strdup (split[i]);
+}
+
+void list_args(char **split, t_input **list, int i, int *m)
+{
+	int n;
+	char **last_split;
+
+	no_surounded_anymore(&split[i]);
+	if (char_counter(split[i], '\4'))
+	{
+		last_split = ft_split(split[i], '\4');
+		n = 0;
+		while (last_split[n])
+			(*list)->arg[(*m)++] = ft_strdup(last_split[n++]);
+		free_double_array(last_split);
+	}
+	else
+	{
+		(*list)->arg[(*m)] = ft_strdup(split[i]);
+		(*m)++;
+	}
+}
+
+void list_details(char **split, t_input **list, int *i, int *m)
+{
+	int one_time;
+
+	one_time = 1;
+	while (split[(*i)])
+	{
+		if (!ft_strncmp(split[(*i)], ">>" , 2))
+			list_append (split, list, (*i)++);
+		else if (!ft_strncmp(split[(*i)], "<<" , 2))
+			list_heardoc(split, list, (*i)++);
+		else if (!ft_strncmp(split[(*i)], ">" , 2))
+			list_out(split, list, (*i)++);
+		else if (!ft_strncmp(split[(*i)], "<" , 1))
+			list_in(split, list, (*i)++);
+		else if (one_time == 1 && ft_strncmp(split [(*i)], "|", 2))
+		{
+			list_cmd(split, list, (*i), m);
+			one_time = 0;
+		}
+		else if (!ft_strncmp(split [(*i)], "|", 1))
+			break;
+		else 
+			list_args(split, list, (*i), m);
+		(*i)++;
+	}
+}
+
+void phil_the_list(t_input **list, char **split)
+{
+	int m;
+	int count;
+	int i;
+	t_input *tmp;
+
+	m = 0;
+	ambiguous_starter_pack(&split);
 	count = ft_strcount(split);
+	tmp = *list;
 	i = 0;
 	while (split[i])
 	{
-		one_time = 1; 
-		while (split[i])
-		{
-			if (!ft_strncmp(split[i], ">>" , 2))
-			{
-				if (char_counter(split[i], '\2'))
-					disable (&split[i], '\2');
-				if (char_counter(split[i+1], '\2'))
-					disable (&split[i+1], '\2');
-				no_surounded_anymore(&split[i + 1]);
-				(*list)->redirect->type[(*list)->redirect->position] = "2";
-				if (split[i+1])
-					(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
-				//	  printf ("file name : %s taked the pos num : %d and type is %s\n", (*list)->redirect->file_name[(*list)->redirect->position], (*list)->redirect->position + 1 , (*list)->redirect->type[(*list)->redirect->position]);
-				(*list)->redirect->position++;
-			}
-			else if (!ft_strncmp(split[i], "<<" , 2))
-			{
-				if (char_counter(split[i], '\2'))
-					disable (&split[i], '\2');
-				if (char_counter(split[i+1], '\2'))
-					disable (&split[i+1], '\2');
-				(*list)->redirect->type[(*list)->redirect->position] = "4";
-				if (split[i+1])
-					(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
-				//	  printf ("file name : %s taked the pos num : %d and type is %s\n", (*list)->redirect->file_name[(*list)->redirect->position], (*list)->redirect->position + 1 , (*list)->redirect->type[(*list)->redirect->position]);
-				(*list)->redirect->position++;
-			}
-			else if (!ft_strncmp(split[i], ">" , 2))
-			{
-				if (char_counter(split[i], '\2'))
-					disable (&split[i], '\2');
-				// if (char_counter(split[i+1], '\2'))
-				// disable (&split[i+1], '\2');
-				no_surounded_anymore(&split[i + 1]);
-				(*list)->redirect->type[(*list)->redirect->position] = "1";
-				if (split[i+1])
-					(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
-				//	  printf ("file name : %s taked the pos num : %d and type is %s\n", (*list)->redirect->file_name[(*list)->redirect->position], (*list)->redirect->position + 1 , (*list)->redirect->type[(*list)->redirect->position]);
-				(*list)->redirect->position++;
-			}
-			else if (!ft_strncmp(split[i], "<" , 1))
-			{
-				if (char_counter(split[i], '\2'))
-					disable (&split[i], '\2');
-				// if (char_counter(split[i+1], '\2'))
-				// disable (&split[i+1], '\2');
-				no_surounded_anymore(&split[i + 1]);
-				(*list)->redirect->type[(*list)->redirect->position] = "3";
-				if (split[i+1])
-					(*list)->redirect->file_name[(*list)->redirect->position] = ft_strdup (split[++i]);
-				//	  printf ("file name : %s taked the pos num : %d and type is %s\n", (*list)->redirect->file_name[(*list)->redirect->position], (*list)->redirect->position + 1 , (*list)->redirect->type[(*list)->redirect->position]);
-				(*list)->redirect->position++;
-			}
-			else if (one_time == 1 && ft_strncmp(split [i], "|", 2))/////// cmd list
-			{
-				if (char_counter(split[i], '\2'))
-					disable (&split[i], '\2');
-				if (char_counter(split[i], '\1'))
-					exchange(&split[i], '\1' , ' ');
-				no_surounded_anymore(&split[i]);
-				//			disable (&split[i], '\1');
-				if (char_counter(split[i], '\4'))
-				{
-					last_split = ft_split(split[i], '\4');
-					n = 0;
-					(*list)->cmd = ft_strdup(last_split[n++]);
-					while (last_split[n])
-						(*list)->arg[m++] = ft_strdup(last_split[n++]);
-					free_double_array(last_split);
-				}
-				else
-					(*list)->cmd = ft_strdup (split[i]);
-				//	  printf ("cmd : %s\n", (*list)->cmd);
-				one_time = 0;
-			}
-			else if (!ft_strncmp(split [i], "|", 1))
-				break;
-			else ////arg list
-			{
-				no_surounded_anymore(&split[i]);
-				//		if (char_counter(split[i], '\1'))
-				//			disable (&split[i], '\1');
-				if (char_counter(split[i], '\4'))
-				{
-					last_split = ft_split(split[i], '\4');
-					n = 0;
-					while (last_split[n])
-						(*list)->arg[m++] = ft_strdup(last_split[n++]);
-					free_double_array(last_split);
-				}
-				else
-				{
-					(*list)->arg[m] = ft_strdup(split[i]);
-					// printf ("arg : %s\n", (*list)->arg[m]);
-					m++;
-				}
-			}
-			i++;
-		}
+		list_details(split, list, &i, &m);
 		if (i >= count)
 			break;
 		if (!ft_strcmp(split [i], "|"))
@@ -1600,19 +1593,26 @@ void phil_list(t_input **list, char **split)
 			(*list)->pipe = 1;
 			append (*list, count);
 			(*list) = (*list)->next;
-			//		printf ("-->pipe\n");
 			m = 0;
 		}
 		i++;
 	}
-	// printer ((*list)->arg);
 	(*list) = tmp;
+}
+
+void check_ambiguous(t_input **list)
+{
+	int k;
+	int count;
+	int j;
 
 	k = 0;
 	while ((*list)->arg[k])
 	{
 		count = char_counter((*list)->arg[k], '\2');
-		if ((count == 1 && ft_strlen ((*list)->arg[k]) <= 1) || (count == 1 && (*list)->arg[k][0] == '\1' && (*list)->arg[k][1] == '\2' && ft_strlen ((*list)->arg[k]) == 2))
+		if ((count == 1 && ft_strlen ((*list)->arg[k]) <= 1) || (count == 1
+				   	&& (*list)->arg[k][0] == '\1' && (*list)->arg[k][1]
+				   	== '\2' && ft_strlen ((*list)->arg[k]) == 2))
 		{
 			j = k;
 			while ((*list)->arg[j + 1])
@@ -1627,6 +1627,12 @@ void phil_list(t_input **list, char **split)
 		}
 		k++;
 	}
+}
+
+void disable_some_checks(t_input **list)
+{
+	int k;
+
 	k = 0;
 	while ((*list)->arg[k])
 	{
@@ -1643,6 +1649,21 @@ void phil_list(t_input **list, char **split)
 		}
 		k++;
 	}
+}
+
+void phil_list(t_input **list, char **split)
+{
+	t_input *tmp;
+
+	phil_the_list(list, split);
+	tmp = *list;
+	while (*list)
+	{
+		check_ambiguous(list);
+		disable_some_checks(list);
+		(*list) = (*list)->next;
+	}
+	(*list) = tmp;
 }
 
 int ft_strmegacount(char **c)
@@ -1693,32 +1714,38 @@ void free_list(t_input *list)
 	}
 }
 
+int check_error(char **str, int i)
+{
+	int h;
+
+	h = ft_strlen (str[i]);
+	if (str[i + 1][0] == '|' && str[i][h - 1] == '>')
+		return (i);
+	if (str[i + 1][0] == '|' && str[i][h - 1] == '<')
+		return (i);
+	if (str[i + 1][0] == '>' && str[i][h - 1] == '<')
+		return (i);
+	if (str[i + 1][0] == '<' && str[i][h - 1] == '>')
+		return (i);
+	return (-1);
+}
+
 int last_check(char **str)
 {
 	int i;
 	int h;
 
-	i = 0;
+	i = -1;
 	if (!str)
 		return (-1);
-	if (!str[i])
+	if (!str[i+1])
 	{
 		free_double_array(str);
 		return (-2);
 	}
-	while (str[i + 1])
-	{
-		h = ft_strlen (str[i]);
-		if (str[i + 1][0] == '|' && str[i][h - 1] == '>')
+	while (str[++i + 1])
+		if (check_error(str, i) != -1)
 			return (i);
-		if (str[i + 1][0] == '|' && str[i][h - 1] == '<')
-			return (i);
-		if (str[i + 1][0] == '>' && str[i][h - 1] == '<')
-			return (i);
-		if (str[i + 1][0] == '<' && str[i][h - 1] == '>')
-			return (i);
-		i++;
-	}
 	h = ft_strlen (str[i]);
 	if (h > 0)
 	{
@@ -1745,7 +1772,6 @@ char **parsing(char **input, char **env)
 		return (NULL);
 	}
 	expand(&new_str, env);
-	//printer (new_str);
 	str_pro_max = ultra_split(new_str, input);
 	free_double_array(new_str);
 	the_joiner(&str_pro_max);
@@ -1754,56 +1780,81 @@ char **parsing(char **input, char **env)
 }
 
 
-// void signals(int signum)
-// {
-// 	int i;
+void sigint(int i)
+{
+	(void)i;
+//	if (g_vars.pid[i] == 0)
+//	{
+//		ft_printf("\n");
+//		rl_on_new_line();
+//		rl_replace_line("", 1);
+//		rl_redisplay();
+//	}
+//	else
+//	{
+//		while (g_vars.pid[i] != 0)
+//		{
+//			kill (g_vars.pid[i], SIGINT);
+//			printf ("%d is dead now\n", g_vars.pid[i]);
+//			g_vars.pid[i] = 0;
+//			i++;
+//		}
+//		ft_bzero (g_vars.pid, PIPE_BUF);
+//		g_vars.index = 0;
+//	}
+//	g_vars.g_exit_status = 130;
+}
 
-// 	i = 0;
-// 	if (signum == SIGINT)
-// 	{
-// 		if (g_vars.pid[i] == 0)
-// 		{
-// 			ft_printf("\n");
-// 			rl_on_new_line();
-// 			rl_replace_line("", 1);
-// 			rl_redisplay();
-// 		}
-// 		else
-// 		{
-// 			while (g_vars.pid[i] != 0)
-// 			{
-// 				kill (g_vars.pid[i], SIGINT);
-// 				printf ("%d is dead now\n", g_vars.pid[i]);
-// 				g_vars.pid[i] = 0;
-// 				i++;
-// 			}
-// 			ft_bzero (g_vars.pid, PIPE_BUF);
-// 			g_vars.index = 0;
-// 		}
-// 		g_vars.g_exit_status = 130;
-// 	}
-// 	else if (signum == SIGQUIT)
-// 	{
-// 		while (g_vars.pid[i] != 0)
-// 		{
-// 			kill (g_vars.pid[i], SIGINT);
-// 			printf ("%d is dead now\n", g_vars.pid[i]);
-// 			g_vars.pid[i] = 0;
-// 			i++;
-// 		}
-// 		ft_bzero (g_vars.pid, PIPE_BUF);
-// 		g_vars.index = 0;
-// 		ft_printf("Quit: 3\n");
-// 	}
-// }
+void sigquit(int i)
+{
+	while (g_vars.pid[i] != 0)
+	{
+		kill (g_vars.pid[i], SIGINT);
+		printf ("%d is dead now\n", g_vars.pid[i]);
+		g_vars.pid[i] = 0;
+		i++;
+	}
+	ft_bzero (g_vars.pid, PIPE_BUF);
+	g_vars.index = 0;
+	ft_printf("Quit: 3\n");
+}
+
+void signals(int signum)
+{
+	int i;
+
+ 	i = 0;
+ 	if (signum == SIGINT)
+		sigint(i);
+ 	else if (signum == SIGQUIT)
+		sigquit(i);
+ }
+
+void re_split(char ***tmp, char **split, int *j)
+{
+	char **ptr;
+	int k;
+
+		if (char_counter ((*split), ' '))
+		{
+			ptr = ft_split((*split), ' ');
+			k = 0;
+			while (ptr[k])
+				(*tmp)[(*j)++] = ptr[k++];
+			free (ptr);
+			if ((*j) > 0)
+				(*j)--;
+		}
+		else
+			(*tmp)[(*j)] = (*split);
+}
 
 void split_and_join(char ***split)
 {
 	int i;
 	int j;
-	int k;
-	char **ptr;
 	char **tmp;
+
 	if (!(*split))
 		return ;
 	tmp = ft_calloc (sizeof (char *) ,ft_strcount((*split)) + mega_counter(*split, ' ') + 2);
@@ -1811,18 +1862,7 @@ void split_and_join(char ***split)
 	j = 0;
 	while ((*split)[i])
 	{
-		if (char_counter ((*split)[i], ' '))
-		{
-			ptr = ft_split((*split)[i], ' ');
-			k = 0;
-			while (ptr[k])
-				tmp[j++] = ptr[k++];
-			free (ptr);
-			if (j > 0)
-				j--;
-		}
-		else
-			tmp[j] = (*split)[i];
+		re_split(&tmp, &(*split)[i], &j);
 		j++;
 		i++;
 	}
@@ -1830,15 +1870,86 @@ void split_and_join(char ***split)
 	*split = tmp;
 }
 
+void parse_it(char **copy, char ***env, char ***split)
+{
+	int check;
 
-int main(int ac, char **av, char **envi)
+	if (char_counter((*copy), '\"') || char_counter((*copy), '\''))
+		(*split) = parsing(&(*copy), *env);
+	else
+	{
+		make_some_space(&(*copy));
+		(*split) = ft_split ((*copy), ' ');
+		expand (&(*split), *env);
+		split_and_join(&(*split));
+	}
+	check = last_check((*split));
+	if (check == -2)
+		(*split) = NULL;
+	if (check != -1 && (*split))
+	{
+		if (check  + 1 < ft_strcount((*split)))
+			ft_printf ("bash: syntax error near unexpected token `%s'\n", (*split)[check + 1]);
+		else
+			error_print ("bash: syntax error near unexpected token `newline'", NULL);
+		g_vars.g_exit_status = 2;
+		free_double_array((*split));
+		(*split) = NULL;
+	}
+}
+
+void parse_phil_list_and_excute(char **copy, char ***env, char ***export)
+{
+	char **split;
+	t_input *list;
+
+	if (fast_check((*copy)))
+	{
+		parse_it(&(*copy), env, &split);
+		ft_update_exit_status(env);
+		if (split)
+		{
+			if (mega_counter(split, '*'))
+				wildcard(&split);
+			list = work_time(split);
+			free_double_array(split);
+			ft_execution(list, env, export);
+			ft_update_exit_status(env);
+			ft_update_last_command(env, list);
+			free_list(list);
+		}
+	}
+}
+
+void minishell(char ***env, char ***export)
 {
 	char *input;
 	char *copy;
-	char **split;
+
+	if (!g_vars.g_exit_status)
+		input = readline("😄\033[0;32mbash-4.2\033[34m$▶️  \033[0m");
+	else
+		input = readline("😡\033[31mbash-4.2\033[34m$❌ \033[0m");
+	if (input == NULL)
+	{
+		// ft_printf ("exit\n");
+		free (input);
+		exit (g_vars.g_exit_status);	
+	}
+	copy = ft_strdup(input);
+	parse_phil_list_and_excute(&copy, env, export);
+	free (copy);
+	add_history(input);
+	if (input && input[0] == 0)
+		g_vars.g_exit_status = 0;
+	free(input);
+	ft_bzero (g_vars.pid, PIPE_BUF);
+	g_vars.index = 0;
+}
+
+int main(int ac, char **av, char **envi)
+{
 	char **env;
-	t_input *list;
-	int check;
 	char **export;
 
 	(void)ac;
@@ -1852,66 +1963,8 @@ int main(int ac, char **av, char **envi)
 	g_vars.index = 0;
 	// signal (SIGINT, signals);
 	// signal (SIGQUIT, signals);
-	//	ft_printf("\033[37mThe default interactive shell is now zsh.\nTo update your account to use zsh, please run chsh -s /bin/zsh.\n\033[0m");
 	while (1)
-	{
-		if (!g_vars.g_exit_status)
-			input = readline("😄\033[0;32mbash-4.2\033[34m$▶️  \033[0m");
-		else
-			input = readline("😡\033[31mbash-4.2\033[34m$❌ \033[0m");
-		if (input == NULL)
-		{
-			// ft_printf ("exit\n");
-			free (input);
-			exit (g_vars.g_exit_status);	
-		}
-		copy = ft_strdup(input);
-		if (fast_check(copy))
-		{
-			if (char_counter(copy, '\"') || char_counter(copy, '\''))
-				split = parsing(&copy, env);
-			else
-			{
-				make_some_space(&copy);
-				split = ft_split (copy, ' ');
-				expand (&split, env);
-				check = 0;
-				split_and_join(&split);
-			}
-			check = last_check(split);
-			if (check == -2)
-				split = NULL;
-			if (check != -1 && split)
-			{
-				if (check  + 1 < ft_strcount(split))
-					ft_printf ("bash: syntax error near unexpected token `%s'\n", split[check + 1]);
-				else
-					error_print ("bash: syntax error near unexpected token `newline'", NULL);
-				g_vars.g_exit_status = 2;
-				free_double_array(split);
-				split = NULL;
-			}
-			ft_update_exit_status(&env);
-			if (split)
-			{
-				if (mega_counter(split, '*'))
-					wildcard(&split);
-				list = work_time(split);
-				free_double_array(split);
-				ft_execution(list, &env, &export);
-				ft_update_exit_status(&env);
-				ft_update_last_command(&env, list);
-				free_list(list);
-			}
-		}
-		free (copy);
-		add_history(input);
-		if (input && input[0] == 0)
-				g_vars.g_exit_status = 0;
-		free(input);
-		ft_bzero (g_vars.pid, PIPE_BUF);
-		g_vars.index = 0;
-	}
+		minishell(&env, &export);
 	shlvl(&env, -1);
 	in_env(NULL, env, 1);
 	free_double_array(env);
