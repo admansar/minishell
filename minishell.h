@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/06 11:52:20 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/03 20:04:07 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/04 09:43:16 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,6 +162,36 @@ typedef struct s_redirection
 	char			*herdoc_file_name;
 }					t_redirection;
 
+
+typedef struct s_parse
+{
+	int i;
+	int j;
+	int k;
+	int taken;
+	int start;
+	int end;
+	float used;
+	int len;
+	char *str;
+}			t_parse;
+
+typedef struct s_expand
+{
+	int i;
+	int k;
+	int h;
+	int j;
+	int m;
+	int start;
+	int end;
+	char *tmp;
+	char *tmp2;
+	char **str;
+	char *re;
+	int to_expand;
+}			t_expand;
+
 typedef struct s_input
 {
 	char			*cmd;
@@ -193,6 +223,7 @@ int					char_counter(const char *co, char c);
 
 void				ft_export(char ***env, t_input *list, char ***export);
 void				ft_unset(char ***env, t_input *list, char ***export);
+//void				ft_export_printer(char **export);
 void				ft_get_var_name(char *var, char **var_name);
 void				ft_get_var_value(char *var, char *var_name,
 						char **var_value);
@@ -239,6 +270,7 @@ void				ft_get_var_value(char *var, char *var_name,
 						char **var_value);
 int					ft_unset_name_checker(char *str);
 int					ft_export_name_checker(char *str);
+//void				ft_export_printer(char **export);
 void				ft_clean_up_name(char **str);
 char				**ft_join_double_ptr_to_ptr(char *str, char **arr1);
 char				**ft_join_ptr_to_double_ptr(char **arr1, char *str);
@@ -337,5 +369,131 @@ void				remake(char ***split, int *i, char **div);
 int					count_for_ls(DIR *dir);
 char				**list_current_directory_content(void);
 void				wildcard(char ***split);
+
+/********************Wildcard********************/
+
+void	the_start_of_the_beg_dual(char *copy, char **ls, int j, char ***holder);
+void	wildcard(char ***split);
+char	**list_current_directory_content(void);
+int	count_for_ls(DIR *dir);
+void	remake(char ***split, int *i, char **div);
+int	re_full_(char ***div, char ***re, int *j);
+char	**make_sure(char **str, char **ls);
+char	**the_commun(char **str, char **ls);
+void	check_for_hidden(char *str, char ***re);
+char	**the_beg(char *str, char **ls);
+void	find_and_collect(char **ls, char ***holder, int *j, char *split);
+void	find_and_collect_no_p(char **ls, char ***holder, int *j, char *split);
+char	**the_popular_choice(char *str, char **ls);
+char	**the_inner(char *str, char **ls);
+char	**the_end(char *str, char **ls);
+char	**get_the_needed_array(char **holder, char **split, char *str);
+char	**collect_repeated(char *str, char **holder, char **split, int h);
+char	***all_the_reapeated(char **holder, char *str, int h);
+char	**the_repeated(char **tmp1, char **tmp2, char *str, int count);
+void	free_triple_array(char ***c);
+void	the_start_of_the_beg(char *copy, char **ls, char ***holder);
+/****************/
+
+void minishell(char ***env, char ***export);
+void parse_phil_list_and_excute(char **copy, char ***env, char ***export);
+void parse_it(char **copy, char ***env, char ***split);
+void split_and_join(char ***split);
+void re_split(char ***tmp, char **split, int *j);
+void signals(int signum);
+void sigquit(int i);
+void sigint(int i);
+char **parsing(char **input, char **env);
+int last_check(char **str);
+int check_error(char **str, int i);
+void free_list(t_input *list);
+t_input *work_time(char **split);
+int ft_strmegacount(char **c);
+void phil_list(t_input **list, char **split);
+void disable_some_checks(t_input **list);
+void check_ambiguous(t_input **list);
+void phil_the_list(t_input **list, char **split);
+void list_details(char **split, t_input **list, int *i, int *m);
+void list_args(char **split, t_input **list, int i, int *m);
+void list_cmd(char **split, t_input **list, int i, int *m);
+void list_in(char **split, t_input **list, int i);
+void list_heardoc(char **split, t_input **list, int i);
+void list_append(char **split, t_input **list, int i);
+void ambiguous_starter_pack(char ***split);
+void exchange(char **ptr, char c, char b);
+int mega_counter(char **str, char c);
+t_input *append(t_input *list, int count);
+void init_list(t_input **list, int count);
+int fast_check(char *input);
+
+int error_detected(void);
+void shlvl(char ***env, int c);
+void expand(char ***str_pro_max, char **env);
+void should_i_expand(t_expand *expand, char ***str_pro_max, char **env);
+void expand_after_redirections(t_expand *expand, char ***str_pro_max, char **env);
+void fill_str(t_expand *expand, char ***str_pro_max, char **env);
+void expand_exit_stat(t_expand *expand, char **env);
+void start_expanding(t_expand *expand, char ***str_pro_max, char **env);
+void store_after_expand_var(char *tmp2, int *m, char **str);
+char *take_variable_from_env(char **env, int k, char *str_pro_max, int h);
+void get_size_to_expand(char ***str, char ***str_pro_max, char **env);
+int get_len_to_allocate(char ***str_pro_max, int i, char **env);
+int len_from_env_(char **env, int *j);
+int len_from_env(char ***str_pro_max, char **env, int i, int *j);
+void array_expander(char **ptr, char **env);
+void time_to_expand(t_expand *expand, char **ptr, char **env);
+void expand_exit_stat_array(t_expand *expand, char **env);
+void the_expander(t_expand *expand, char **ptr, char **env);
+void expand_exit_stat_size(t_expand *expand, char **env);
+void the_array_size_to_expand(t_expand *expand, char **ptr, char **env);
+void no_extra_(char **ptr, char c);
+void replace_spaces(char **ptr);
+int	checking_direction(char *str, char *behind_str, char **env);
+int recursive_untill_found(char *str, char **env);
+int recursive_why_not(char *str, char **env);
+int checking_direction_expand(char *str, char **env);
+int in_env(char *ptr, char **env, int flag);
+char **fill(char **str);
+void make_some_space(char **str);
+int size_to_allocate(char **str);
+void space_char(char **tmp, int *i, int *j, char c);
+void space_append_heardoc(char **tmp, int *i, int *j, int type);
+void no_etxra_qoutes(char ***str);
+void delete_last_spaces(char ***str);
+void no_surounded_anymore(char **str);
+void disable(char **str, char c);
+void check_delete(char **str);
+void delete_them_inside(char **ptr, char c);
+void delete_the_chosen(t_expand *var, char **ptr, int number_of_char, char c);
+char dual(char c);
+void printer(char **ptr);
+void the_joiner(char ***str_pro_max);
+void delete_array_form_double_array(int *i, char ***str_pro_max);
+char **ultra_split(char **new_str , char **input);
+void make_space_split_join(char **new_str, char ***split, int i);
+void free_double_array(char **c);
+void i_should_replace_them(char **input);
+void i_should_replace_single(t_parse *pars, char **input);
+void should_i_replace_them(char **input);
+void search_and_replace(t_parse *pars, char **input);
+char **split_without_weast(char **input) ;
+void split_without_weast_utils(t_parse *pars, char ***new_str, char **input);
+void delete_non_sense(char **input);
+void look_for_partner(t_parse *pars, char ***new_str, char **input);
+int ft_simularity_len(char *str, char c);
+int ft_simularity_len_dual(char *str, char c);
+void delete_them(char **input, int start, int end);
+void delete_both(char **input, int start, int end, char c);
+char *take_copy(char *s1, int start, int end);
+int char_counter(const char *co, char c);
+void error_print(char *s1, char *s2);
+int surounded_by(char *str, char c);
+char *clean_copy(char *c);
+int max_len(char **str);
+void delete_both_double (t_parse *pars, char **input);
+void d_delete(char **input);
+void delete_both_single(t_parse *pars, char **input);
+void s_delete(char **input);
+void look_for_partner(t_parse *pars, char ***new_str, char **input);
 
 #endif
