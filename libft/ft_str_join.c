@@ -47,6 +47,6 @@ char	*ft_str_join(char *s1, char *s2)
 	if (!ptr)
 		return (NULL);
 	g_g(ptr, s1, s2);
-	free (s1);
+	free(s1);
 	return (ptr);
 }

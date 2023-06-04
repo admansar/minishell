@@ -12,16 +12,15 @@
 
 #include "libft.h"
 
-
-int ft_strncmp_dual(const char *s1, const char *s2, size_t n)
+int	ft_strncmp_dual(const char *s1, const char *s2, size_t n)
 {
 	int	len1;
 	int	len2;
 
 	if ((!s1 && !s2) || !n)
 		return (0);
-	len1 = ft_strlen ((char *)s1);
-	len2 = ft_strlen ((char *)s2);
+	len1 = ft_strlen((char *)s1);
+	len2 = ft_strlen((char *)s2);
 	if (!len1 || !len2)
 		return (0);
 	while (len1-- && len2-- && n--)
@@ -35,7 +34,6 @@ int ft_strncmp_dual(const char *s1, const char *s2, size_t n)
 	}
 	return (0);
 }
-
 
 int	ft_strncmp(const char *s1, const char *s2, size_t n)
 {
