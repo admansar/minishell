@@ -6,7 +6,7 @@
 /*   By: admansar <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 23:09:12 by admansar          #+#    #+#             */
-/*   Updated: 2023/06/03 23:09:15 by admansar         ###   ########.fr       */
+/*   Updated: 2023/06/04 12:02:52 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -206,29 +206,31 @@ void delete_both_double (t_parse *pars, char **input)
 
 void d_delete(char **input) // d for double quotes
 {
-	t_parse pars;
+	t_parse *pars;
 
-	pars.i = 0;
-	pars.taken = 1;
-	pars.start = 0;
-	pars.end = 0;
-	pars.len = ft_strlen (*input) + 1;
-	while ((*input)[pars.i])
+	pars = malloc (sizeof (t_parse));
+	pars->i = 0;
+	pars->taken = 1;
+	pars->start = 0;
+	pars->end = 0;
+	pars->len = ft_strlen (*input) + 1;
+	while ((*input)[pars->i])
 	{
-		pars.used = 0;
-		if ((*input)[pars.i] == '\"' && pars.taken == 1)
+		pars->used = 0;
+		if ((*input)[pars->i] == '\"' && pars->taken == 1)
 		{
-			pars.start = pars.i;
-			pars.taken = 0;
+			pars->start = pars->i;
+			pars->taken = 0;
 		}
-		else if ((*input)[pars.i] == '\"' && pars.taken == 0)
+		else if ((*input)[pars->i] == '\"' && pars->taken == 0)
 		{
-			pars.end = pars.i;
-			pars.taken = 1;
+			pars->end = pars->i;
+			pars->taken = 1;
 		}
-		delete_both_double (&pars, input);
-		pars.i++;
+		delete_both_double (pars, input);
+		pars->i++;
 	}
+	free (pars);
 }
 
 void delete_both_single(t_parse *pars, char **input)
@@ -586,23 +588,25 @@ void delete_the_chosen(t_expand *var, char **ptr, int number_of_char, char c)
 //delete the usless iner things
 void delete_them_inside(char **ptr, char c)
 {
-	t_expand var;
+	t_expand *var;
 	int		number_of_char;
 
-	var.i = 0;
-	var.j = 0;
-	var.k = 0;
+	var = malloc (sizeof (t_expand));
+	var->i = 0;
+	var->j = 0;
+	var->k = 0;
 	number_of_char = char_counter(*ptr, c);
-	var.tmp = ft_calloc (sizeof(char), (ft_strlen(*ptr) + 3));
-	var.tmp[var.j++] = c;
-	delete_the_chosen(&var, ptr, number_of_char, c);
-	if (char_counter(var.tmp, c) != 2)
-		var.tmp[var.j++] = c;
-	var.tmp[var.j] = '\0';
+	var->tmp = ft_calloc (sizeof(char), (ft_strlen(*ptr) + 3));
+	var->tmp[var->j++] = c;
+	delete_the_chosen(var, ptr, number_of_char, c);
+	if (char_counter(var->tmp, c) != 2)
+		var->tmp[var->j++] = c;
+	var->tmp[var->j] = '\0';
 	free (*ptr);
-	*ptr = malloc (sizeof (char) * (ft_strlen(var.tmp) + 1));
-	ft_strlcpy(*ptr, var.tmp, ft_strlen(var.tmp) + 1);
-	free(var.tmp);
+	*ptr = malloc (sizeof (char) * (ft_strlen(var->tmp) + 1));
+	ft_strlcpy(*ptr, var->tmp, ft_strlen(var->tmp) + 1);
+	free(var->tmp);
+	free (var);
 }
 
 void check_delete(char **str)
@@ -1056,24 +1060,26 @@ void time_to_expand(t_expand *expand, char **ptr, char **env)
 
 void array_expander(char **ptr, char **env)
 {
-	t_expand expand;
+	t_expand *expand;
 
-	expand.i = 0;
-	expand.k = 0;
-	while ((*ptr)[expand.i])
+	expand = malloc (sizeof (t_expand));
+	expand->i = 0;
+	expand->k = 0;
+	while ((*ptr)[expand->i])
 	{
-		if ((*ptr)[expand.i] == '$' && (ft_isalpha((*ptr)[expand.i+1])
-				   	|| ft_isdigit((*ptr)[expand.i+1])
-				   	|| (*ptr)[expand.i+1] == '_'))
-			the_array_size_to_expand(&expand, ptr, env);
-		else if ((*ptr)[expand.i] == '$' && (*ptr)[expand.i+1] == '?')
-			expand_exit_stat_size(&expand, env);
-		expand.i++;
+		if ((*ptr)[expand->i] == '$' && (ft_isalpha((*ptr)[expand->i+1])
+				   	|| ft_isdigit((*ptr)[expand->i+1])
+				   	|| (*ptr)[expand->i+1] == '_'))
+			the_array_size_to_expand(expand, ptr, env);
+		else if ((*ptr)[expand->i] == '$' && (*ptr)[expand->i+1] == '?')
+			expand_exit_stat_size(expand, env);
+		expand->i++;
 	}
-	time_to_expand(&expand, ptr, env);
+	time_to_expand(expand, ptr, env);
 	free (*ptr);
-	*ptr = ft_strdup (expand.re);
-	free (expand.re);
+	*ptr = ft_strdup (expand->re);
+	free (expand->re);
+	free (expand);
 }
 
 int len_from_env(char ***str_pro_max, char **env, int i, int *j)
@@ -1312,19 +1318,21 @@ void should_i_expand(t_expand *expand, char ***str_pro_max, char **env)
 
 void expand(char ***str_pro_max, char **env)
 {
-	t_expand expand;
+	t_expand *expand;
 
-	get_size_to_expand(&expand.str, str_pro_max, env);
-	expand.i = 0;
-	expand.j = 0;
-	expand.start = 0;
-	expand.end = 0;
-	fill_str(&expand, str_pro_max, env);
-	expand.i = -1;
-	while ((*str_pro_max)[++expand.i])
-		if (char_counter((*str_pro_max)[expand.i], '$'))
-			should_i_expand(&expand, str_pro_max, env);
-	free_double_array(expand.str);
+	expand = malloc (sizeof (t_expand));
+	get_size_to_expand(&expand->str, str_pro_max, env);
+	expand->i = 0;
+	expand->j = 0;
+	expand->start = 0;
+	expand->end = 0;
+	fill_str(expand, str_pro_max, env);
+	expand->i = -1;
+	while ((*str_pro_max)[++expand->i])
+		if (char_counter((*str_pro_max)[expand->i], '$'))
+			should_i_expand(expand, str_pro_max, env);
+	free_double_array(expand->str);
+	free (expand);
 }
 
 void shlvl(char ***env, int c)
