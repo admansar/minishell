@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 09:54:04 by admansar          #+#    #+#             */
-/*   Updated: 2023/06/03 18:05:37 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/05 12:55:41 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,10 @@
 
 void	the_start_of_the_beg_dual(char *copy, char **ls, int j, char ***holder)
 {
-	int	i;
 	int	h;
 	int	pass;
 	int	k;
 
-	i = 0;
 	h = ft_strlen(copy);
 	pass = 1;
 	k = 0;
@@ -43,12 +41,10 @@ void	the_start_of_the_beg_dual(char *copy, char **ls, int j, char ***holder)
 
 void	the_start_of_the_beg(char *copy, char **ls, char ***holder)
 {
-	int	i;
 	int	h;
 	int	pass;
 	int	k;
 
-	i = 0;
 	h = ft_strlen(copy);
 	pass = 1;
 	k = 0;

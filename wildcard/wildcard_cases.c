@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 09:40:09 by admansar          #+#    #+#             */
-/*   Updated: 2023/06/04 14:55:26 by admansar         ###   ########.fr       */
+/*   Updated: 2023/06/05 12:54:28 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@ char	**the_end(char *str, char **ls)
 	the_start_of_the_beg_dual(copy, ls, j, &holder);
 	if (holder[j])
 		j++;
+		else 
+		return (NULL);
 	i = 0;
 	while (split[i + 1])
 		find_and_collect_no_p(ls, &holder, &j, split[i++]);
@@ -42,11 +44,9 @@ char	**the_inner(char *str, char **ls)
 	char	**holder;
 	int		j;
 	int		i;
-	int		k;
 
 	i = 0;
 	j = 0;
-	k = 0;
 	split = ft_split(str, '*');
 	holder = ft_calloc(sizeof(char *), (ft_strcount(split) * char_counter(str,
 					'*') + ft_strcount(ls) + 1));
@@ -77,11 +77,15 @@ char	**the_popular_choice(char *str, char **ls)
 	the_start_of_the_beg(copy, ls, &holder);
 	if (holder[j])
 		j++;
+	else 
+		return (NULL);
 	copy = take_copy(str, ft_simularity_len_dual(str, '*') + 1, ft_strlen(str)
 			- 1);
 	the_start_of_the_beg_dual(copy, ls, j, &holder);
 	if (holder[j])
 		j++;
+	else
+		return (NULL);
 	i = 1;
 	while (split[++i])
 		find_and_collect(ls, &holder, &j, split[i]);
@@ -107,6 +111,8 @@ char	**the_beg(char *str, char **ls)
 	the_start_of_the_beg(copy, ls, &holder);
 	if (holder[j])
 		j++;
+		else 
+		return (NULL);
 	i = 1;
 	while (split[i])
 	{
