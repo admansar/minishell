@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:17:30 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/03 20:17:31 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/05 12:32:31 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 void	ft_exit(t_input *list)
 {
+	ft_printf ("\nexit\n");
 	if (list->arg[0])
 	{
 		if (have_just_digits(list->arg[0]) && !list->arg[1])
@@ -34,7 +35,5 @@ void	ft_exit(t_input *list)
 		}
 	}
 	else
-	{
 		exit(g_vars.g_exit_status);
-	}
 }

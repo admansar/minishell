@@ -39,7 +39,7 @@ SRC_DIR := .
 
 CC = cc
 
-CFLAGS = -Wall -Wextra -Werror #-g -fsanitize=address #-I/goinfre/${USER_NAME}/homebrew/opt/readline/include -L/goinfre/${USER_NAME}/homebrew/opt/readline/lib -g -fsanitize=address
+CFLAGS = -Wall -Wextra -Werror -I/goinfre/${USER_NAME}/homebrew/opt/readline/include -L/goinfre/${USER_NAME}/homebrew/opt/readline/lib -g -fsanitize=address
 
 all : $(NAME)
 
