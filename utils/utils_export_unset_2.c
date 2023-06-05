@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:18:19 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/03 20:18:20 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/05 13:48:40 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void	ft_init_export_data(t_export *data)
 	data->len = 0;
 }
 
-int	ft_get_var(char *var, char **name, char **value)
+void	ft_get_var(char *var, char **name, char **value)
 {
 	t_export	data;
 
@@ -41,8 +41,6 @@ int	ft_get_var(char *var, char **name, char **value)
 		data.len = ft_strlen(var);
 		*name = take_copy(var, 0, data.len);
 		*value = NULL;
-		if (ft_simularity_len(var, '+') == data.len - 1)
-			return (-13);
 	}
 	else
 	{
@@ -57,7 +55,6 @@ int	ft_get_var(char *var, char **name, char **value)
 		while (++data.i < data.len)
 			(*value)[data.i] = var[data.i + data.ret];
 	}
-	return (0);
 }
 
 void	ft_clean_up_vars(char ***export)

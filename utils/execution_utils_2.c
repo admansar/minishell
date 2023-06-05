@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:17:54 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/04 15:00:54 by admansar         ###   ########.fr       */
+/*   Updated: 2023/06/05 13:58:25 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,9 +47,7 @@ void	ft_current_dir_executables(t_input *list, t_execution *data,
 	if (WEXITSTATUS(data->status))
 		data->status = WEXITSTATUS(data->status);
 	else if (WIFSIGNALED(data->status))
-	{
 		data->status = WTERMSIG(data->status) + 128;
-	}
 	g_vars.g_exit_status = data->status;
 }
 
@@ -69,9 +67,7 @@ void	ft_cmd_with_path(t_input *list, t_execution *data, char ***envi)
 	if (WEXITSTATUS(data->status))
 		data->status = WEXITSTATUS(data->status);
 	else if (WIFSIGNALED(data->status))
-	{
 		data->status = WTERMSIG(data->status) + 128;
-	}
 	g_vars.g_exit_status = data->status;
 }
 
@@ -89,9 +85,7 @@ void	ft_execute(t_input *list, t_execution *data, char ***envi)
 	if (WEXITSTATUS(data->status))
 		data->status = WEXITSTATUS(data->status);
 	else if (WIFSIGNALED(data->status))
-	{
 		data->status = WTERMSIG(data->status) + 128;
-	}
 	g_vars.g_exit_status = data->status;
 }
 

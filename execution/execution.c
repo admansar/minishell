@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 17:17:33 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/03 20:17:41 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/05 12:44:44 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,22 +62,6 @@ void	ft_exec(t_input *list, char ***envi, char ***export)
 		basic_execution(list, envi);
 }
 
-void	ft_execution(t_input *list, char ***env, char ***export)
-{
-	t_redir	data;
-
-	ft_execute_here_docs(list, &data, env, export);
-	if (!list->pipe)
-	{
-		if (list->redirect->position)
-			ft_redirections(list, &data, env, export);
-		else
-			ft_exec(list, env, export);
-	}
-	else
-		ft_pipe(list, &data, env, export);
-}
-
 void	ft_n_pipe(t_input *list, t_pipe *pipe_data, t_redir *data)
 {
 	pipe_data->i = 0;
@@ -127,4 +111,20 @@ void	ft_pipe(t_input *list, t_redir *data, char ***envi, char ***export)
 	ft_bzero(g_vars.pid, pipe_data.i + 1);
 	g_vars.index = 0;
 	free(pipe_data.pipe_fd);
+}
+
+void	ft_execution(t_input *list, char ***env, char ***export)
+{
+	t_redir	data;
+
+	ft_execute_here_docs(list, &data, env, export);
+	if (!list->pipe)
+	{
+		if (list->redirect->position)
+			ft_redirections(list, &data, env, export);
+		else
+			ft_exec(list, env, export);
+	}
+	else
+		ft_pipe(list, &data, env, export);
 }

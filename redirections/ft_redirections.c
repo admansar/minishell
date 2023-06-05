@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:17:47 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/04 15:44:29 by admansar         ###   ########.fr       */
+/*   Updated: 2023/06/05 15:03:13 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,9 +61,10 @@ void	ft_file_creation(t_input *list, t_redir *data)
 {
 	t_files	f_data;
 
+	get_outfile_nbr(&f_data, list, data);
 	data->output = -1;
-	data->count = 0;
-	ft_get_all_fds(&f_data, list, data);
+	f_data.ret = 0;
+	f_data.i = -1;
 	while (list->redirect->type[++f_data.i])
 	{
 		if (ft_ambiguous(list, data, f_data.i))
@@ -73,7 +74,6 @@ void	ft_file_creation(t_input *list, t_redir *data)
 		if (redirections_error(list, data, &f_data))
 			break ;
 	}
-	get_out_fd(&f_data, data);
 }
 
 void	ft_get_input(t_input *list, t_redir *data)
@@ -128,7 +128,7 @@ void	ft_redirections(t_input *list, t_redir *data, char ***env,
 		}
 		if (list->cmd)
 			ft_exec(list, env, export);
-		exit(EXIT_SUCCESS);
+		exit(g_vars.g_exit_status);
 	}
 	wait(NULL);
 }

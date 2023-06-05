@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/06 11:52:20 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/04 14:29:55 by admansar         ###   ########.fr       */
+/*   Updated: 2023/06/05 15:50:52 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,7 +125,7 @@ typedef struct s_cd
 	char			*pwd;
 	char			*joined;
 	char			*home_path;
-	char			old_name[7];
+	char			old_pwd_name[7];
 	char			pwd_name[5];
 	char			path[PATH_MAX];
 	int				index_pwd;
@@ -226,7 +226,7 @@ void				ft_unset(char ***env, t_input *list, char ***export);
 void				ft_get_var_name(char *var, char **var_name);
 void				ft_get_var_value(char *var, char *var_name,
 						char **var_value);
-int					ft_get_var(char *var, char **name, char **value);
+void					ft_get_var(char *var, char **name, char **value);
 void				ft_check_env_var(t_export *data);
 void				ft_clean_up_name(char **str);
 int					mega_counter(char **str, char c);
@@ -301,7 +301,7 @@ int					ambiguous_check_2(t_input *list, t_redir *data, char *tmp,
 int					ft_early_ambiguous_check(t_input *list, t_redir *data);
 void				ft_error(t_redir *data, int flag);
 int					ft_ambiguous(t_input *list, t_redir *data, int i);
-void				ft_get_all_fds(t_files *f_data, t_input *list,
+void				get_outfile_nbr(t_files *f_data, t_input *list,
 						t_redir *data);
 int					ft_check_permissions(t_input *list, t_redir *data,
 						t_files *f_data, int flag);

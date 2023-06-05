@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:17:45 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/04 15:01:22 by admansar         ###   ########.fr       */
+/*   Updated: 2023/06/05 12:59:21 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,26 +47,25 @@ void	ft_write_in_file(t_input *list, t_redir *data, char **env)
 }
 
 // launch here-doc as many times as it appear in the input
-void	ft_here_doc(t_input *list, int *pos, t_redir *data, char **env)
+void	ft_here_doc(t_input *list, int *pos, t_redir *data, t_rand_str *d)
 {
-	t_rand_str	d;
-
-	ft_get_rand_str(&d, data, list);
-	while (++d.i < data->herdoc_count)
+	d->i = -1;
+	data->expand = 1;
+	while (++d->i < data->herdoc_count)
 	{
-		ft_check_expand(list, data, pos, d.i);
+		ft_check_expand(list, data, pos, d->i);
 		while (1)
 		{
 			data->input = readline("> ");
 			if (!data->input)
 				break ;
-			if (!ft_strcmp(data->input, list->redirect->file_name[pos[d.i]]))
+			if (!ft_strcmp(data->input, list->redirect->file_name[pos[d->i]]))
 			{
-				ft_leave_current_heredoc(data, d.i);
+				ft_leave_current_heredoc(data, d->i);
 				break ;
 			}
-			else if (d.i == data->herdoc_count - 1)
-				ft_write_in_file(list, data, env);
+			else if (d->i == data->herdoc_count - 1)
+				ft_write_in_file(list, data, (*data->env));
 		}
 	}
 }
@@ -75,22 +74,23 @@ void	ft_execute_here_docs(t_input *list, t_redir *data, char ***env,
 		char ***export)
 {
 	t_input	*tmp;
-
+	t_rand_str d;
+	
 	tmp = list;
 	data->env = env;
 	data->export = export;
 	data->herdoc_count = 0;
-	data->output_count = 0;
 	while (tmp)
 	{
 		if (tmp->redirect->position)
 		{
 			data->pos_herdoc = ft_get_operators_pos(tmp, HERDOC,
 					&(data->herdoc_count));
-			data->pos_output = ft_get_operators_pos(tmp, OUTPUT,
-					&(data->output_count));
-			ft_here_doc(tmp, data->pos_herdoc, data, *env);
-			free(data->pos_output);
+			if (data->herdoc_count)
+			{
+				ft_get_rand_str(&d, data, list);	
+				ft_here_doc(tmp, data->pos_herdoc, data, &d);
+			}
 			free(data->pos_herdoc);
 		}
 		tmp = tmp->next;
