@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:18:14 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/05 16:32:48 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/05 23:29:55 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@ void	get_outfile_nbr(t_files *f_data, t_input *list, t_redir *data)
 int	ft_check_permissions(t_input *list, t_redir *data, t_files *f_data,
 		int flag)
 {
+	if (!ft_is_file_dir(list, data, f_data))
+		return (0);
 	f_data->ret = access(list->redirect->file_name[f_data->i], R_OK | W_OK);
 	if (!f_data->ret)
 	{

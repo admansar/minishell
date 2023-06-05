@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:18:10 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/03 20:18:11 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/05 19:17:05 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,4 +75,24 @@ void	init_vars(t_redir *data)
 	data->error = 0;
 	data->in_fd = 0;
 	data->out_fd = 0;
+}
+
+int	ft_is_file_dir(t_input *list, t_redir *data, t_files *f_data)
+{
+	struct stat	f_stat;
+	int			ret;
+
+	ret = stat(list->redirect->file_name[f_data->i], &f_stat);
+	if (!ret)
+	{	
+		if (S_ISDIR(f_stat.st_mode))
+		{
+			g_vars.g_exit_status = 1;
+			ft_printf("bash: %s: Is a directory\n",
+				list->redirect->file_name[f_data->i]);
+			data->error = 1;
+			return (0);
+		}
+	}
+	return (1);
 }

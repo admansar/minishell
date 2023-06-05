@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:17:30 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/05 16:56:17 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/05 22:42:16 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	ft_exit(t_input *list)
 {
-	ft_printf ("\nexit\n");
+	// ft_printf ("\nexit\n");
 	if (list->arg[0])
 	{
 		if (have_just_digits(list->arg[0]) && !list->arg[1])

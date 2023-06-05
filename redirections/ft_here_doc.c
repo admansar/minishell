@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:17:45 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/05 16:53:30 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/05 23:03:59 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,28 +46,47 @@ void	ft_write_in_file(t_input *list, t_redir *data, char **env)
 	free(data->input);
 }
 
+// void heredoc_sigint(int sig)
+// {
+// 	if (sig == SIGINT)
+// 	{
+// 		// rl_replace_line("", 1);
+// 		// rl_on_new_line();
+// 		// rl_redisplay();
+// 		exit (1);
+// 	}
+// }
+
+
 // launch here-doc as many times as it appear in the input
 void	ft_here_doc(t_input *list, int *pos, t_redir *data, t_rand_str *d)
 {
 	d->i = -1;
 	data->expand = 1;
-	while (++d->i < data->herdoc_count)
+	g_vars.here_doc = fork();
+	if (g_vars.here_doc == 0)
 	{
-		ft_check_expand(list, data, pos, d->i);
-		while (1)
+		signal (SIGINT, SIG_DFL);
+		while (++d->i < data->herdoc_count)
 		{
-			data->input = readline("> ");
-			if (!data->input)
-				break ;
-			if (!ft_strcmp(data->input, list->redirect->file_name[pos[d->i]]))
+			ft_check_expand(list, data, pos, d->i);
+			while (1)
 			{
-				ft_leave_current_heredoc(data, d->i);
-				break ;
+				data->input = readline("> ");
+				if (!data->input)
+					break ;
+				if (!ft_strcmp(data->input, list->redirect->file_name[pos[d->i]]))
+				{
+					ft_leave_current_heredoc(data, d->i);
+					break ;
+				}
+				else if (d->i == data->herdoc_count - 1)
+					ft_write_in_file(list, data, (*data->env));
 			}
-			else if (d->i == data->herdoc_count - 1)
-				ft_write_in_file(list, data, (*data->env));
 		}
+		exit (0);
 	}
+	wait (NULL);
 }
 
 void	ft_execute_here_docs(t_input *list, t_redir *data, char ***env,
@@ -88,6 +107,7 @@ void	ft_execute_here_docs(t_input *list, t_redir *data, char ***env,
 					&(data->herdoc_count));
 			if (data->herdoc_count)
 			{
+				g_vars.g_exit_status = 0;
 				ft_get_rand_str(&d, data, list);
 				ft_here_doc(tmp, data->pos_herdoc, data, &d);
 			}

@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/06 11:52:20 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/05 16:57:22 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/05 19:47:51 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ typedef struct s_global
 	int				g_exit_status;
 	int				pid[PIPE_BUF];
 	int				index;
+	int 			here_doc;
 }					t_global;
 
 t_global			g_vars;
@@ -64,6 +65,7 @@ typedef struct s_rand_str
 	char			*tmp;
 	char			*ruin_name;
 	int				rand_nbr;
+	int				err;
 }					t_rand_str;
 
 typedef struct s_execution
@@ -215,14 +217,9 @@ void				ft_pipe(t_input *list, t_redir *data, char ***env,
 void				ft_exec(t_input *list, char ***envi, char ***export);
 void				printer(char **ptr);
 int					char_counter(const char *co, char c);
-
-/***************************************************************/
-/*                         EXPORT/UNSET                        */
-/***************************************************************/
-
 void				ft_export(char ***env, t_input *list, char ***export);
 void				ft_unset(char ***env, t_input *list, char ***export);
-// void				ft_export_printer(char **export);
+int					ft_is_file_dir(t_input *list, t_redir *data, t_files *f_data);
 void				ft_get_var_name(char *var, char **var_name);
 void				ft_get_var_value(char *var, char *var_name,
 						char **var_value);
@@ -234,21 +231,14 @@ int					ft_unset_name_checker(char *str);
 int					ft_export_name_checker(char *str);
 char				**ft_join_double_ptr_to_ptr(char *str, char **arr1);
 void				ft_init_export_data(t_export *data);
-
-/*******************************************************************/
-/*                            BUILT-INS                            */
-/*******************************************************************/
 void				ft_exit(t_input *list);
-
 int					ft_in_env(char *ptr, char **env);
 char				*ft_create_var(char *name, char *value);
 char				**fill(char **str);
-/********************UTILS********************/
 void				ft_change_directory(t_input *list, char ***env,
 						char ***export);
 void				ft_pwd(void);
 void				ft_echo(t_input *list);
-
 int					ft_strcmp(const char *s1, const char *s2);
 void				ft_redirections(t_input *list, t_redir *data, char ***env,
 						char ***export);
@@ -269,7 +259,6 @@ void				ft_get_var_value(char *var, char *var_name,
 						char **var_value);
 int					ft_unset_name_checker(char *str);
 int					ft_export_name_checker(char *str);
-// void				ft_export_printer(char **export);
 void				ft_clean_up_name(char **str);
 char				**ft_join_double_ptr_to_ptr(char *str, char **arr1);
 char				**ft_join_ptr_to_double_ptr(char **arr1, char *str);

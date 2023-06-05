@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:17:47 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/05 16:50:42 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/05 23:53:39 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,16 +34,16 @@ int	redirections_error(t_input *list, t_redir *data, t_files *f_data)
 {
 	if (!ft_strcmp(list->redirect->type[f_data->i], OUTPUT))
 	{
-		if (file_found(list, f_data) && !ft_check_permissions(list, data,
-				f_data, O_TRUNC))
+		if (file_found(list, f_data) 
+			&& !ft_check_permissions(list, data, f_data, O_TRUNC))
 			return (1);
 		else
 			ft_create_file(list, data, f_data, O_TRUNC);
 	}
 	else if (!ft_strcmp(list->redirect->type[f_data->i], APPEND))
 	{
-		if (file_found(list, f_data) && !ft_check_permissions(list, data,
-				f_data, O_APPEND))
+		if (file_found(list, f_data) 
+			&& !ft_check_permissions(list, data, f_data, O_APPEND))
 			return (1);
 		else
 			ft_create_file(list, data, f_data, O_APPEND);
@@ -93,8 +93,9 @@ void	ft_get_input(t_input *list, t_redir *data)
 	if (data->herdoc_count > data->input_count)
 	{
 		data->in_fd = open(list->redirect->herdoc_file_name, O_RDONLY, 0644);
-		unlink(list->redirect->herdoc_file_name);
-		free(list->redirect->herdoc_file_name);
+		// unlink(list->redirect->herdoc_file_name);
+		// free(list->redirect->herdoc_file_name);
+		// list->redirect->herdoc_file_name = NULL;
 	}
 	else if (data->herdoc_count < data->input_count)
 		data->in_fd = open(list->redirect->file_name[data->input_count],

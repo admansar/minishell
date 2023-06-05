@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 23:09:12 by admansar          #+#    #+#             */
-/*   Updated: 2023/06/05 16:57:35 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/05 22:42:13 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,12 @@ void	minishell(char ***env, char ***export)
 		input = readline("😡\033[31mbash-4.2\033[34m$❌ \033[0m");
 	if (input == NULL)
 	{
-		ft_printf ("exit\n");
+		// ft_printf ("exit\n");
 		free(input);
 		exit(g_vars.g_exit_status);
 	}
 	copy = ft_strdup(input);
+	exchange(&copy, '\t', ' ');
 	parse_phil_list_and_excute(&copy, env, export);
 	free(copy);
 	add_history(input);
@@ -36,6 +37,7 @@ void	minishell(char ***env, char ***export)
 	free(input);
 	ft_bzero(g_vars.pid, PIPE_BUF);
 	g_vars.index = 0;
+	g_vars.here_doc = 0;
 }
 
 int	main(int ac, char **av, char **envi)

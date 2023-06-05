@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:18:07 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/05 12:52:27 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/05 23:38:46 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,10 @@ unsigned int	ft_random(void)
 {
 	static long int	rand;
 	char			*p;
-	int				i;
+	unsigned int	i;
 
 	p = malloc(sizeof(char) * 2);
-	i = (unsigned char)&p[0];
+	i = (unsigned int)p[0];
 	rand += ((rand + i) * 1103515245 + 12345) & 0xFFFFFFFF;
 	free(p);
 	return ((unsigned int)rand);

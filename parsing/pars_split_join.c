@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pars_split_join.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: admansar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 14:20:08 by admansar          #+#    #+#             */
-/*   Updated: 2023/06/04 15:25:30 by admansar         ###   ########.fr       */
+/*   Updated: 2023/06/05 22:57:19 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,28 @@ void	split_and_join(char ***split)
 	*split = tmp;
 }
 
+int catch_you(char **str)
+{
+	int i;
+	
+	i = 0;
+	while (str[i])
+	{
+		if (!ft_strncmp(str[i], "<<", 2) && str [i+1]
+		 && !ft_strncmp(str[i+1], "<", 1))
+		return (i);
+		if (!ft_strncmp(str[i], ">>", 2) && str [i+1]
+		 && !ft_strncmp(str[i+1], ">", 1))
+		return (i);
+		if (!ft_strncmp(str[i], "|", 1) && str [i+1]
+		 && !ft_strncmp(str[i+1], "|", 1))
+		return (i);
+		i++;
+	}
+	return (-1);
+}
+
+
 int	last_check(char **str)
 {
 	int	i;
@@ -77,6 +99,8 @@ int	last_check(char **str)
 		if (str[i][h - 1] == '<')
 			return (i);
 	}
+	if (catch_you(str) >= 0)
+		return (catch_you(str));
 	return (-1);
 }
 

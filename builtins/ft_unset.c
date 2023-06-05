@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:17:37 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/05 16:55:24 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/05 18:15:24 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,11 @@ void	ft_fill_unset_vars(t_input *list, t_export *data)
 		ft_get_var(list->arg[data->i], &data->tmp_name,
 			&data->tmp_value);
 		if (ft_unset_name_checker(data->tmp_name) == -1)
+		{	
 			ft_printf("bash: unset: `%s': not a valid identifier\n",
 				list->arg[data->i]);
+			g_vars.g_exit_status = 2;
+		}
 		else
 		{
 			data->valid_export_vars[data->j] = ft_strdup(list->arg[data->i]);

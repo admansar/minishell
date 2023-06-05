@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:17:27 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/03 20:17:28 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/05 17:15:55 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,13 +23,18 @@ int	ft_check_valid_option(char *str)
 	if (str[0] == '-')
 	{
 		i = 1;
-		while (str[i])
+		if (str[1] == 'n')
 		{
-			if (str[i] == 'n')
-				i++;
-			else
-				return (-1);
+			while (str[i])
+			{
+				if (str[i] == 'n')
+					i++;
+				else
+					return (-1);
+			}
 		}
+		else
+			return (-1);
 	}
 	return (i);
 }
