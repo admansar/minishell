@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 09:40:09 by admansar          #+#    #+#             */
-/*   Updated: 2023/06/04 14:55:26 by admansar         ###   ########.fr       */
+/*   Updated: 2023/06/05 16:50:59 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,11 +42,9 @@ char	**the_inner(char *str, char **ls)
 	char	**holder;
 	int		j;
 	int		i;
-	int		k;
 
 	i = 0;
 	j = 0;
-	k = 0;
 	split = ft_split(str, '*');
 	holder = ft_calloc(sizeof(char *), (ft_strcount(split) * char_counter(str,
 					'*') + ft_strcount(ls) + 1));

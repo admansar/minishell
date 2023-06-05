@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   split_and_join.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: admansar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 14:04:06 by admansar          #+#    #+#             */
-/*   Updated: 2023/06/04 15:18:59 by admansar         ###   ########.fr       */
+/*   Updated: 2023/06/05 16:52:07 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,11 +71,9 @@ void	delete_array_form_double_array(int *i, char ***str_pro_max)
 void	the_joiner(char ***str_pro_max)
 {
 	int	i;
-	int	j;
 	int	h;
 
 	i = 0;
-	j = 0;
 	if (i + 1 < ft_strcount(*str_pro_max))
 	{
 		while ((*str_pro_max)[i + 1])

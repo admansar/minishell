@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   wildcard.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: admansar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 17:27:11 by admansar          #+#    #+#             */
-/*   Updated: 2023/06/04 14:55:44 by admansar         ###   ########.fr       */
+/*   Updated: 2023/06/05 16:51:29 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,6 @@ char	**list_current_directory_content(void)
 void	wildcard(char ***split)
 {
 	int		i;
-	int		count;
 	char	**ls;
 	char	**re;
 
@@ -111,7 +110,6 @@ void	wildcard(char ***split)
 	if (!ls)
 		return ;
 	i = 0;
-	count = mega_counter((*split), '*');
 	while ((*split)[i])
 	{
 		if (char_counter((*split)[i], '*') && !surounded_by((*split)[i], '\'')

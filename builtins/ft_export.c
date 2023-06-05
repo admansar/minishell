@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:17:32 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/05 13:46:56 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/05 16:55:43 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ void	ft_fill_export_vars(t_input *list, t_export *data)
 	while (list->arg[data->i])
 	{
 		ft_get_var(list->arg[data->i], &data->tmp_name,
-				&data->tmp_value);
+			&data->tmp_value);
 		if (ft_export_name_checker(data->tmp_name) == -1)
 		{
 			ft_printf("bash: export: `%s': not a valid identifier\n",

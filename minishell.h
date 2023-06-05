@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/06 11:52:20 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/05 15:50:52 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/05 16:57:22 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -226,7 +226,7 @@ void				ft_unset(char ***env, t_input *list, char ***export);
 void				ft_get_var_name(char *var, char **var_name);
 void				ft_get_var_value(char *var, char *var_name,
 						char **var_value);
-void					ft_get_var(char *var, char **name, char **value);
+void				ft_get_var(char *var, char **name, char **value);
 void				ft_check_env_var(t_export *data);
 void				ft_clean_up_name(char **str);
 int					mega_counter(char **str, char c);
@@ -438,7 +438,8 @@ void				expand(char ***str_pro_max, char **env);
 void				should_i_expand(t_expand *expand, char ***str_pro_max,
 						char **env);
 void				expand_after_redirections(t_expand *expand,
-						char ***str_pro_max, char **env);
+						char ***str_pro_max,
+						char **env);
 void				fill_str(t_expand *expand, char ***str_pro_max, char **env);
 void				expand_exit_stat(t_expand *expand, char **env);
 void				start_expanding(t_expand *expand, char ***str_pro_max,

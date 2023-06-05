@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:17:23 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/05 16:45:32 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/05 16:54:28 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,14 +28,14 @@ int	ft_long_path_name(t_cd *data)
 void	ft_update_pwd(t_cd *data, char ***ptr)
 {
 	char	*tmp;
-	
+
 	ft_long_path_name(data);
 	data->index_old_pwd = ft_in_env("OLDPWD", *ptr);
 	if (data->index_old_pwd >= 0)
 	{
 		tmp = take_copy((*ptr)[data->index_pwd],
-			ft_char_checker((*ptr)[data->index_pwd], '=') + 1,
-			ft_strlen((*ptr)[data->index_pwd]));
+				ft_char_checker((*ptr)[data->index_pwd], '=') + 1,
+				ft_strlen((*ptr)[data->index_pwd]));
 		free((*ptr)[data->index_old_pwd]);
 		(*ptr)[data->index_old_pwd] = ft_strjoin("OLDPWD=", tmp);
 		free(tmp);

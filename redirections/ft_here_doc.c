@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:17:45 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/05 12:59:21 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/05 16:53:30 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,9 +73,9 @@ void	ft_here_doc(t_input *list, int *pos, t_redir *data, t_rand_str *d)
 void	ft_execute_here_docs(t_input *list, t_redir *data, char ***env,
 		char ***export)
 {
-	t_input	*tmp;
-	t_rand_str d;
-	
+	t_input		*tmp;
+	t_rand_str	d;
+
 	tmp = list;
 	data->env = env;
 	data->export = export;
@@ -88,7 +88,7 @@ void	ft_execute_here_docs(t_input *list, t_redir *data, char ***env,
 					&(data->herdoc_count));
 			if (data->herdoc_count)
 			{
-				ft_get_rand_str(&d, data, list);	
+				ft_get_rand_str(&d, data, list);
 				ft_here_doc(tmp, data->pos_herdoc, data, &d);
 			}
 			free(data->pos_herdoc);

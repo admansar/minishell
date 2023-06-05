@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:17:47 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/05 16:33:14 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/05 16:50:42 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,10 +78,8 @@ void	ft_file_creation(t_input *list, t_redir *data)
 
 void	ft_get_input(t_input *list, t_redir *data)
 {
-	t_input	*tmp;
 	int		i;
 
-	tmp = list;
 	data->herdoc_count = -1;
 	data->input_count = -1;
 	i = -1;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signals.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: admansar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 14:20:46 by admansar          #+#    #+#             */
-/*   Updated: 2023/06/05 12:24:43 by admansar         ###   ########.fr       */
+/*   Updated: 2023/06/05 16:57:42 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,9 @@ void	sigint(int i)
 	if (g_vars.pid[i] == 0)
 	{
 		ft_printf("\n");
-//		rl_on_new_line();
-//		rl_replace_line("", 1);
-//		rl_redisplay();
+		rl_on_new_line();
+		rl_replace_line("", 1);
+		rl_redisplay();
 	}
 	else
 	{
