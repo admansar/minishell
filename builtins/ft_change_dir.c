@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:17:23 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/05 15:52:16 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/05 16:45:32 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,36 +27,27 @@ int	ft_long_path_name(t_cd *data)
 // update the value of $PWD and $OLDPWD in the given ptr
 void	ft_update_pwd(t_cd *data, char ***ptr)
 {
+	char	*tmp;
+	
+	ft_long_path_name(data);
 	data->index_old_pwd = ft_in_env("OLDPWD", *ptr);
 	if (data->index_old_pwd >= 0)
 	{
-		ft_get_var_value((*ptr)[data->index_pwd], data->pwd_name,
-			&data->old_pwd);
-		data->joined = ft_strjoin(data->old_pwd_name, data->old_pwd);
-		free(data->old_pwd);
-		data->old_pwd = data->joined;
-		data->pwd = ft_strjoin(data->pwd_name, data->path);
-		ft_update_value_env(data->old_pwd, ptr, data->index_old_pwd);
-		ft_update_value_env(data->pwd, ptr, data->index_pwd);
+		tmp = take_copy((*ptr)[data->index_pwd],
+			ft_char_checker((*ptr)[data->index_pwd], '=') + 1,
+			ft_strlen((*ptr)[data->index_pwd]));
+		free((*ptr)[data->index_old_pwd]);
+		(*ptr)[data->index_old_pwd] = ft_strjoin("OLDPWD=", tmp);
+		free(tmp);
 	}
-	else
-	{
-		ft_get_var_value((*ptr)[data->index_pwd], data->pwd_name,
-			&data->old_pwd);
-		data->joined = ft_strjoin(data->old_pwd_name, data->old_pwd);
-		free(data->old_pwd);
-		data->old_pwd = data->joined;
-		data->pwd = ft_strjoin(data->pwd_name, data->path);
-		ft_update_value_env(data->pwd, ptr, data->index_pwd);
-		*ptr = ft_join_ptr_to_double_ptr(*ptr, data->old_pwd);
-	}
-	free(data->old_pwd);
-	free(data->pwd);
+	free((*ptr)[data->index_pwd]);
+	(*ptr)[data->index_pwd] = ft_strjoin("PWD=", data->path);
 }
 
 // handle the cd with no option or if we use the the $HOME variable
 int	ft_home_dir(t_cd *data, char ***env, char ***export)
 {
+	(void)export;
 	data->home_index = ft_in_env("HOME", *env);
 	if (data->home_index >= 0)
 	{
@@ -84,25 +75,20 @@ int	ft_home_dir(t_cd *data, char ***env, char ***export)
 
 void	ft_ch_dir(t_cd *data, char ***env, char ***export)
 {
+	(void)export;
 	data->index_pwd = ft_in_env("PWD", *env);
-	data->index_old_pwd = ft_in_env("OLDPWD", *env);
-	if (data->index_pwd > 0)
+	if (data->index_pwd >= 0)
 	{
-		ft_update_pwd(data, env);
-	}
-	in_env(NULL, *env, 1);
-	data->index_pwd = ft_in_env("PWD", *export);
-	data->index_old_pwd = ft_in_env("OLDPWD", *export);
-	if (data->index_pwd > 0)
 		ft_update_pwd(data, export);
+		ft_update_pwd(data, env);
+		in_env(NULL, *env, 1);
+	}
 }
 
 void	ft_change_directory(t_input *list, char ***env, char ***export)
 {
 	t_cd	data;
 
-	ft_strlcpy(data.old_pwd_name, "OLDPWD=", 8);
-	ft_strlcpy(data.pwd_name, "PWD=", 5);
 	if (!ft_strcount(list->arg))
 	{
 		if (ft_home_dir(&data, env, export) == -1)

@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:18:14 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/05 15:01:23 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/05 16:32:48 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	get_outfile_nbr(t_files *f_data, t_input *list, t_redir *data)
 	f_data->i = 0;
 	while (list->redirect->type[f_data->i])
 	{
-		if (!strcmp(list->redirect->type[f_data->i], OUTPUT))
+		if (!ft_strcmp(list->redirect->type[f_data->i], OUTPUT))
 			data->count++;
 		else if (!ft_strcmp(list->redirect->type[f_data->i], APPEND))
 			data->count++;

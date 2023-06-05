@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:17:47 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/05 15:03:13 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/05 16:33:14 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ void	ft_get_input(t_input *list, t_redir *data)
 	i = -1;
 	while (list->redirect->type[++i])
 	{
-		if (!strcmp(list->redirect->type[i], HERDOC))
+		if (!ft_strcmp(list->redirect->type[i], HERDOC))
 			data->herdoc_count = i;
 		else if (!ft_strcmp(list->redirect->type[i], INPUT))
 			data->input_count = i;
