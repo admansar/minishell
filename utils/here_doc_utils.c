@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:18:07 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/05 23:38:46 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/06 01:08:53 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,8 @@ void	ft_get_rand_str(t_rand_str *d, t_redir *data, t_input *list)
 	d->rand_nbr = ft_random() % 63;
 	d->ruin_name = ft_generate_rand_str(data->herdoc_count + d->rand_nbr);
 	list->redirect->herdoc_file_name = ft_strjoin("/tmp/", d->ruin_name);
+	data->in_fd = open(list->redirect->herdoc_file_name, O_CREAT | O_TRUNC, 0644);
+	close (data->in_fd);
 	free(d->ruin_name);
 }
 

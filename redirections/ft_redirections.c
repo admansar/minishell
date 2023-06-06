@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:17:47 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/05 23:53:39 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/06 01:10:32 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,9 +93,9 @@ void	ft_get_input(t_input *list, t_redir *data)
 	if (data->herdoc_count > data->input_count)
 	{
 		data->in_fd = open(list->redirect->herdoc_file_name, O_RDONLY, 0644);
-		// unlink(list->redirect->herdoc_file_name);
-		// free(list->redirect->herdoc_file_name);
-		// list->redirect->herdoc_file_name = NULL;
+		unlink(list->redirect->herdoc_file_name);
+		free(list->redirect->herdoc_file_name);
+		list->redirect->herdoc_file_name = NULL;
 	}
 	else if (data->herdoc_count < data->input_count)
 		data->in_fd = open(list->redirect->file_name[data->input_count],
@@ -130,4 +130,5 @@ void	ft_redirections(t_input *list, t_redir *data, char ***env,
 		exit(g_vars.g_exit_status);
 	}
 	wait(NULL);
+	g_vars.g_exit_status = 0;
 }

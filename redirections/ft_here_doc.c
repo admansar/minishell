@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:17:45 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/05 23:03:59 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/06 01:08:09 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,9 +107,11 @@ void	ft_execute_here_docs(t_input *list, t_redir *data, char ***env,
 					&(data->herdoc_count));
 			if (data->herdoc_count)
 			{
-				g_vars.g_exit_status = 0;
 				ft_get_rand_str(&d, data, list);
-				ft_here_doc(tmp, data->pos_herdoc, data, &d);
+				// g_vars.pid[g_vars.index]= fork();
+				// if (!g_vars.pid[g_vars.index])
+				// {
+					ft_here_doc(tmp, data->pos_herdoc, data, &d);
 			}
 			free(data->pos_herdoc);
 		}

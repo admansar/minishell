@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/06 11:52:20 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/05 19:47:51 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/06 00:50:34 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -224,6 +224,7 @@ void				ft_get_var_name(char *var, char **var_name);
 void				ft_get_var_value(char *var, char *var_name,
 						char **var_value);
 void				ft_get_var(char *var, char **name, char **value);
+void	ft_get_rand_str(t_rand_str *d, t_redir *data, t_input *list);
 void				ft_check_env_var(t_export *data);
 void				ft_clean_up_name(char **str);
 int					mega_counter(char **str, char c);
@@ -277,8 +278,6 @@ void				ft_export_printer(t_input *list, char **export,
 						t_export *data);
 unsigned int		ft_random(void);
 char				*ft_generate_rand_str(int len);
-void				ft_get_rand_str(t_rand_str *d, t_redir *data,
-						t_input *list);
 void				ft_check_expand(t_input *list, t_redir *data, int *pos,
 						int i);
 void				ft_leave_current_heredoc(t_redir *data, int i);
