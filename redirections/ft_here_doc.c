@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:17:45 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/06 01:08:09 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/06 13:14:23 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,23 +46,9 @@ void	ft_write_in_file(t_input *list, t_redir *data, char **env)
 	free(data->input);
 }
 
-// void heredoc_sigint(int sig)
-// {
-// 	if (sig == SIGINT)
-// 	{
-// 		// rl_replace_line("", 1);
-// 		// rl_on_new_line();
-// 		// rl_redisplay();
-// 		exit (1);
-// 	}
-// }
-
-
 // launch here-doc as many times as it appear in the input
 void	ft_here_doc(t_input *list, int *pos, t_redir *data, t_rand_str *d)
 {
-	d->i = -1;
-	data->expand = 1;
 	g_vars.here_doc = fork();
 	if (g_vars.here_doc == 0)
 	{
@@ -75,7 +61,8 @@ void	ft_here_doc(t_input *list, int *pos, t_redir *data, t_rand_str *d)
 				data->input = readline("> ");
 				if (!data->input)
 					break ;
-				if (!ft_strcmp(data->input, list->redirect->file_name[pos[d->i]]))
+				if (!ft_strcmp(data->input
+						, list->redirect->file_name[pos[d->i]]))
 				{
 					ft_leave_current_heredoc(data, d->i);
 					break ;
@@ -92,29 +79,26 @@ void	ft_here_doc(t_input *list, int *pos, t_redir *data, t_rand_str *d)
 void	ft_execute_here_docs(t_input *list, t_redir *data, char ***env,
 		char ***export)
 {
-	t_input		*tmp;
 	t_rand_str	d;
 
-	tmp = list;
 	data->env = env;
 	data->export = export;
 	data->herdoc_count = 0;
-	while (tmp)
+	while (list)
 	{
-		if (tmp->redirect->position)
+		if (list->redirect->position)
 		{
-			data->pos_herdoc = ft_get_operators_pos(tmp, HERDOC,
+			data->pos_herdoc = ft_get_operators_pos(list, HERDOC,
 					&(data->herdoc_count));
 			if (data->herdoc_count)
 			{
 				ft_get_rand_str(&d, data, list);
-				// g_vars.pid[g_vars.index]= fork();
-				// if (!g_vars.pid[g_vars.index])
-				// {
-					ft_here_doc(tmp, data->pos_herdoc, data, &d);
+				d.i = -1;
+				data->expand = 1;
+				ft_here_doc(list, data->pos_herdoc, data, &d);
 			}
 			free(data->pos_herdoc);
 		}
-		tmp = tmp->next;
+		list = list->next;
 	}
 }

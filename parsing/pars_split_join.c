@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 14:20:08 by admansar          #+#    #+#             */
-/*   Updated: 2023/06/05 22:57:19 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/06 12:48:58 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,28 +52,6 @@ void	split_and_join(char ***split)
 	free(*split);
 	*split = tmp;
 }
-
-int catch_you(char **str)
-{
-	int i;
-	
-	i = 0;
-	while (str[i])
-	{
-		if (!ft_strncmp(str[i], "<<", 2) && str [i+1]
-		 && !ft_strncmp(str[i+1], "<", 1))
-		return (i);
-		if (!ft_strncmp(str[i], ">>", 2) && str [i+1]
-		 && !ft_strncmp(str[i+1], ">", 1))
-		return (i);
-		if (!ft_strncmp(str[i], "|", 1) && str [i+1]
-		 && !ft_strncmp(str[i+1], "|", 1))
-		return (i);
-		i++;
-	}
-	return (-1);
-}
-
 
 int	last_check(char **str)
 {
@@ -138,7 +116,8 @@ void	split_without_weast_utils(t_parse *pars, char ***new_str, char **input)
 	else if (pars->taken == 1)
 		look_for_partner(pars, new_str, input);
 	else if (((*input)[pars->i] == '\"' || (*input)[pars->i] == '\'')
-			&& pars->taken == 0 && (*input)[pars->start] == ((*input)[pars->i]))
+				&& pars->taken == 0
+				&& (*input)[pars->start] == ((*input)[pars->i]))
 	{
 		pars->end = pars->i;
 		if ((*input)[pars->i + 1] == ' ')

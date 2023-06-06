@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/06 11:52:20 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/06 00:50:34 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/06 12:13:34 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ typedef struct s_global
 	int				g_exit_status;
 	int				pid[PIPE_BUF];
 	int				index;
-	int 			here_doc;
+	int				here_doc;
 }					t_global;
 
 t_global			g_vars;
@@ -161,7 +161,7 @@ typedef struct s_redirection
 	char			**type;
 	int				position;
 	char			**file_name;
-	char			*herdoc_file_name;
+	char			herdoc_file_name[30];
 }					t_redirection;
 
 typedef struct s_parse
@@ -210,7 +210,7 @@ void				ft_execution(t_input *list, char ***env, char ***export);
 char				*take_copy(char *s1, int start, int end);
 int					in_env(char *ptr, char **env, int flag);
 int					ft_simularity_len(char *str, char c);
-int					ft_simularity_len_dual(char *str, char c);
+int					ft_simularity_len_d(char *str, char c);
 void				free_double_array(char **c);
 void				ft_pipe(t_input *list, t_redir *data, char ***env,
 						char ***export);
@@ -219,12 +219,14 @@ void				printer(char **ptr);
 int					char_counter(const char *co, char c);
 void				ft_export(char ***env, t_input *list, char ***export);
 void				ft_unset(char ***env, t_input *list, char ***export);
-int					ft_is_file_dir(t_input *list, t_redir *data, t_files *f_data);
+int					ft_is_file_dir(t_input *list, t_redir *data,
+						t_files *f_data);
 void				ft_get_var_name(char *var, char **var_name);
 void				ft_get_var_value(char *var, char *var_name,
 						char **var_value);
 void				ft_get_var(char *var, char **name, char **value);
-void	ft_get_rand_str(t_rand_str *d, t_redir *data, t_input *list);
+void				ft_get_rand_str(t_rand_str *d, t_redir *data,
+						t_input *list);
 void				ft_check_env_var(t_export *data);
 void				ft_clean_up_name(char **str);
 int					mega_counter(char **str, char c);
@@ -426,8 +428,7 @@ void				expand(char ***str_pro_max, char **env);
 void				should_i_expand(t_expand *expand, char ***str_pro_max,
 						char **env);
 void				expand_after_redirections(t_expand *expand,
-						char ***str_pro_max,
-						char **env);
+						char ***str_pro_max, char **env);
 void				fill_str(t_expand *expand, char ***str_pro_max, char **env);
 void				expand_exit_stat(t_expand *expand, char **env);
 void				start_expanding(t_expand *expand, char ***str_pro_max,
@@ -486,7 +487,6 @@ void				delete_non_sense(char **input);
 void				look_for_partner(t_parse *pars, char ***new_str,
 						char **input);
 int					ft_simularity_len(char *str, char c);
-int					ft_simularity_len_dual(char *str, char c);
 void				delete_them(char **input, int start, int end);
 void				delete_both(char **input, int start, int end, char c);
 char				*take_copy(char *s1, int start, int end);
@@ -502,5 +502,6 @@ void				s_delete(char **input);
 void				look_for_partner(t_parse *pars, char ***new_str,
 						char **input);
 void				list_out(char **split, t_input **list, int i);
+int					catch_you(char **str);
 
 #endif

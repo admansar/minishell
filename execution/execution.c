@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 17:17:33 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/06 00:48:32 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/06 11:20:05 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,8 +116,6 @@ void	ft_pipe(t_input *list, t_redir *data, char ***envi, char ***export)
 void	ft_execution(t_input *list, char ***env, char ***export)
 {
 	t_redir	data;
-	t_input	*tmp;
-	tmp = list;
 
 	ft_execute_here_docs(list, &data, env, export);
 	if (!list->pipe)
@@ -129,14 +127,4 @@ void	ft_execution(t_input *list, char ***env, char ***export)
 	}
 	else
 		ft_pipe(list, &data, env, export);
-	// while (tmp)
-	// {
-	// 	while (list->redirect->heredoc_num--)
-	// 	{
-	// 		unlink(tmp->redirect->herdoc_file_name[list->redirect->heredoc_num]);
-	// 		free(tmp->redirect->herdoc_file_name[list->redirect->heredoc_num]);
-	// 		tmp->redirect->herdoc_file_name[list->redirect->heredoc_num] = NULL;
-	// 	}~
-	// 	tmp = tmp->next;
-	// }
 }

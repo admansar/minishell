@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 14:21:32 by admansar          #+#    #+#             */
-/*   Updated: 2023/06/05 20:32:14 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/06 11:28:21 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,4 +62,25 @@ void	parse_phil_list_and_excute(char **copy, char ***env, char ***export)
 			free_list(list);
 		}
 	}
+}
+
+int	catch_you(char **str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (!ft_strncmp(str[i], "<<", 2) && str[i + 1]
+			&& !ft_strncmp(str[i + 1], "<", 1))
+			return (i);
+		if (!ft_strncmp(str[i], ">>", 2) && str[i + 1]
+			&& !ft_strncmp(str[i + 1], ">", 1))
+			return (i);
+		if (!ft_strncmp(str[i], "|", 1) && str[i + 1]
+			&& !ft_strncmp(str[i + 1], "|", 1))
+			return (i);
+		i++;
+	}
+	return (-1);
 }

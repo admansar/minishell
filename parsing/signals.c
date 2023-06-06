@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 14:20:46 by admansar          #+#    #+#             */
-/*   Updated: 2023/06/05 22:41:45 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/06 13:18:01 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,9 @@ void	sigint(int i)
 	else if (g_vars.pid[i] == 0)
 	{
 		ft_printf("\n");
-		// rl_replace_line("", 1);
-		// rl_on_new_line();
-		// rl_redisplay();
+		rl_replace_line("", 1);
+		rl_on_new_line();
+		rl_redisplay();
 		g_vars.g_exit_status = 0;
 	}
 	else
@@ -41,7 +41,7 @@ void	sigint(int i)
 void	sigquit(int i)
 {
 	if (!g_vars.pid[i])
-		return;
+		return ;
 	while (g_vars.pid[i] != 0)
 	{
 		kill(g_vars.pid[i], SIGINT);

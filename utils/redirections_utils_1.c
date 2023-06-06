@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:18:10 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/05 19:17:05 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/06 11:18:42 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,7 @@ void	init_vars(t_redir *data)
 	data->error = 0;
 	data->in_fd = 0;
 	data->out_fd = 0;
+	g_vars.g_exit_status = 0;
 }
 
 int	ft_is_file_dir(t_input *list, t_redir *data, t_files *f_data)

@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 14:15:03 by admansar          #+#    #+#             */
-/*   Updated: 2023/06/06 00:43:47 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/06 12:27:13 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ void	init_list(t_input **list, int count)
 	(*list)->redirect->file_name = ft_calloc(sizeof(char *), count + 1);
 	(*list)->redirect->type = ft_calloc(sizeof(char *), count + 1);
 	(*list)->redirect->position = 0;
+	ft_bzero((*list)->redirect->herdoc_file_name, 30);
 	(*list)->pipe = 0;
 }
 

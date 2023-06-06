@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils1.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: admansar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 13:35:04 by admansar          #+#    #+#             */
-/*   Updated: 2023/06/04 15:14:04 by admansar         ###   ########.fr       */
+/*   Updated: 2023/06/06 11:52:48 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ int	ft_simularity_len(char *str, char c)
 	return (i);
 }
 
-int	ft_simularity_len_dual(char *str, char c)
+int	ft_simularity_len_d(char *str, char c)
 {
 	int	i;
 

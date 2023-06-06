@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils4.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: admansar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 13:57:10 by admansar          #+#    #+#             */
-/*   Updated: 2023/06/04 15:11:08 by admansar         ###   ########.fr       */
+/*   Updated: 2023/06/06 12:49:24 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ char	**split_without_weast(char **input)
 	{
 		free_double_array(new_str);
 		new_str = NULL;
+		free (pars);
 		return (NULL);
 	}
 	free(pars);

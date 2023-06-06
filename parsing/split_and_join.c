@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 14:04:06 by admansar          #+#    #+#             */
-/*   Updated: 2023/06/05 16:52:07 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/06 11:29:07 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,12 +79,12 @@ void	the_joiner(char ***str_pro_max)
 		while ((*str_pro_max)[i + 1])
 		{
 			h = ft_strlen((*str_pro_max)[i]) - 1;
-			if ((*str_pro_max)[i][h] != ' ' && (*str_pro_max)[i
-					+ 1][0] != '>' && (*str_pro_max)[i + 1][0] != '<'
-					&& (*str_pro_max)[i + 1][0] != '|')
+			if ((*str_pro_max)[i][h] != ' ' && (*str_pro_max)[i + 1][0] != '>'
+				&& (*str_pro_max)[i + 1][0] != '<' && (*str_pro_max)[i
+				+ 1][0] != '|')
 			{
 				if (char_counter((*str_pro_max)[i + 1], '$')
-						&& surounded_by((*str_pro_max)[i + 1], '\''))
+					&& surounded_by((*str_pro_max)[i + 1], '\''))
 					exchange(&(*str_pro_max)[i + 1], '\'', '\"');
 				(*str_pro_max)[i] = ft_str_join((*str_pro_max)[i],
 						(*str_pro_max)[i + 1]);

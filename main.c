@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 23:09:12 by admansar          #+#    #+#             */
-/*   Updated: 2023/06/05 22:42:13 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/06 13:18:08 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,10 @@ void	minishell(char ***env, char ***export)
 	char	*input;
 	char	*copy;
 
-	if (!g_vars.g_exit_status)
-		input = readline("😄\033[0;32mbash-4.2\033[34m$▶️  \033[0m");
-	else
-		input = readline("😡\033[31mbash-4.2\033[34m$❌ \033[0m");
+	input = readline("\033[0;32mminishell-4.2\033[34m$▶️ \033[0m");
 	if (input == NULL)
 	{
-		// ft_printf ("exit\n");
+		ft_printf ("exit\n");
 		free(input);
 		exit(g_vars.g_exit_status);
 	}
