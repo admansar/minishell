@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 23:09:12 by admansar          #+#    #+#             */
-/*   Updated: 2023/06/06 13:18:08 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/06 18:28:09 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void	minishell(char ***env, char ***export)
 	char	*input;
 	char	*copy;
 
-	input = readline("\033[0;32mminishell-4.2\033[34m$▶️ \033[0m");
+	input = readline("\033[0;32mminishell-4.2$ \033[34m➜ \033[0m");
 	if (input == NULL)
 	{
 		ft_printf ("exit\n");
@@ -49,10 +49,11 @@ int	main(int ac, char **av, char **envi)
 	shlvl(&env, 1);
 	in_env(NULL, env, 1);
 	export = fill(env);
+	export = ft_remove(export, ft_in_env("_", env));
 	g_vars.g_exit_status = 0;
 	g_vars.index = 0;
-	signal (SIGINT, signals);
-	signal (SIGQUIT, signals);
+	signal(SIGINT, signals);
+	signal(SIGQUIT, SIG_IGN);
 	while (1)
 		minishell(&env, &export);
 	shlvl(&env, -1);

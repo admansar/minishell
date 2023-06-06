@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expand.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: admansar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 14:13:15 by admansar          #+#    #+#             */
-/*   Updated: 2023/06/04 14:52:28 by admansar         ###   ########.fr       */
+/*   Updated: 2023/06/06 13:43:51 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ void	shlvl(char ***env, int c)
 	int		h;
 	char	*tmp;
 	char	*tmp2;
+	char	*shell_lvl;
 
 	h = ft_strlen("SHLVL=");
 	i = 0;
@@ -72,6 +73,9 @@ void	shlvl(char ***env, int c)
 		}
 		i++;
 	}
+	shell_lvl = ft_strdup("SHLVL=1");
+	ft_join_str_to_double_array(env, &shell_lvl);
+	free (shell_lvl);
 }
 
 int	error_detected(void)

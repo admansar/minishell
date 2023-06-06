@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:17:45 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/06 13:14:23 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/06 18:00:00 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,10 +49,12 @@ void	ft_write_in_file(t_input *list, t_redir *data, char **env)
 // launch here-doc as many times as it appear in the input
 void	ft_here_doc(t_input *list, int *pos, t_redir *data, t_rand_str *d)
 {
+	signal(SIGINT, SIG_IGN);
 	g_vars.here_doc = fork();
 	if (g_vars.here_doc == 0)
 	{
-		signal (SIGINT, SIG_DFL);
+		signal(SIGINT, SIG_DFL);
+		signal(SIGQUIT, SIG_DFL);
 		while (++d->i < data->herdoc_count)
 		{
 			ft_check_expand(list, data, pos, d->i);
@@ -62,11 +64,9 @@ void	ft_here_doc(t_input *list, int *pos, t_redir *data, t_rand_str *d)
 				if (!data->input)
 					break ;
 				if (!ft_strcmp(data->input
-						, list->redirect->file_name[pos[d->i]]))
-				{
-					ft_leave_current_heredoc(data, d->i);
+						, list->redirect->file_name[pos[d->i]])
+					&& ft_leave_current_heredoc(data, d->i))
 					break ;
-				}
 				else if (d->i == data->herdoc_count - 1)
 					ft_write_in_file(list, data, (*data->env));
 			}

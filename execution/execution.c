@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 17:17:33 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/06 11:20:05 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/06 18:09:12 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ void	ft_exec(t_input *list, char ***envi, char ***export)
 
 void	ft_n_pipe(t_input *list, t_pipe *pipe_data, t_redir *data)
 {
-	pipe_data->i = 0;
+	signal(SIGINT, SIG_IGN);
 	while (list)
 	{
 		g_vars.pid[g_vars.index] = fork();
@@ -72,6 +72,8 @@ void	ft_n_pipe(t_input *list, t_pipe *pipe_data, t_redir *data)
 			return ;
 		if (g_vars.pid[g_vars.index] == 0)
 		{
+			signal(SIGINT, SIG_DFL);
+			signal(SIGQUIT, SIG_DFL);
 			if (pipe_data->i < pipe_data->pipe_num)
 				dup2(pipe_data->pipe_fd[pipe_data->i][1], STDOUT_FILENO);
 			if (pipe_data->i > 0)
@@ -100,6 +102,7 @@ void	ft_pipe(t_input *list, t_redir *data, char ***envi, char ***export)
 	if (ft_check_pipe_errors(list, &pipe_data, envi, export))
 		return ;
 	ft_allocate_pipe_fds(&pipe_data);
+	pipe_data.i = 0;
 	ft_n_pipe(list, &pipe_data, data);
 	ft_close(&pipe_data);
 	ft_get_exit_status(&pipe_data);

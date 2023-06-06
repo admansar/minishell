@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:17:37 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/05 18:15:24 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/06 18:34:21 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@ char	**ft_remove(char **ptr, int pos)
 	int		i;
 	int		j;
 
+	if (pos < 0)
+		return (ptr);
 	len = ft_strcount(ptr);
 	new_ptr = (char **)ft_calloc(sizeof(char *), len + 1);
 	i = 0;

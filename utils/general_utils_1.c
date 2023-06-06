@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:18:02 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/04 15:07:20 by admansar         ###   ########.fr       */
+/*   Updated: 2023/06/06 18:21:56 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,22 +31,24 @@ int	ft_strcmp(const char *s1, const char *s2)
 	return (0);
 }
 
-// check if my var is in the envirement
-int	ft_in_env(char *str, char **env)
+// check if the char c is found inside of the string str
+int	inside_of(char *str, char c)
 {
-	int	i;
 	int	len;
+	int	i;
 
-	i = 0;
-	len = ft_strlen(str);
-	while (env[i])
+	i = 1;
+	len = ft_strlen(str) - 1;
+	if (len > 0)
+		if (str[len] == c)
+			len--;
+	while (i < len && str[i])
 	{
-		if (!ft_strncmp(env[i], str, ft_strlen(str)) && (env[i][len] == '='
-			|| env[i][len] == '\0'))
-			return (i);
+		if (str[i] == c)
+			return (1);
 		i++;
 	}
-	return (-1);
+	return (0);
 }
 
 // check if my char c is in my str and return the its index if exist | -1 if not

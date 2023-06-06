@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 14:20:46 by admansar          #+#    #+#             */
-/*   Updated: 2023/06/06 13:18:01 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/06 18:28:14 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,33 +24,6 @@ void	sigint(int i)
 		rl_redisplay();
 		g_vars.g_exit_status = 0;
 	}
-	else
-	{
-		while (g_vars.pid[i] != 0)
-		{
-			kill (g_vars.pid[i], SIGINT);
-			g_vars.pid[i] = 0;
-			i++;
-		}
-		ft_bzero (g_vars.pid, PIPE_BUF);
-		g_vars.index = 0;
-		g_vars.g_exit_status = 130;
-	}
-}
-
-void	sigquit(int i)
-{
-	if (!g_vars.pid[i])
-		return ;
-	while (g_vars.pid[i] != 0)
-	{
-		kill(g_vars.pid[i], SIGINT);
-		g_vars.pid[i] = 0;
-		i++;
-	}
-	ft_bzero(g_vars.pid, PIPE_BUF);
-	g_vars.index = 0;
-	ft_printf("Quit: 3\n");
 }
 
 void	signals(int signum)
@@ -60,6 +33,4 @@ void	signals(int signum)
 	i = 0;
 	if (signum == SIGINT)
 		sigint(i);
-	else if (signum == SIGQUIT)
-		sigquit(i);
 }

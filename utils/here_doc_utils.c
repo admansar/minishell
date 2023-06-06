@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:18:07 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/06 13:15:00 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/06 17:58:20 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,10 +69,11 @@ void	ft_check_expand(t_input *list, t_redir *data, int *pos, int i)
 	}
 }
 
-void	ft_leave_current_heredoc(t_redir *data, int i)
+int	ft_leave_current_heredoc(t_redir *data, int i)
 {
 	free(data->input);
 	data->input = NULL;
 	if (i == data->herdoc_count - 1)
 		close(data->in_fd);
+	return (1);
 }

@@ -6,31 +6,11 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:18:10 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/06 11:18:42 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/06 18:21:44 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-// check if the char c is found inside of the string str
-int	inside_of(char *str, char c)
-{
-	int	len;
-	int	i;
-
-	i = 1;
-	len = ft_strlen(str) - 1;
-	if (len > 0)
-		if (str[len] == c)
-			len--;
-	while (i < len && str[i])
-	{
-		if (str[i] == c)
-			return (1);
-		i++;
-	}
-	return (0);
-}
 
 // check if there is consecutive character in the string
 int	consecutive(char *str, char c)
@@ -96,4 +76,22 @@ int	ft_is_file_dir(t_input *list, t_redir *data, t_files *f_data)
 		}
 	}
 	return (1);
+}
+
+int	check_in_file_permissions(t_input *list, t_redir *data, int i)
+{
+	if (list->redirect->file_name[i] == NULL)
+	{
+		ft_error(data, AMBIGUOUS_ERR);
+		return (0);
+	}
+	if (list->redirect->file_name[i][0] == '$')
+	{
+		ft_error(data, AMBIGUOUS_ERR);
+		return (0);
+	}
+	data->error = 1;
+	g_vars.g_exit_status = 1;
+	ft_printf("bash: %s: %s\n", list->redirect->file_name[i], strerror(errno));
+	return (0);
 }

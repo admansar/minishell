@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:18:14 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/05 23:29:55 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/06 17:56:44 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,4 +69,17 @@ void	ft_create_file(t_input *list, t_redir *data, t_files *f_data, int flag)
 		close(data->out_fd);
 	if (data->output <= f_data->i)
 		data->output = f_data->i;
+}
+
+int	ft_is_builtin(t_input *list)
+{
+	if (!ft_strcmp(list->cmd, "export"))
+		return (1);
+	else if (!ft_strcmp(list->cmd, "exit"))
+		return (1);
+	else if (!ft_strcmp(list->cmd, "unset"))
+		return (1);
+	else if (!ft_strcmp(list->cmd, "cd"))
+		return (1);
+	return (0);
 }

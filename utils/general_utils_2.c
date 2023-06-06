@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:18:05 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/03 20:18:06 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/06 18:21:24 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,4 +79,22 @@ void	ft_join_str_to_double_array(char ***arg, char **to_join)
 	joined[i] = ft_strdup(*to_join);
 	free_double_array((*arg));
 	(*arg) = joined;
+}
+
+// check if my var is in the envirement
+int	ft_in_env(char *str, char **env)
+{
+	int	i;
+	int	len;
+
+	i = 0;
+	len = ft_strlen(str);
+	while (env[i])
+	{
+		if (!ft_strncmp(env[i], str, ft_strlen(str)) && (env[i][len] == '='
+			|| env[i][len] == '\0'))
+			return (i);
+		i++;
+	}
+	return (-1);
 }

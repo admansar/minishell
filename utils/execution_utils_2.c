@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:17:54 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/05 13:58:25 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/06 17:19:47 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,12 @@ void	ft_path_fixing(t_execution *data, char ***envi)
 void	ft_current_dir_executables(t_input *list, t_execution *data,
 		char ***envi)
 {
+	signal(SIGINT, SIG_IGN);
 	g_vars.pid[g_vars.index] = fork();
 	if (g_vars.pid[g_vars.index] == 0)
 	{
+		signal(SIGINT, SIG_DFL);
+		signal(SIGQUIT, SIG_DFL);
 		data->arg = ft_join_double_ptr_to_ptr(list->cmd, list->arg);
 		execve(list->cmd, data->arg, *envi);
 		perror("execve");
@@ -53,9 +56,12 @@ void	ft_current_dir_executables(t_input *list, t_execution *data,
 
 void	ft_cmd_with_path(t_input *list, t_execution *data, char ***envi)
 {
+	signal(SIGINT, SIG_IGN);
 	g_vars.pid[g_vars.index] = fork();
 	if (g_vars.pid[g_vars.index] == 0)
 	{
+		signal(SIGINT, SIG_DFL);
+		signal(SIGQUIT, SIG_DFL);
 		data->env = ft_calloc(2, sizeof(char *));
 		data->env[0] = take_copy(list->cmd, ft_strrchr(list->cmd, '/')
 				- list->cmd, ft_strlen(list->cmd));
@@ -73,9 +79,12 @@ void	ft_cmd_with_path(t_input *list, t_execution *data, char ***envi)
 
 void	ft_execute(t_input *list, t_execution *data, char ***envi)
 {
+	signal(SIGINT, SIG_IGN);
 	g_vars.pid[g_vars.index] = fork();
 	if (g_vars.pid[g_vars.index] == 0)
 	{
+		signal(SIGINT, SIG_DFL);
+		signal(SIGQUIT, SIG_DFL);
 		list->arg = ft_join_double_ptr_to_ptr(data->acces[data->i], list->arg);
 		execve(data->acces[data->i], list->arg, *envi);
 		ft_printf("bash: command not found\n");

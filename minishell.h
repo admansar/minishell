@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/06 11:52:20 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/06 12:13:34 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/06 18:22:44 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -282,7 +282,7 @@ unsigned int		ft_random(void);
 char				*ft_generate_rand_str(int len);
 void				ft_check_expand(t_input *list, t_redir *data, int *pos,
 						int i);
-void				ft_leave_current_heredoc(t_redir *data, int i);
+int					ft_leave_current_heredoc(t_redir *data, int i);
 int					inside_of(char *str, char c);
 void				init_vars(t_redir *data);
 int					ambiguous_check_1(t_input *list, t_redir *data, int i);
@@ -325,11 +325,13 @@ void				ft_allocate_pipe_fds(t_pipe *pipe_data);
 int					fork_error(t_pipe *pipe_data);
 void				ft_close(t_pipe *pipe_data);
 void				ft_get_exit_status(t_pipe *pipe_data);
-
+char				**ft_remove(char **ptr, int pos);
+int					ft_is_builtin(t_input *list);
+int					check_in_file_permissions(t_input *list,
+						t_redir *data, int i);
 /*******************************************************************/
 /*                         WILDCARD_UTILS                          */
 /*******************************************************************/
-
 void				the_start_of_the_beg_dual(char *copy, char **ls, int j,
 						char ***holder);
 void				the_start_of_the_beg(char *copy, char **ls, char ***holder);
