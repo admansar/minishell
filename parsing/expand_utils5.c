@@ -100,6 +100,8 @@ void	fill_str(t_expand *expand, char ***str_pro_max, char **env)
 			(*expand).j++;
 			(*expand).m++;
 		}
+		if (char_counter ((*str_pro_max)[(*expand).i], '\6'))
+			disable (&(*str_pro_max)[(*expand).i], '\6');
 		(*expand).i++;
 	}
 }

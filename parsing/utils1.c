@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 13:35:04 by admansar          #+#    #+#             */
-/*   Updated: 2023/06/12 17:31:57 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/12 21:37:39 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,6 @@ void	delete_them(char **input, int start, int end)
 	}
 	re[j] = '\0';
 	ft_strlcpy((*input), re, i);
-	printf("xi smiya :%s\n", re);
 	free(re);
 }
 

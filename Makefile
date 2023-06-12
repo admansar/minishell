@@ -20,9 +20,9 @@ BUILTIN_SRC = $(addprefix $(BUILTIN_PATH)/, ft_change_dir.c ft_echo.c ft_export.
 
 PARSE_SRC = $(addprefix $(PARSE_PATH)/, chared_info.c  chared_info_utils1.c chared_info_utils2.c\
 				chared_info_utils3.c expand.c  expand_utils1.c  expand_utils2.c  expand_utils3.c\
-				expand_utils4.c  expand_utils5.c  pars_split_join.c pars_utils.c  signals.c\
-				split_and_join.c split_and_join_utils1.c split_and_join_utils2.c utils1.c  utils2.c\
-				utils3.c  utils4.c  utils5.c) 
+				expand_utils4.c  expand_utils5.c expand_utils6.c  pars_split_join.c pars_utils.c\
+				signals.c split_and_join.c split_and_join_utils1.c split_and_join_utils2.c utils1.c\
+				utils2.c utils3.c  utils4.c  utils5.c) 
 
 UTILS_SRC = $(addprefix $(UTILS_PATH)/, env_update_utils.c general_utils_1.c general_utils_2.c\
 				here_doc_utils.c redirections_utils_1.c redirections_utils_2.c redirections_utils_3.c\

@@ -6,40 +6,11 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 14:11:35 by admansar          #+#    #+#             */
-/*   Updated: 2023/06/12 17:31:10 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/12 22:12:21 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-int	len_from_env(char ***str_pro_max, char **env, int i, int *j)
-{
-	int		start;
-	int		k;
-	int		h;
-	int		end;
-	char	*tmp;
-
-	start = (*j);
-	while ((*str_pro_max)[i][(*j)] && (ft_isalpha((*str_pro_max)[i][(*j) + 1])
-			|| ft_isdigit((*str_pro_max)[i][(*j) + 1])
-			|| (*str_pro_max)[i][(*j) + 1] == '_'))
-		(*j)++;
-	end = (*j);
-	tmp = take_copy((*str_pro_max)[i], start + 1, end);
-	k = -1;
-	h = ft_strlen(tmp);
-	while (env[++k])
-	{
-		if (!ft_strncmp(tmp, env[k], h) && env[k][h] == '=')
-		{
-			k = ft_strlen(env[k]);
-			break ;
-		}
-	}
-	free(tmp);
-	return (k);
-}
 
 int	len_from_env_(char **env, int *j)
 {
@@ -64,6 +35,15 @@ int	len_from_env_(char **env, int *j)
 	return (k);
 }
 
+void	exchange_both(char **ptr, int first, int second)
+{
+	char	*str;
+
+	str = *ptr;
+	str[first] = '\6';
+	str[second] = '\6';
+}
+
 int	get_len_to_allocate(char ***str_pro_max, int i, char **env)
 {
 	int	j;
@@ -75,7 +55,7 @@ int	get_len_to_allocate(char ***str_pro_max, int i, char **env)
 	{
 		if ((*str_pro_max)[i][j] == '$' && ((*str_pro_max)[i][j + 1] == '@'
 					|| ft_isdigit((*str_pro_max)[i][j + 1])))
-			delete_them(&(*str_pro_max)[i], j, j + 1);
+			exchange_both(&(*str_pro_max)[i], j, j + 1);
 		if ((*str_pro_max)[i][j] == '$' && (ft_isalpha((*str_pro_max)[i][j + 1])
 					|| (*str_pro_max)[i][j + 1] == '_'
 					|| ft_isdigit((*str_pro_max)[i][j + 1])))

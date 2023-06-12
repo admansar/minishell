@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 23:09:12 by admansar          #+#    #+#             */
-/*   Updated: 2023/06/12 20:17:33 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/12 21:45:06 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void	minishell(char ***env, char ***export)
 	free(copy);
 	add_history(input);
 	if (input && input[0] == 0)
-		g_vars.g_exit_status = 99;
+		g_vars.g_exit_status = 0;
 	free(input);
 	ft_bzero(g_vars.pid, PIPE_BUF);
 	g_vars.index = 0;
@@ -50,7 +50,7 @@ int	main(int ac, char **av, char **envi)
 	in_env(NULL, g_vars.env, 1);
 	export = fill(g_vars.env);
 	export = ft_remove(export, ft_in_env("_", g_vars.env));
-	g_vars.g_exit_status = 78;
+	g_vars.g_exit_status = 0;
 	g_vars.index = 0;
 	signal(SIGINT, signals);
 	signal(SIGQUIT, SIG_IGN);
