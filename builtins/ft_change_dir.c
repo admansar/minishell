@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:17:23 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/05 16:54:28 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/12 20:01:26 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,7 @@ int	ft_home_dir(t_cd *data, char ***env, char ***export)
 		g_vars.g_exit_status = 1;
 		return (-1);
 	}
+	g_vars.g_exit_status = 0;
 	return (0);
 }
 
@@ -83,6 +84,7 @@ void	ft_ch_dir(t_cd *data, char ***env, char ***export)
 		ft_update_pwd(data, env);
 		in_env(NULL, *env, 1);
 	}
+	g_vars.g_exit_status = 0;
 }
 
 void	ft_change_directory(t_input *list, char ***env, char ***export)
@@ -107,5 +109,4 @@ void	ft_change_directory(t_input *list, char ***env, char ***export)
 			return ;
 		ft_ch_dir(&data, env, export);
 	}
-	g_vars.g_exit_status = 0;
 }

@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:17:57 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/04 15:07:43 by admansar         ###   ########.fr       */
+/*   Updated: 2023/06/12 16:44:38 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,16 @@ int	ft_check_pipe_errors(t_input *list, t_pipe *pipe_data, char ***envi,
 {
 	if (pipe_data->pipe_num == 0)
 	{
-		ft_exec(list, envi, export);
+		signal(SIGINT, SIG_IGN);
+		g_vars.pid[g_vars.index] = fork();
+		if (!g_vars.pid[g_vars.index])
+		{
+			signal(SIGINT, SIG_DFL);
+			signal(SIGQUIT, SIG_DFL);
+			ft_exec(list, envi, export);
+			exit(g_vars.g_exit_status);
+		}
+		signal(SIGINT, signals);
 		return (1);
 	}
 	if (pipe_data->pipe_num > PIPE_BUF)

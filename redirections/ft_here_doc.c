@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:17:45 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/06 18:00:00 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/12 20:15:29 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ void	ft_here_doc(t_input *list, int *pos, t_redir *data, t_rand_str *d)
 {
 	signal(SIGINT, SIG_IGN);
 	g_vars.here_doc = fork();
-	if (g_vars.here_doc == 0)
+	if (!g_vars.here_doc)
 	{
 		signal(SIGINT, SIG_DFL);
 		signal(SIGQUIT, SIG_DFL);

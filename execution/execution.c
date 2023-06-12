@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 17:17:33 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/06 18:09:12 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/12 16:41:53 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ void	ft_n_pipe(t_input *list, t_pipe *pipe_data, t_redir *data)
 		g_vars.pid[g_vars.index] = fork();
 		if (fork_error(pipe_data))
 			return ;
-		if (g_vars.pid[g_vars.index] == 0)
+		if (g_vars.pid[g_vars.index++] == 0)
 		{
 			signal(SIGINT, SIG_DFL);
 			signal(SIGQUIT, SIG_DFL);
@@ -86,9 +86,9 @@ void	ft_n_pipe(t_input *list, t_pipe *pipe_data, t_redir *data)
 			exit(g_vars.g_exit_status);
 		}
 		pipe_data->i++;
-		g_vars.index++;
 		list = list->next;
 	}
+	signal(SIGINT, signals);
 }
 
 void	ft_pipe(t_input *list, t_redir *data, char ***envi, char ***export)

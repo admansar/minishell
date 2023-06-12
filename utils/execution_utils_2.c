@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:17:54 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/06 17:19:47 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/12 16:44:29 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ void	ft_current_dir_executables(t_input *list, t_execution *data,
 		perror("execve");
 	}
 	waitpid(g_vars.pid[g_vars.index++], &data->status, 0);
+	signal(SIGINT, signals);
 	if (WEXITSTATUS(data->status))
 		data->status = WEXITSTATUS(data->status);
 	else if (WIFSIGNALED(data->status))
@@ -70,6 +71,7 @@ void	ft_cmd_with_path(t_input *list, t_execution *data, char ***envi)
 		perror("execve");
 	}
 	waitpid(g_vars.pid[g_vars.index++], &data->status, 0);
+	signal(SIGINT, signals);
 	if (WEXITSTATUS(data->status))
 		data->status = WEXITSTATUS(data->status);
 	else if (WIFSIGNALED(data->status))
@@ -91,6 +93,7 @@ void	ft_execute(t_input *list, t_execution *data, char ***envi)
 		exit(127);
 	}
 	waitpid(g_vars.pid[g_vars.index++], &data->status, 0);
+	signal(SIGINT, signals);
 	if (WEXITSTATUS(data->status))
 		data->status = WEXITSTATUS(data->status);
 	else if (WIFSIGNALED(data->status))

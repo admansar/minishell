@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/06 11:52:20 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/12 11:29:39 by admansar         ###   ########.fr       */
+/*   Updated: 2023/06/12 20:06:08 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ typedef struct s_global
 	int				pid[PIPE_BUF];
 	int				index;
 	int				here_doc;
+	char			**env;
 }					t_global;
 
 t_global			g_vars;
@@ -400,8 +401,7 @@ void				parse_it(char **copy, char ***env, char ***split);
 void				split_and_join(char ***split);
 void				re_split(char ***tmp, char **split, int *j);
 void				signals(int signum);
-void				sigquit(int i);
-void				sigint(int i);
+void				sigint(void);
 char				**parsing(char **input, char **env);
 int					last_check(char **str);
 int					check_error(char **str, int i);

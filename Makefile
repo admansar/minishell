@@ -43,7 +43,8 @@ ALL_SRCS =  $(SRC) $(BUILTIN_SRC) $(UTILS_SRC) $(REDIRECTIONS_SRC) $(EXECUTION_S
 
 OBJ = $(ALL_SRCS:.c=.o)
 
-CFLAGS = -Wall -Wextra -Werror -I/goinfre/${USER_NAME}/homebrew/opt/readline/include -L/goinfre/${USER_NAME}/homebrew/opt/readline/lib
+CFLAGS = -Wall -Wextra -Werror #-I/goinfre/${USER_NAME}/homebrew/opt/readline/include -L/goinfre/${USER_NAME}/homebrew/opt/readline/lib
+
 all : $(NAME)
 
 $(NAME) : $(ALL_SRCS) minishell.h

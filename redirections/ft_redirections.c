@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:17:47 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/06 18:19:12 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/12 20:15:49 by jlaazouz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,6 +113,7 @@ void	ft_redir(t_input *list, t_redir *data, char ***env,
 	wait(NULL);
 	if (ft_is_builtin(list))
 		ft_exec(list, env, export);
+	signal(SIGINT, signals);
 }
 
 void	ft_redirections(t_input *list, t_redir *data, char ***env,
