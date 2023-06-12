@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 17:27:11 by admansar          #+#    #+#             */
-/*   Updated: 2023/06/05 16:51:29 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/12 12:05:18 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ char	**make_sure(char **str, char **ls)
 	else
 		re = the_popular_choice(*str, ls);
 	check_for_hidden(*str, &re);
+	free (*str);
 	return (re);
 }
 
@@ -37,20 +38,19 @@ void	remake(char ***split, int *i, char **div)
 	int		m;
 	int		j;
 
-	if (!div)
+	if (!div || !div[0])
 		return ;
 	re = ft_calloc(sizeof(char *), (ft_strcount(*split) + ft_strcount(div)
 				+ 1));
-	n = 0;
+	n = -1;
 	j = 0;
-	while ((*split)[n])
+	while ((*split)[++n])
 	{
 		if (n == (*i))
 			m = re_full_(&div, &re, &j);
 		else
 			re[j] = ft_strdup((*split)[n]);
 		j++;
-		n++;
 	}
 	(*i) += m - 1;
 	free_double_array(*split);
@@ -105,21 +105,23 @@ void	wildcard(char ***split)
 	int		i;
 	char	**ls;
 	char	**re;
+	char	*tmp;
 
 	ls = list_current_directory_content();
-	if (!ls)
-		return ;
 	i = 0;
-	while ((*split)[i])
+	the_checker(&(*split));
+	while (ls && (*split)[i])
 	{
 		if (char_counter((*split)[i], '*') && !surounded_by((*split)[i], '\'')
 				&& !surounded_by((*split)[i], '\"'))
 		{
-			re = make_sure(&(*split)[i], ls);
-			if (re && re[0])
-				remake(split, &i, re);
+			tmp = clean_from((*split)[i], '\2');
+			re = make_sure(&tmp, ls);
+			remake(split, &i, re);
 			free_double_array(re);
 		}
+		if (char_counter((*split)[i], '\3'))
+			disable (&(*split)[i], '\3');
 		if (++i >= ft_strcount(*split))
 			break ;
 	}

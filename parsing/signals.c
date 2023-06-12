@@ -14,14 +14,15 @@
 
 void	sigint(int i)
 {
+	(void)i;
 	if (g_vars.here_doc)
 		g_vars.g_exit_status = 1;
-	else if (g_vars.pid[i] == 0)
+	else
 	{
 		ft_printf("\n");
-		rl_replace_line("", 1);
-		rl_on_new_line();
-		rl_redisplay();
+		// rl_replace_line("", 1);
+		// rl_on_new_line();
+		// rl_redisplay();
 		g_vars.g_exit_status = 0;
 	}
 }

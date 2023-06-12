@@ -14,7 +14,7 @@
 
 void	ft_exit(t_input *list)
 {
-	ft_printf ("exit\n");
+	// ft_printf ("exit\n");
 	if (list->arg[0])
 	{
 		if (have_just_digits(list->arg[0]) && !list->arg[1])

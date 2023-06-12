@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/06 11:52:20 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/06 18:22:44 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/12 11:29:39 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -275,6 +275,7 @@ void				array_expander(char **ptr, char **env);
 void				no_extra_(char **ptr, char c);
 int					consecutive(char *str, char c);
 void				wildcard(char ***split);
+void				the_checker(char ***split);
 char				*clean_from(char *c, char l);
 void				ft_export_printer(t_input *list, char **export,
 						t_export *data);

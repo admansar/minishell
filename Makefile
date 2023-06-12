@@ -33,20 +33,24 @@ REDIRECTIONS_SRC = $(addprefix $(REDIRECTIONS_PATH)/, ft_redirections.c ft_here_
 
 EXECUTION_SRC = $(addprefix $(EXECUTION_PATH)/, execution.c)
 
-WILDCARD_SRC = $(addprefix $(WILDCARD_PATH)/, wildcard_cases.c wildcard_utils1.c the_most_nedded_utils.c wildcard_utils2.c  wildcard.c)
+WILDCARD_SRC = $(addprefix $(WILDCARD_PATH)/, wildcard_cases.c wildcard_utils1.c the_most_nedded_utils.c wildcard_utils2.c  wildcard.c ambiguous_wildcard.c)
 
 SRC_DIR := .
 
 CC = cc
 
-CFLAGS = -Wall -Wextra -Werror -g -fsanitize=address -I/goinfre/${USER_NAME}/homebrew/opt/readline/include -L/goinfre/${USER_NAME}/homebrew/opt/readline/lib
+ALL_SRCS =  $(SRC) $(BUILTIN_SRC) $(UTILS_SRC) $(REDIRECTIONS_SRC) $(EXECUTION_SRC) $(WILDCARD_SRC) $(PARSE_SRC)
+
+OBJ = $(ALL_SRCS:.c=.o)
+
+CFLAGS = -Wall -Wextra -Werror -g -fsanitize=address #-I/goinfre/${USER_NAME}/homebrew/opt/readline/include -L/goinfre/${USER_NAME}/homebrew/opt/readline/lib -g -fsanitize=address
 
 all : $(NAME)
 
-$(NAME) : $(SRC) $(BUILTIN_SRC) $(UTILS_SRC) $(REDIRECTIONS_SRC) $(EXECUTION_SRC) $(WILDCARD_SRC) $(PARSE_SRC) minishell.h
+$(NAME) : $(ALL_SRCS) minishell.h
 	@make -C libft
 	$(emo)
-	$(CC) $(SRC) $(BUILTIN_SRC) $(UTILS_SRC) $(REDIRECTIONS_SRC) $(EXECUTION_SRC) $(WILDCARD_SRC) $(PARSE_SRC) $(CFLAGS) libft/libft.a -lreadline -o $(NAME)
+	$(CC) $(ALL_SRCS) $(CFLAGS) libft/libft.a -lreadline -o $(NAME)
 
 clean :
 	make -C libft clean
