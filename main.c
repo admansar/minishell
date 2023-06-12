@@ -20,7 +20,7 @@ void	minishell(char ***env, char ***export)
 	input = readline("\033[0;32mminishell-4.2$ \033[34m➜ \033[0m");
 	if (input == NULL)
 	{
-		// ft_printf ("exit\n");
+		ft_printf ("exit\n");
 		free(input);
 		exit(g_vars.g_exit_status);
 	}
