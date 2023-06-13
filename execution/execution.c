@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 17:17:33 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/12 16:41:53 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/13 19:08:01 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,6 +121,8 @@ void	ft_execution(t_input *list, char ***env, char ***export)
 	t_redir	data;
 
 	ft_execute_here_docs(list, &data, env, export);
+	if (g_vars.killed_heardoc)
+		return ;
 	if (!list->pipe)
 	{
 		if (list->redirect->position)

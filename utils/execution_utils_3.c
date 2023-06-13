@@ -86,6 +86,7 @@ int	ft_check_pipe_errors(t_input *list, t_pipe *pipe_data, char ***envi,
 			ft_exec(list, envi, export);
 			exit(g_vars.g_exit_status);
 		}
+		wait (NULL);
 		signal(SIGINT, signals);
 		return (1);
 	}

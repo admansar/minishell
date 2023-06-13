@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/06 11:52:20 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/12 20:06:08 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/13 19:18:52 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ typedef struct s_global
 	int				index;
 	int				here_doc;
 	char			**env;
+	int				killed_heardoc;
 }					t_global;
 
 t_global			g_vars;

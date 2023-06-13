@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 23:09:12 by admansar          #+#    #+#             */
-/*   Updated: 2023/06/12 21:45:06 by admansar         ###   ########.fr       */
+/*   Updated: 2023/06/13 19:29:03 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,15 +17,16 @@ void	minishell(char ***env, char ***export)
 	char	*input;
 	char	*copy;
 
-	input = readline("\033[0;32mminishell-4.2$ \033[34m➜ \033[0m");
+	input = readline("\033[0;36mminishell-4.2$ \033[0;32m➜ \033[0m");
 	if (input == NULL)
 	{
-		// ft_printf ("exit\n");
+		ft_printf ("exit\n");
 		free(input);
 		exit(g_vars.g_exit_status);
 	}
 	copy = ft_strdup(input);
 	exchange(&copy, '\t', ' ');
+	g_vars.killed_heardoc = 0;
 	parse_phil_list_and_excute(&copy, env, export);
 	free(copy);
 	add_history(input);

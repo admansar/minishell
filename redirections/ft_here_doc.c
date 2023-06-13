@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:17:45 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/12 20:15:29 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/13 19:16:09 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,6 @@ void	ft_here_doc(t_input *list, int *pos, t_redir *data, t_rand_str *d)
 	if (!g_vars.here_doc)
 	{
 		signal(SIGINT, SIG_DFL);
-		signal(SIGQUIT, SIG_DFL);
 		while (++d->i < data->herdoc_count)
 		{
 			ft_check_expand(list, data, pos, d->i);
@@ -73,6 +72,7 @@ void	ft_here_doc(t_input *list, int *pos, t_redir *data, t_rand_str *d)
 		}
 		exit (0);
 	}
+	signal(SIGINT, signals);
 	wait (NULL);
 }
 
@@ -86,7 +86,7 @@ void	ft_execute_here_docs(t_input *list, t_redir *data, char ***env,
 	data->herdoc_count = 0;
 	while (list)
 	{
-		if (list->redirect->position)
+		if (list->redirect->position && !g_vars.killed_heardoc)
 		{
 			data->pos_herdoc = ft_get_operators_pos(list, HERDOC,
 					&(data->herdoc_count));
