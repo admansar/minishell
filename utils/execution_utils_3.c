@@ -6,7 +6,7 @@
 /*   By: jlaazouz < jlaazouz@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 20:17:57 by jlaazouz          #+#    #+#             */
-/*   Updated: 2023/06/12 16:44:38 by jlaazouz         ###   ########.fr       */
+/*   Updated: 2023/06/14 11:26:42 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ void	ft_join_path_and_cmd(t_input *list, t_execution *data, char ***envi)
 {
 	if (list->arg[0])
 	{
-		if (list->arg[0][0] == '\0')
+		if (list->arg[0][0] == '\0' && !list->arg[1])
 		{
 			free(list->arg[0]);
 			list->arg[0] = NULL;
