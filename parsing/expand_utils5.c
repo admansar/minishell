@@ -6,21 +6,11 @@
 /*   By: admansar <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 14:12:16 by admansar          #+#    #+#             */
-/*   Updated: 2023/06/04 15:27:51 by admansar         ###   ########.fr       */
+/*   Updated: 2023/06/16 16:11:07 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-void	store_after_expand_var(char *tmp2, int *m, char **str)
-{
-	int	k;
-
-	k = 0;
-	while (tmp2[k])
-		(*str)[(*m)++] = tmp2[k++];
-	free(tmp2);
-}
 
 void	start_expanding(t_expand *expand, char ***str_pro_max, char **env)
 {
@@ -77,6 +67,29 @@ void	expand_exit_stat(t_expand *expand, char **env)
 	free((*expand).tmp);
 }
 
+void	creat_the_expanded_copy(t_expand *expand,
+char ***str_pro_max, char **env)
+{
+	if ((*str_pro_max)[(*expand).i][(*expand).j] == '$'
+			&& ((*str_pro_max)[(*expand).i][(*expand).j + 1] == '@'
+				|| ft_isdigit((*str_pro_max)[(*expand).i][(*expand).j + 1])))
+		(*expand).j += 2;
+	if ((*str_pro_max)[(*expand).i][(*expand).j] == '$'
+			&& (ft_isalpha((*str_pro_max)[(*expand).i][(*expand).j + 1])
+				|| (*str_pro_max)[(*expand).i][(*expand).j + 1] == '_'
+				|| ft_isdigit((*str_pro_max)[(*expand).i][(*expand).j
+					+ 1])))
+		start_expanding(&(*expand), str_pro_max, env);
+	else if ((*str_pro_max)[(*expand).i][(*expand).j] == '$'
+			&& ((*str_pro_max)[(*expand).i][(*expand).j + 1] == '?'))
+		expand_exit_stat(&(*expand), env);
+	else
+		(*expand).str[(*expand).i][(*expand).m]
+			= (*str_pro_max)[(*expand).i][(*expand).j];
+	(*expand).j++;
+	(*expand).m++;
+}
+
 void	fill_str(t_expand *expand, char ***str_pro_max, char **env)
 {
 	while ((*str_pro_max)[(*expand).i])
@@ -85,20 +98,7 @@ void	fill_str(t_expand *expand, char ***str_pro_max, char **env)
 		(*expand).m = 0;
 		while ((*str_pro_max)[(*expand).i][(*expand).j])
 		{
-			if ((*str_pro_max)[(*expand).i][(*expand).j] == '$'
-					&& (ft_isalpha((*str_pro_max)[(*expand).i][(*expand).j + 1])
-						|| (*str_pro_max)[(*expand).i][(*expand).j + 1] == '_'
-						|| ft_isdigit((*str_pro_max)[(*expand).i][(*expand).j
-							+ 1])))
-				start_expanding(&(*expand), str_pro_max, env);
-			else if ((*str_pro_max)[(*expand).i][(*expand).j] == '$'
-					&& ((*str_pro_max)[(*expand).i][(*expand).j + 1] == '?'))
-				expand_exit_stat(&(*expand), env);
-			else
-				(*expand).str[(*expand).i][(*expand).m]
-					= (*str_pro_max)[(*expand).i][(*expand).j];
-			(*expand).j++;
-			(*expand).m++;
+			creat_the_expanded_copy(expand, str_pro_max, env);
 		}
 		if (char_counter ((*str_pro_max)[(*expand).i], '\6'))
 			disable (&(*str_pro_max)[(*expand).i], '\6');

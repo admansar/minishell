@@ -507,5 +507,7 @@ void				look_for_partner(t_parse *pars, char ***new_str,
 						char **input);
 void				list_out(char **split, t_input **list, int i);
 int					catch_you(char **str);
+void				creat_the_expanded_copy(t_expand *expand,
+						char ***str_pro_max, char **env);
 
 #endif

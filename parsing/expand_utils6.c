@@ -40,3 +40,13 @@ int	len_from_env(char ***str_pro_max, char **env, int i, int *j)
 	free(tmp);
 	return (k);
 }
+
+void	store_after_expand_var(char *tmp2, int *m, char **str)
+{
+	int	k;
+
+	k = 0;
+	while (tmp2[k])
+		(*str)[(*m)++] = tmp2[k++];
+	free(tmp2);
+}
